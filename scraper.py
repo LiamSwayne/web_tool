@@ -1,7 +1,26 @@
 import requests
+import time
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from fake_useragent import UserAgent
+
+def archive_url(url):
+    ua = UserAgent()
+    headers = {'User-Agent': ua.random}
+    archive_url = f"https://web.archive.org/save/{url}"
+    
+    while True:
+        try:
+            response = requests.get(archive_url, headers=headers)
+            if response.status_code == 429:
+                print(f"Rate limited. Waiting 3 minutes before retrying to archive {url}")
+                time.sleep(180)  # Wait for 3 minutes
+            else:
+                print(f"Archived: {url}")
+                break
+        except Exception as e:
+            print(f"Error archiving {url}: {str(e)}")
+            break
 
 def fetch_urls(url):
     ua = UserAgent()
@@ -30,12 +49,6 @@ def fetch_urls(url):
                 lego_urls.add(lego_url[:-6] + "webp")
                 lego_urls.add(lego_url[:-6] + "png")
             start_index = end_index
-        
-        # Print the found Lego URLs
-        print(f"\nLego URLs found in {url}:")
-        for lego_url in lego_urls:
-            print(lego_url)
-        print("\n" + "="*50 + "\n")
         
         soup = BeautifulSoup(html_content, 'html.parser')
         
@@ -80,9 +93,10 @@ for url in source_urls:
     all_urls.add(url)  # Add the original URL
     all_urls.update(fetched_urls)
 
-# Write all URLs to output file
+# Archive and write all URLs to output file
 with open("output_urls.txt", "w") as f:
     for url in sorted(all_urls):
+        archive_url(url)
         f.write(f"{url}\n")
 
 print(f"Found {len(all_urls)} unique URLs. Results written to output_urls.txt")
