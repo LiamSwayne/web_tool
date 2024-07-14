@@ -2,18 +2,39 @@ import requests
 from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from fake_useragent import UserAgent
+import os
+
+# Use environment variable for GitHub token
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 
 def is_github_repo(url):
     parsed = urlparse(url)
     parts = parsed.path.split('/')
     return parsed.netloc == 'github.com' and len(parts) == 3
 
-def get_github_archive_urls(repo_url):
+def get_github_urls(repo_url):
     owner, repo = repo_url.split('/')[-2:]
-    return [
+    urls = [
         f"{repo_url}/archive/refs/heads/main.zip",
         f"https://codeload.github.com/{owner}/{repo}/zip/refs/heads/main"
     ]
+    
+    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+    headers = {'Authorization': f'token {GITHUB_TOKEN}'} if GITHUB_TOKEN else {}
+    
+    try:
+        response = requests.get(api_url, headers=headers)
+        response.raise_for_status()
+        releases = response.json()
+        
+        for release in releases:
+            for asset in release['assets']:
+                urls.append(asset['browser_download_url'])
+        
+    except Exception as e:
+        print(f"Error fetching GitHub releases for {repo_url}: {str(e)}")
+    
+    return urls
 
 def check_archive_status(url):
     api_url = f"http://archive.org/wayback/available?url={url}"
@@ -57,9 +78,9 @@ def fetch_urls(url):
             link = urljoin(url, a_tag['href'])
             if link.startswith('http'):
                 links.add(link)
-                # Check if it's a GitHub repo and add archive URLs
+                # Check if it's a GitHub repo and add .git and release asset URLs
                 if is_github_repo(link):
-                    links.update(get_github_archive_urls(link))
+                    links.update(get_github_urls(link))
         
         # Find all image sources
         images = set()
