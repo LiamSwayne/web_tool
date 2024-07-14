@@ -56,10 +56,10 @@ def fetch_urls(url):
             if end_index == -1:
                 break
             lego_url = html_content[start_index:end_index]
-            lego_urls.add(lego_url)
             if lego_url.endswith("/legacy"):
                 lego_urls.add(lego_url[:-6] + "webp")
-                lego_urls.add(lego_url[:-6] + "png")
+            else:
+                lego_urls.add(lego_url)
             start_index = end_index
         
         soup = BeautifulSoup(html_content, 'html.parser')
