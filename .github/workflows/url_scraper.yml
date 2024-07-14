@@ -22,7 +22,7 @@ jobs:
     - name: Run URL scraper
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: python url_scraper.py
+      run: python scraper.py
 
     - name: Commit and push if changed
       run: |
