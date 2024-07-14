@@ -4,9 +4,21 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin
 from fake_useragent import UserAgent
 
+def check_archive_status(url):
+    api_url = f"http://archive.org/wayback/available?url={url}"
+    response = requests.get(api_url)
+    data = response.json()
+    hasSnapshot = data['archived_snapshots'] != {}
+    return hasSnapshot
+
 def archive_url(url):
     ua = UserAgent()
     headers = {'User-Agent': ua.random}
+    
+    if check_archive_status(url):
+        print(f"Already archived: {url}")
+        return
+
     archive_url = f"https://web.archive.org/save/{url}"
     
     while True:
@@ -93,7 +105,7 @@ for url in source_urls:
     all_urls.add(url)  # Add the original URL
     all_urls.update(fetched_urls)
 
-# Archive and write all URLs to output file
+# Archive if no snapshots currently exist and write all URLs to output file
 with open("output_urls.txt", "w") as f:
     for url in sorted(all_urls):
         archive_url(url)
