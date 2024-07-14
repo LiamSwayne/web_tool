@@ -19,20 +19,23 @@ def get_github_urls(repo_url):
         f"https://codeload.github.com/{owner}/{repo}/zip/refs/heads/main"
     ]
     
-    api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
-    headers = {'Authorization': f'token {GITHUB_TOKEN}'} if GITHUB_TOKEN else {}
-    
-    try:
-        response = requests.get(api_url, headers=headers)
-        response.raise_for_status()
-        releases = response.json()
+    if GITHUB_TOKEN:
+        api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+        headers = {'Authorization': f'token {GITHUB_TOKEN}'}
         
-        for release in releases:
-            for asset in release['assets']:
-                urls.append(asset['browser_download_url'])
-        
-    except Exception as e:
-        print(f"Error fetching GitHub releases for {repo_url}: {str(e)}")
+        try:
+            response = requests.get(api_url, headers=headers)
+            response.raise_for_status()
+            releases = response.json()
+            
+            for release in releases:
+                for asset in release['assets']:
+                    urls.append(asset['browser_download_url'])
+            
+        except Exception as e:
+            print(f"Error fetching GitHub releases for {repo_url}: {str(e)}")
+    else:
+        print(f"Skipping GitHub API request for {repo_url} (no token provided)")
     
     return urls
 
