@@ -3,6 +3,7 @@ from bs4 import BeautifulSoup
 from urllib.parse import urljoin, urlparse
 from fake_useragent import UserAgent
 import os
+import datetime
 
 # Use environment variable for GitHub token
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
@@ -119,8 +120,12 @@ for url in source_urls:
     all_urls.add(url)  # Add the original URL
     all_urls.update(fetched_urls)
 
+# Generate timestamp for filename
+timestamp = datetime.datetime.now().strftime("%Y_%m_%d_%H_%M")
+output_filename = f"output_urls_{timestamp}.txt"
+
 # Check archive status and write archived URLs to output file
-with open("output_urls.txt", "w") as f:
+with open(output_filename, "w") as f:
     for url in sorted(all_urls):
         if check_archive_status(url):
             f.write(f"{url}\n")
@@ -128,4 +133,4 @@ with open("output_urls.txt", "w") as f:
         else:
             print(f"Not archived: {url}")
 
-print(f"Processed {len(all_urls)} unique URLs. Archived URLs written to output_urls.txt")
+print(f"Processed {len(all_urls)} unique URLs. Archived URLs written to {output_filename}")
