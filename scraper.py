@@ -1,7 +1,19 @@
 import requests
 from bs4 import BeautifulSoup
-from urllib.parse import urljoin
+from urllib.parse import urljoin, urlparse
 from fake_useragent import UserAgent
+
+def is_github_repo(url):
+    parsed = urlparse(url)
+    parts = parsed.path.split('/')
+    return parsed.netloc == 'github.com' and len(parts) == 3
+
+def get_github_archive_urls(repo_url):
+    owner, repo = repo_url.split('/')[-2:]
+    return [
+        f"{repo_url}/archive/refs/heads/main.zip",
+        f"https://codeload.github.com/{owner}/{repo}/zip/refs/heads/main"
+    ]
 
 def check_archive_status(url):
     api_url = f"http://archive.org/wayback/available?url={url}"
@@ -45,6 +57,9 @@ def fetch_urls(url):
             link = urljoin(url, a_tag['href'])
             if link.startswith('http'):
                 links.add(link)
+                # Check if it's a GitHub repo and add archive URLs
+                if is_github_repo(link):
+                    links.update(get_github_archive_urls(link))
         
         # Find all image sources
         images = set()
