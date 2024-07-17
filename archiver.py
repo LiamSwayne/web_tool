@@ -9,6 +9,7 @@ import random
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 MAX_URLS_TO_ARCHIVE = 20
 ARCHIVE_TIMEOUT = 120  # 2 minutes
+MAX_RETRIES = 3
 
 def is_github_repo(url):
     parsed = urlparse(url)
@@ -104,7 +105,7 @@ def check_archive_status(url):
     data = response.json()
     return data['archived_snapshots'] != {}
 
-def archive_url(url, ua):
+def archive_url(url, ua, retries=0):
     headers = {'User-Agent': ua.random}
     archive_url = f"https://web.archive.org/save/{url}"
     
@@ -113,16 +114,26 @@ def archive_url(url, ua):
         if response.status_code == 429:
             print(f"Rate limited. Waiting 5 minutes before retrying to archive {url}")
             time.sleep(300)  # Wait for 5 minutes
-            return archive_url(url, ua)  # Retry
+            return archive_url(url, ua, retries)  # Retry
         elif response.status_code == 200:
             print(f"Successfully archived: {url}")
             return True
         else:
             print(f"Failed to archive {url}: Status code {response.status_code}")
-            return False
+            if retries < MAX_RETRIES - 1:
+                print(f"Retrying... (Attempt {retries + 2} of {MAX_RETRIES})")
+                time.sleep(5)  # Wait 5 seconds before retrying
+                return archive_url(url, ua, retries + 1)
+            else:
+                return False
     except Exception as e:
         print(f"Error archiving {url}: {str(e)}")
-        return False
+        if retries < MAX_RETRIES - 1:
+            print(f"Retrying... (Attempt {retries + 2} of {MAX_RETRIES})")
+            time.sleep(5)  # Wait 5 seconds before retrying
+            return archive_url(url, ua, retries + 1)
+        else:
+            return False
 
 def remove_url_from_file(url, filename):
     with open(filename, 'r') as f:
@@ -165,7 +176,7 @@ for i, url in enumerate(all_urls, 1):
             if archive_url(url, ua):
                 archived_urls += 1
             else:
-                print(f"Failed to archive: {url}")
+                print(f"Failed to archive after {MAX_RETRIES} attempts: {url}")
                 failed_urls += 1
         else:
             print(f"Reached maximum number of URLs to archive ({MAX_URLS_TO_ARCHIVE})")
@@ -176,9 +187,6 @@ for i, url in enumerate(all_urls, 1):
 
 print(f"Process complete. Archived {archived_urls} new URLs, {already_archived_urls} were already archived, {failed_urls} failed to archive.")
 
-# Only remove the source URL if all URLs were processed
-if archived_urls + already_archived_urls + failed_urls == total_urls:
-    remove_url_from_file(source_url, "source_urls.txt")
-    print(f"All URLs processed. Removed {source_url} from source_urls.txt")
-else:
-    print(f"Not all URLs were processed. Keeping {source_url} in source_urls.txt for future processing.")
+# Remove the source URL regardless of the archiving results
+remove_url_from_file(source_url, "source_urls.txt")
+print(f"Removed {source_url} from source_urls.txt")
