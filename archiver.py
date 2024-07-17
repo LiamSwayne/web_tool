@@ -1,6 +1,106 @@
 import requests
-import time
+from bs4 import BeautifulSoup
+from urllib.parse import urljoin, urlparse
 from fake_useragent import UserAgent
+import os
+import time
+import random
+
+GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+
+def is_github_repo(url):
+    parsed = urlparse(url)
+    parts = parsed.path.split('/')
+    return parsed.netloc == 'github.com' and len(parts) == 3
+
+def get_github_urls(repo_url):
+    owner, repo = repo_url.split('/')[-2:]
+    urls = [
+        f"{repo_url}/archive/refs/heads/main.zip",
+        f"https://codeload.github.com/{owner}/{repo}/zip/refs/heads/main"
+    ]
+    
+    if GITHUB_TOKEN:
+        api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
+        headers = {'Authorization': f'token {GITHUB_TOKEN}'}
+        
+        try:
+            response = requests.get(api_url, headers=headers)
+            response.raise_for_status()
+            releases = response.json()
+            
+            for release in releases:
+                for asset in release['assets']:
+                    urls.append(asset['browser_download_url'])
+            
+        except Exception as e:
+            print(f"Error fetching GitHub releases for {repo_url}: {str(e)}")
+    else:
+        print(f"Skipping GitHub API request for {repo_url} (no token provided)")
+    
+    return urls
+
+def fetch_urls(url):
+    ua = UserAgent()
+    headers = {'User-Agent': ua.random}
+    
+    try:
+        response = requests.get(url, headers=headers)
+        html_content = response.text
+        
+        lego_urls = set()
+        start_string = "https://ideascdn.lego.com/media/generate/lego_ci/"
+        start_index = 0
+        while True:
+            start_index = html_content.find(start_string, start_index)
+            if start_index == -1:
+                break
+            end_index = html_content.find('"', start_index)
+            if end_index == -1:
+                end_index = html_content.find("'", start_index)
+            if end_index == -1:
+                break
+            lego_url = html_content[start_index:end_index]
+            if lego_url.endswith("/legacy"):
+                lego_urls.add(lego_url[:-6] + "webp")
+            else:
+                lego_urls.add(lego_url)
+            start_index = end_index
+        
+        soup = BeautifulSoup(html_content, 'html.parser')
+        
+        links = set()
+        for a_tag in soup.find_all('a', href=True):
+            link = urljoin(url, a_tag['href'])
+            if link.startswith('http'):
+                links.add(link)
+                if is_github_repo(link):
+                    links.update(get_github_urls(link))
+        
+        images = set()
+        for img_tag in soup.find_all('img', src=True):
+            img_src = urljoin(url, img_tag['src'])
+            if img_src.startswith('http'):
+                images.add(img_src)
+        
+        other_urls = set()
+        for tag in soup.find_all():
+            for attribute in tag.attrs:
+                value = tag.attrs[attribute]
+                if isinstance(value, str) and value.startswith('http'):
+                    other_urls.add(value)
+        
+        return links.union(images).union(other_urls).union(lego_urls)
+    
+    except Exception as e:
+        print(f"Error fetching {url}: {str(e)}")
+        return set()
+
+def check_archive_status(url):
+    api_url = f"http://archive.org/wayback/available?url={url}"
+    response = requests.get(api_url)
+    data = response.json()
+    return data['archived_snapshots'] != {}
 
 def archive_url(url, ua):
     headers = {'User-Agent': ua.random}
@@ -24,21 +124,34 @@ def archive_url(url, ua):
 
 ua = UserAgent()
 
-# Read URLs from output_urls.txt
-with open("output_urls.txt", "r") as f:
-    urls = f.read().splitlines()
+# Read source URLs
+with open("source_urls.txt", "r") as f:
+    source_urls = f.read().splitlines()
 
-total_urls = len(urls)
+# Choose a random source URL
+source_url = random.choice(source_urls)
+print(f"Processing source URL: {source_url}")
+
+# Fetch URLs from the source
+all_urls = fetch_urls(source_url)
+all_urls.add(source_url)  # Add the source URL itself
+
+total_urls = len(all_urls)
 archived_urls = 0
 
-print(f"Starting to archive {total_urls} URLs...")
+print(f"Found {total_urls} URLs. Starting to process...")
 
-for i, url in enumerate(urls, 1):
+for i, url in enumerate(all_urls, 1):
     print(f"Processing URL {i} of {total_urls}")
-    if archive_url(url, ua):
-        archived_urls += 1
+    
+    if not check_archive_status(url):
+        print(f"Archiving: {url}")
+        if archive_url(url, ua):
+            archived_urls += 1
+    else:
+        print(f"Already archived: {url}")
     
     # Add a small delay between requests to be polite
     time.sleep(2)
 
-print(f"Archiving complete. Successfully archived {archived_urls} out of {total_urls} URLs.")
+print(f"Process complete. Archived {archived_urls} new URLs out of {total_urls} total URLs.")
