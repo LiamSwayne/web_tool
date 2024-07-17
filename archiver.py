@@ -7,6 +7,7 @@ import time
 import random
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
+MAX_URLS_TO_ARCHIVE = 20
 
 def is_github_repo(url):
     parsed = urlparse(url)
@@ -146,30 +147,36 @@ all_urls.add(source_url)  # Add the source URL itself
 
 total_urls = len(all_urls)
 archived_urls = 0
-all_archived = True
+already_archived_urls = 0
 
 print(f"Found {total_urls} URLs. Starting to process...")
 
 for i, url in enumerate(all_urls, 1):
     print(f"Processing URL {i} of {total_urls}")
     
-    if not check_archive_status(url):
-        print(f"Archiving: {url}")
-        if archive_url(url, ua):
-            archived_urls += 1
-        else:
-            all_archived = False
-    else:
+    if check_archive_status(url):
         print(f"Already archived: {url}")
+        already_archived_urls += 1
+    else:
+        if archived_urls < MAX_URLS_TO_ARCHIVE:
+            print(f"Archiving: {url}")
+            if archive_url(url, ua):
+                archived_urls += 1
+            else:
+                print(f"Failed to archive: {url}")
+                break
+        else:
+            print(f"Reached maximum number of URLs to archive ({MAX_URLS_TO_ARCHIVE})")
+            break
     
     # Add a small delay between requests to be polite
     time.sleep(2)
 
-print(f"Process complete. Archived {archived_urls} new URLs out of {total_urls} total URLs.")
+print(f"Process complete. Archived {archived_urls} new URLs, {already_archived_urls} were already archived.")
 
-# Remove the source URL from source_urls.txt if all URLs were successfully archived
-if all_archived:
+# Only remove the source URL if all URLs were processed
+if archived_urls + already_archived_urls == total_urls:
     remove_url_from_file(source_url, "source_urls.txt")
-    print(f"Removed {source_url} from source_urls.txt")
+    print(f"All URLs processed. Removed {source_url} from source_urls.txt")
 else:
-    print(f"Not all URLs were archived successfully. Keeping {source_url} in source_urls.txt")
+    print(f"Not all URLs were processed. Keeping {source_url} in source_urls.txt for future processing.")
