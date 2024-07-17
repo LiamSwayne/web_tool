@@ -5,6 +5,7 @@ from fake_useragent import UserAgent
 import os
 import time
 import random
+import sys
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 MAX_URLS_TO_ARCHIVE = 20
@@ -105,16 +106,20 @@ def check_archive_status(url):
     data = response.json()
     return data['archived_snapshots'] != {}
 
-def archive_url(url, ua, retries=0):
+def archive_url(url, ua, retries=0, rate_limit_count=0):
     headers = {'User-Agent': ua.random}
     url_to_archive = f"https://web.archive.org/save/{url}"
     
     try:
         response = requests.get(url_to_archive, headers=headers, timeout=ARCHIVE_TIMEOUT)
         if response.status_code == 429:
+            rate_limit_count += 1
+            if rate_limit_count > 3:
+                print("Rate limited more than 3 times. Quitting.")
+                sys.exit(1)
             print(f"Rate limited. Waiting 5 minutes before retrying to archive {url}")
             time.sleep(300)  # Wait for 5 minutes
-            return archive_url(url, ua, retries)  # Retry
+            return archive_url(url, ua, retries, rate_limit_count)  # Retry
         elif response.status_code == 200:
             print(f"Successfully archived: {url}")
             return True
@@ -123,7 +128,7 @@ def archive_url(url, ua, retries=0):
             if retries < MAX_RETRIES - 1:
                 print(f"Retrying... (Attempt {retries + 2} of {MAX_RETRIES})")
                 time.sleep(5)  # Wait 5 seconds before retrying
-                return archive_url(url, ua, retries + 1)
+                return archive_url(url, ua, retries + 1, rate_limit_count)
             else:
                 return False
     except Exception as e:
@@ -131,7 +136,7 @@ def archive_url(url, ua, retries=0):
         if retries < MAX_RETRIES - 1:
             print(f"Retrying... (Attempt {retries + 2} of {MAX_RETRIES})")
             time.sleep(5)  # Wait 5 seconds before retrying
-            return archive_url(url, ua, retries + 1)
+            return archive_url(url, ua, retries + 1, rate_limit_count)
         else:
             return False
 
@@ -173,7 +178,7 @@ for i, url in enumerate(all_urls, 1):
     else:
         if archived_urls < MAX_URLS_TO_ARCHIVE:
             print(f"Archiving: {url}")
-            if archive_url(url, ua):
+            if archive_url(url, ua, retries=0, rate_limit_count=0):
                 archived_urls += 1
             else:
                 print(f"Failed to archive after {MAX_RETRIES} attempts: {url}")
