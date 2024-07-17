@@ -20,7 +20,7 @@ jobs:
     - name: Run URL scraper
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: python scraper.py
+      run: python archiver.py
     - name: Commit and push if changed
       run: |
         git config --global user.name 'GitHub Action'
