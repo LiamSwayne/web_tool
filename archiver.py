@@ -8,6 +8,7 @@ import random
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 MAX_URLS_TO_ARCHIVE = 20
+ARCHIVE_TIMEOUT = 120  # 2 minutes
 
 def is_github_repo(url):
     parsed = urlparse(url)
@@ -108,7 +109,7 @@ def archive_url(url, ua):
     archive_url = f"https://web.archive.org/save/{url}"
     
     try:
-        response = requests.get(archive_url, headers=headers, timeout=30)
+        response = requests.get(archive_url, headers=headers, timeout=ARCHIVE_TIMEOUT)
         if response.status_code == 429:
             print(f"Rate limited. Waiting 5 minutes before retrying to archive {url}")
             time.sleep(300)  # Wait for 5 minutes
@@ -148,6 +149,7 @@ all_urls.add(source_url)  # Add the source URL itself
 total_urls = len(all_urls)
 archived_urls = 0
 already_archived_urls = 0
+failed_urls = 0
 
 print(f"Found {total_urls} URLs. Starting to process...")
 
@@ -164,7 +166,7 @@ for i, url in enumerate(all_urls, 1):
                 archived_urls += 1
             else:
                 print(f"Failed to archive: {url}")
-                break
+                failed_urls += 1
         else:
             print(f"Reached maximum number of URLs to archive ({MAX_URLS_TO_ARCHIVE})")
             break
@@ -172,10 +174,10 @@ for i, url in enumerate(all_urls, 1):
     # Add a small delay between requests to be polite
     time.sleep(2)
 
-print(f"Process complete. Archived {archived_urls} new URLs, {already_archived_urls} were already archived.")
+print(f"Process complete. Archived {archived_urls} new URLs, {already_archived_urls} were already archived, {failed_urls} failed to archive.")
 
 # Only remove the source URL if all URLs were processed
-if archived_urls + already_archived_urls == total_urls:
+if archived_urls + already_archived_urls + failed_urls == total_urls:
     remove_url_from_file(source_url, "source_urls.txt")
     print(f"All URLs processed. Removed {source_url} from source_urls.txt")
 else:
