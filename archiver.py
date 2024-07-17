@@ -107,10 +107,10 @@ def check_archive_status(url):
 
 def archive_url(url, ua, retries=0):
     headers = {'User-Agent': ua.random}
-    archive_url = f"https://web.archive.org/save/{url}"
+    url_to_archive = f"https://web.archive.org/save/{url}"
     
     try:
-        response = requests.get(archive_url, headers=headers, timeout=ARCHIVE_TIMEOUT)
+        response = requests.get(url_to_archive, headers=headers, timeout=ARCHIVE_TIMEOUT)
         if response.status_code == 429:
             print(f"Rate limited. Waiting 5 minutes before retrying to archive {url}")
             time.sleep(300)  # Wait for 5 minutes
