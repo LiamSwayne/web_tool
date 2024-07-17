@@ -122,6 +122,14 @@ def archive_url(url, ua):
         print(f"Error archiving {url}: {str(e)}")
         return False
 
+def remove_url_from_file(url, filename):
+    with open(filename, 'r') as f:
+        lines = f.readlines()
+    with open(filename, 'w') as f:
+        for line in lines:
+            if line.strip() != url:
+                f.write(line)
+
 ua = UserAgent()
 
 # Read source URLs
@@ -138,6 +146,7 @@ all_urls.add(source_url)  # Add the source URL itself
 
 total_urls = len(all_urls)
 archived_urls = 0
+all_archived = True
 
 print(f"Found {total_urls} URLs. Starting to process...")
 
@@ -148,6 +157,8 @@ for i, url in enumerate(all_urls, 1):
         print(f"Archiving: {url}")
         if archive_url(url, ua):
             archived_urls += 1
+        else:
+            all_archived = False
     else:
         print(f"Already archived: {url}")
     
@@ -155,3 +166,10 @@ for i, url in enumerate(all_urls, 1):
     time.sleep(2)
 
 print(f"Process complete. Archived {archived_urls} new URLs out of {total_urls} total URLs.")
+
+# Remove the source URL from source_urls.txt if all URLs were successfully archived
+if all_archived:
+    remove_url_from_file(source_url, "source_urls.txt")
+    print(f"Removed {source_url} from source_urls.txt")
+else:
+    print(f"Not all URLs were archived successfully. Keeping {source_url} in source_urls.txt")
