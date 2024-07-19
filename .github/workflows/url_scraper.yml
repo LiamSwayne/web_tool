@@ -1,8 +1,8 @@
 name: URL Scraper
 on:
   workflow_dispatch:  # Allows manual triggering
-  schedule:
-    - cron: '0 * * * *'  # Runs every hour
+  # schedule:
+    # - cron: '0 * * * *'  # Runs every hour
 
 jobs:
   scrape:
