@@ -1,8 +1,9 @@
 name: scrape
 on:
   workflow_dispatch:  # Allows manual triggering
-  schedule:
-    - cron: '0 * * * *'  # Runs every hour
+  #schedule:
+  #  - cron: '0 * * * *'  # Runs every hour
+  # disabled because currently the version that checks for 404 is being used instead
 
 jobs:
   scrape:
