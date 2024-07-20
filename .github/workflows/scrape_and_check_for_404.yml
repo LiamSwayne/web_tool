@@ -1,4 +1,4 @@
-name: scrape
+name: scrape and check for 404
 on:
   workflow_dispatch:  # Allows manual triggering
   schedule:
@@ -20,7 +20,7 @@ jobs:
     - name: Run URL scraper
       env:
         GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-      run: python scraper.py
+      run: python scrape_and_check_for_404.py
     - name: Commit and push if changed
       run: |
         git config --global user.name 'GitHub Action'
