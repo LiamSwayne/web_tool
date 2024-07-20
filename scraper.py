@@ -23,10 +23,11 @@ def get_github_urls(repo_url):
     ]
     
     if GITHUB_TOKEN:
-        api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
         headers = {'Authorization': f'token {GITHUB_TOKEN}'}
         
+        # Get releases
         try:
+            api_url = f"https://api.github.com/repos/{owner}/{repo}/releases"
             response = requests.get(api_url, headers=headers)
             response.raise_for_status()
             releases = response.json()
@@ -34,8 +35,32 @@ def get_github_urls(repo_url):
             for release in releases:
                 for asset in release['assets']:
                     urls.append(asset['browser_download_url'])
-        except Exception:
-            pass
+        except Exception as e:
+            print(f"Error fetching releases: {e}")
+        
+        # Get issues
+        try:
+            api_url = f"https://api.github.com/repos/{owner}/{repo}/issues"
+            response = requests.get(api_url, headers=headers)
+            response.raise_for_status()
+            issues = response.json()
+            
+            for issue in issues:
+                urls.append(issue['html_url'])
+        except Exception as e:
+            print(f"Error fetching issues: {e}")
+        
+        # Get pull requests
+        try:
+            api_url = f"https://api.github.com/repos/{owner}/{repo}/pulls"
+            response = requests.get(api_url, headers=headers)
+            response.raise_for_status()
+            pulls = response.json()
+            
+            for pull in pulls:
+                urls.append(pull['html_url'])
+        except Exception as e:
+            print(f"Error fetching pull requests: {e}")
     
     return urls
 
