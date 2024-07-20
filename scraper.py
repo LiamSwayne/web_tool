@@ -6,7 +6,7 @@ import os
 import random
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
-URLS_TO_PROCESS = 50
+URLS_TO_PROCESS = 5
 
 def is_github_repo(url):
     parsed = urlparse(url)
