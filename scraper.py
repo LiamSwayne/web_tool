@@ -149,7 +149,7 @@ processed_source_urls = set()
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
     results = executor.map(process_url, source_urls_to_process)
-    for urls_to_archive in results:
+    for source_url, urls_to_archive in zip(source_urls_to_process, results):
         all_urls_to_archive.update(urls_to_archive)
         processed_source_urls.add(source_url)
 
