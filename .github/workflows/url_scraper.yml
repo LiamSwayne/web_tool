@@ -1,4 +1,4 @@
-name: URL Scraper
+name: URL
 on:
   workflow_dispatch:  # Allows manual triggering
   # schedule:
