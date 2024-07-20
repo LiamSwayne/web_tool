@@ -4,9 +4,11 @@ from urllib.parse import urljoin, urlparse
 from fake_useragent import UserAgent
 import os
 import random
+import concurrent.futures
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 URLS_TO_PROCESS = 5
+MAX_WORKERS = 20  # Adjust this based on your system's capabilities
 
 def is_github_repo(url):
     parsed = urlparse(url)
@@ -32,11 +34,8 @@ def get_github_urls(repo_url):
             for release in releases:
                 for asset in release['assets']:
                     urls.append(asset['browser_download_url'])
-            
-        except Exception as e:
-            print(f"Error fetching GitHub releases for {repo_url}: {str(e)}")
-    else:
-        print(f"Skipping GitHub API request for {repo_url} (no token provided)")
+        except Exception:
+            pass
     
     return urls
 
@@ -45,7 +44,7 @@ def fetch_urls(url):
     headers = {'User-Agent': ua.random}
     
     try:
-        response = requests.get(url, headers=headers)
+        response = requests.get(url, headers=headers, timeout=10)
         html_content = response.text
         
         lego_urls = set()
@@ -92,15 +91,17 @@ def fetch_urls(url):
         
         return links.union(images).union(other_urls).union(lego_urls)
     
-    except Exception as e:
-        print(f"Error fetching {url}: {str(e)}")
+    except Exception:
         return set()
 
 def check_archive_status(url):
     api_url = f"http://archive.org/wayback/available?url={url}"
-    response = requests.get(api_url)
-    data = response.json()
-    return data['archived_snapshots'] != {}
+    try:
+        response = requests.get(api_url, timeout=10)
+        data = response.json()
+        return data['archived_snapshots'] != {}
+    except Exception:
+        return False
 
 def remove_urls_from_file(urls, filename):
     with open(filename, 'r') as f:
@@ -124,45 +125,33 @@ def append_urls_to_output(urls):
         for url in all_urls:
             f.write(f"{url}\n")
 
-    print(f"Updated {output_file} with {len(all_urls)} unique URLs")
+    print(f"Added {len(all_urls)} to output_urls.txt")
 
-# Read source URLs
+def process_url(url):
+    all_urls = fetch_urls(url)
+    all_urls.add(url)
+    print(f"Found {len(all_urls)} URLs in {url}")
+    
+    urls_to_archive = set()
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        archive_results = executor.map(check_archive_status, all_urls)
+        urls_to_archive = set(url for url, needs_archive in zip(all_urls, archive_results) if not needs_archive)
+    
+    return urls_to_archive
+
 with open("source_urls.txt", "r") as f:
     source_urls = f.read().splitlines()
 
-# Choose random source URLs
 source_urls_to_process = random.sample(source_urls, min(URLS_TO_PROCESS, len(source_urls)))
 
-urls_to_archive = set()
+all_urls_to_archive = set()
 processed_source_urls = set()
 
-for source_url in source_urls_to_process:
-    print(f"Processing source URL: {source_url}")
+with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+    results = executor.map(process_url, source_urls_to_process)
+    for urls_to_archive in results:
+        all_urls_to_archive.update(urls_to_archive)
+        processed_source_urls.add(source_url)
 
-    # Fetch URLs from the source
-    all_urls = fetch_urls(source_url)
-    all_urls.add(source_url)  # Add the source URL itself
-
-    total_urls = len(all_urls)
-    print(f"Found {total_urls} URLs. Processing...")
-
-    for i, url in enumerate(all_urls, 1):
-        print(f"Processing URL {i} of {total_urls}")
-        
-        if not check_archive_status(url):
-            print(f"Would archive: {url}")
-            urls_to_archive.add(url)
-        else:
-            print(f"Already archived: {url}")
-
-    processed_source_urls.add(source_url)
-    print(f"Completed processing source URL: {source_url}")
-
-print(f"Process complete. Found {len(urls_to_archive)} URLs to archive.")
-
-# Append the URLs to the output file
-append_urls_to_output(urls_to_archive)
-
-# Remove the processed source URLs
+append_urls_to_output(all_urls_to_archive)
 remove_urls_from_file(processed_source_urls, "source_urls.txt")
-print(f"Removed {len(processed_source_urls)} processed URLs from source_urls.txt")
