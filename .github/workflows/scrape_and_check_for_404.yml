@@ -1,8 +1,8 @@
 name: scrape and check for 404
 on:
   workflow_dispatch:  # Allows manual triggering
-  #schedule:
-  #  - cron: '0 */12 * * *'  # Runs every 12 hours
+  schedule:
+    - cron: '0 */12 * * *'  # Runs every 12 hours
   push:
     branches:
       - main
