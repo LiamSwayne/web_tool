@@ -1,3 +1,16 @@
+https://blog.regehr.org/archives/1109
+https://blog.regehr.org/wp-includes/blocks/navigation/style.min.css?ver=6.5.5
+https://blog.regehr.org/wp-content/themes/twentytwentytwo/style.css?ver=1.7
+https://blog.regehr.org/wp-includes/blocks/navigation/view.min.js?ver=6.5.5
+https://blog.regehr.org/wp-includes/js/dist/interactivity.min.js?ver=6.5.5
+https://blog.regehr.org/extra_files/super-cfg2.png
+https://blog.regehr.org/extra_files/super-cfg1.png
+https://blog.regehr.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shCore.js?ver=3.0.9b
+https://blog.regehr.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/scripts/shBrushCpp.js?ver=3.0.9b
+https://blog.regehr.org/wp-includes/js/comment-reply.min.js?ver=6.5.5
+https://blog.regehr.org/wp-content/themes/twentytwentytwo/assets/fonts/source-serif-pro/SourceSerif4Variable-Roman.ttf.woff2
+https://blog.regehr.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shCore.css?ver=3.0.9b
+https://blog.regehr.org/wp-content/plugins/syntaxhighlighter/syntaxhighlighter3/styles/shThemeDefault.css?ver=3.0.9b
 https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 https://www.mecabricks.com/libraries/signals/signals.min.js
 https://www.mecabricks.com/libraries/OverlayScrollbars/js/jquery.overlayScrollbars.min.js
