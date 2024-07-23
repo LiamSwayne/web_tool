@@ -6,6 +6,8 @@ on:
   push:
     branches:
       - main
+    paths:
+      - 'source_urls.txt'
 
 jobs:
   scrape:
