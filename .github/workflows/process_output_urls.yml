@@ -1,0 +1,54 @@
+name: process output urls
+
+on:
+  schedule:
+    - cron: '0 */12 * * *'  # Run every 12 hours
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  archive-urls:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install ArchiveBox
+      run: |
+        pip install archivebox
+
+    - name: Select 1000 random URLs
+      run: |
+        shuf -n 1000 output_urls.txt > selected_urls.txt
+
+    - name: Initialize and configure ArchiveBox
+      run: |
+        mkdir archivebox_data
+        cd archivebox_data
+        archivebox init
+        archivebox config --set SAVE_ARCHIVE_DOT_ORG=True
+        archivebox config --set SAVE_TITLE=False
+        archivebox config --set SAVE_FAVICON=False
+        archivebox config --set SAVE_WGET=False
+        archivebox config --set SAVE_WARC=False
+        archivebox config --set SAVE_PDF=False
+        archivebox config --set SAVE_SCREENSHOT=False
+        archivebox config --set SAVE_DOM=False
+        archivebox config --set SAVE_SINGLEFILE=False
+        archivebox config --set SAVE_READABILITY=False
+        archivebox config --set SAVE_MERCURY=False
+        archivebox config --set SAVE_GIT=False
+        archivebox config --set SAVE_MEDIA=False
+
+    - name: Archive URLs
+      run: |
+        cd archivebox_data
+        archivebox add < ../selected_urls.txt
+
+    - name: Clean up
+      run: |
+        rm -rf archivebox_data
+        rm selected_urls.txt
