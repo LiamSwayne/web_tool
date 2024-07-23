@@ -1,29 +1,43 @@
-name: process output urls
-
+name: Parallel Process Output URLs
 on:
   schedule:
     - cron: '0 */12 * * *'  # Run every 12 hours
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
-  archive-urls:
+  prepare:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v2
+    - name: Select and split URLs
+      run: |
+        shuf -n 100 output_urls.txt > selected_urls.txt
+        split -n l/5 -d selected_urls.txt url_part_
+    - name: Upload URL parts
+      uses: actions/upload-artifact@v2
+      with:
+        name: url-parts
+        path: url_part_*
 
+  archive-urls:
+    needs: prepare
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        part: [0, 1, 2, 3, 4]
+    steps:
+    - uses: actions/checkout@v2
     - name: Set up Python 3.11
       uses: actions/setup-python@v2
       with:
         python-version: '3.11'
-
     - name: Install ArchiveBox
       run: |
         pip install archivebox
-
-    - name: Select 100 random URLs
-      run: |
-        shuf -n 100 output_urls.txt > selected_urls.txt
-
+    - name: Download URL part
+      uses: actions/download-artifact@v2
+      with:
+        name: url-parts
     - name: Initialize and configure ArchiveBox
       run: |
         mkdir archivebox_data
@@ -44,16 +58,22 @@ jobs:
         archivebox config --set SAVE_MEDIA=False
         archivebox config --set USE_COLOR=False
         archivebox config --set SHOW_PROGRESS=False
-
     - name: Archive URLs
       run: |
         cd archivebox_data
         while read url; do
           echo "Archiving: $url"
           archivebox add "$url" > /dev/null 2>&1
-        done < ../selected_urls.txt
-
+        done < ../url_part_0${{ matrix.part }}
     - name: Clean up
       run: |
         rm -rf archivebox_data
-        rm selected_urls.txt
+
+  cleanup:
+    needs: archive-urls
+    runs-on: ubuntu-latest
+    steps:
+    - name: Remove artifacts
+      uses: geekyeggo/delete-artifact@v1
+      with:
+        name: url-parts
