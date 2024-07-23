@@ -1,4 +1,4 @@
-name: process output urls
+name: Archive URLs to Internet Archive
 
 on:
   schedule:
@@ -11,10 +11,10 @@ jobs:
     steps:
     - uses: actions/checkout@v2
 
-    - name: Set up Python
+    - name: Set up Python 3.11
       uses: actions/setup-python@v2
       with:
-        python-version: '3.x'
+        python-version: '3.11'
 
     - name: Install ArchiveBox
       run: |
@@ -28,7 +28,7 @@ jobs:
       run: |
         mkdir archivebox_data
         cd archivebox_data
-        archivebox init
+        archivebox init --quiet
         archivebox config --set SAVE_ARCHIVE_DOT_ORG=True
         archivebox config --set SAVE_TITLE=False
         archivebox config --set SAVE_FAVICON=False
@@ -42,11 +42,16 @@ jobs:
         archivebox config --set SAVE_MERCURY=False
         archivebox config --set SAVE_GIT=False
         archivebox config --set SAVE_MEDIA=False
+        archivebox config --set USE_COLOR=False
+        archivebox config --set SHOW_PROGRESS=False
 
     - name: Archive URLs
       run: |
         cd archivebox_data
-        archivebox add < ../selected_urls.txt
+        while read url; do
+          echo "Archiving: $url"
+          archivebox add "$url" --quiet
+        done < ../selected_urls.txt
 
     - name: Clean up
       run: |
