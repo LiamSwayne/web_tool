@@ -1,4 +1,4 @@
-name: Archive URLs to Internet Archive
+name: process output urls
 
 on:
   schedule:
@@ -20,9 +20,9 @@ jobs:
       run: |
         pip install archivebox
 
-    - name: Select 1000 random URLs
+    - name: Select 100 random URLs
       run: |
-        shuf -n 1000 output_urls.txt > selected_urls.txt
+        shuf -n 100 output_urls.txt > selected_urls.txt
 
     - name: Initialize and configure ArchiveBox
       run: |
