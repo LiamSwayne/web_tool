@@ -144,13 +144,18 @@ def append_urls_to_output(urls):
         with open(output_file, 'r') as f:
             existing_urls = set(line.strip() for line in f)
 
-    all_urls = existing_urls.union(urls)
+    new_urls = urls - existing_urls
+    urls_to_add = set()
 
-    with open(output_file, 'w') as f:
-        for url in all_urls:
+    for url in new_urls:
+        if not check_archive_status(url):
+            urls_to_add.add(url)
+
+    with open(output_file, 'a') as f:
+        for url in urls_to_add:
             f.write(f"{url}\n")
 
-    print(f"Added {len(all_urls)} to output_urls.txt")
+    print(f"Added {len(urls_to_add)} new unarchived URLs to output_urls.txt")
 
 def process_url(url):
     all_urls = fetch_urls(url)
