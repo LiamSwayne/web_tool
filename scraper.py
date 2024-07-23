@@ -136,26 +136,32 @@ def remove_urls_from_file(urls, filename):
             if line.strip() not in urls:
                 f.write(line)
 
-def append_urls_to_output(urls):
+def append_urls_to_output(new_urls):
     output_file = "output_urls.txt"
     existing_urls = set()
 
+    # Read existing URLs
     if os.path.exists(output_file):
         with open(output_file, 'r') as f:
             existing_urls = set(line.strip() for line in f)
 
-    new_urls = urls - existing_urls
-    urls_to_add = set()
+    # Find truly new URLs
+    unique_new_urls = set(new_urls) - existing_urls
 
-    for url in new_urls:
+    # Check archive status of new URLs and update existing_urls
+    urls_added = 0
+    for url in unique_new_urls:
         if not check_archive_status(url):
-            urls_to_add.add(url)
+            existing_urls.add(url)
+            urls_added += 1
 
-    with open(output_file, 'a') as f:
-        for url in urls_to_add:
+    # Write all unique URLs to the file
+    with open(output_file, 'w') as f:
+        for url in sorted(existing_urls):
             f.write(f"{url}\n")
 
-    print(f"Added {len(urls_to_add)} new unarchived URLs to output_urls.txt")
+    print(f"Added {urls_added} new unarchived URLs to output_urls.txt")
+    print(f"Total unique URLs in output_urls.txt: {len(existing_urls)}")
 
 def process_url(url):
     all_urls = fetch_urls(url)
