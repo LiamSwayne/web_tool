@@ -1,0 +1,52 @@
+name: Check and Remove Archived URLs
+
+on:
+  workflow_dispatch:  # Allow manual triggering
+
+jobs:
+  check-and-remove:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+
+    - name: Set up Python
+      uses: actions/setup-python@v2
+      with:
+        python-version: '3.x'
+
+    - name: Install dependencies
+      run: |
+        python -m pip install --upgrade pip
+        pip install requests
+
+    - name: Check URLs and update file
+      run: |
+        import requests
+        import time
+
+        def is_archived(url):
+            api_url = f"https://archive.org/wayback/available?url={url}"
+            response = requests.get(api_url)
+            data = response.json()
+            return 'archived_snapshots' in data and data['archived_snapshots']
+
+        with open('output_urls.txt', 'r') as file:
+            urls = file.read().splitlines()
+
+        new_urls = []
+        for url in urls:
+            if not is_archived(url):
+                new_urls.append(url)
+            time.sleep(1)  # Be nice to the API
+
+        with open('output_urls.txt', 'w') as file:
+            file.write('\n'.join(new_urls))
+      shell: python
+
+    - name: Commit changes
+      run: |
+        git config --local user.email "action@github.com"
+        git config --local user.name "GitHub Action"
+        git add output_urls.txt
+        git diff --quiet && git diff --staged --quiet || git commit -m "Remove already archived URLs from output_urls.txt"
+        git push
