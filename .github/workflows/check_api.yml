@@ -24,7 +24,7 @@ jobs:
     - name: Check URLs and update file
       run: |
         import requests
-        from multiprocessing import Pool, Manager
+        from multiprocessing import Pool, Manager, Process
         import time
 
         def process_url(args):
@@ -40,12 +40,13 @@ jobs:
             except:
                 result = url  # Assume not archived if there's an error
 
-            with counter.get_lock():
-                counter.value += 1
-                if counter.value % 1000 == 0:
-                    print(f"Processed {counter.value} URLs")
-
+            counter.value += 1
             return result
+
+        def print_progress(counter, total_urls):
+            while counter.value < total_urls:
+                print(f"Processed {counter.value} out of {total_urls} URLs")
+                time.sleep(5)  # Print every 5 seconds
 
         with open('output_urls.txt', 'r') as file:
             urls = file.read().splitlines()
@@ -57,8 +58,18 @@ jobs:
         counter = manager.Value('i', 0)
 
         start_time = time.time()
+
+        # Start the progress printing process
+        progress_process = Process(target=print_progress, args=(counter, len(urls)))
+        progress_process.start()
+
         with Pool(num_processes) as pool:
             new_urls = pool.map(process_url, [(url, counter) for url in urls])
+
+        # Stop the progress printing process
+        progress_process.terminate()
+        progress_process.join()
+
         end_time = time.time()
 
         # Filter out None values (archived URLs)
