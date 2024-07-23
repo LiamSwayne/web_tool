@@ -10,7 +10,7 @@ jobs:
     - uses: actions/checkout@v2
     - name: Select and split URLs
       run: |
-        shuf -n 100 output_urls.txt > selected_urls.txt
+        shuf -n 200 output_urls.txt > selected_urls.txt
         split -n l/10 -d selected_urls.txt url_part_
     - name: Upload URL parts
       uses: actions/upload-artifact@v2
