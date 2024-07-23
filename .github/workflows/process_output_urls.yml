@@ -44,7 +44,6 @@ jobs:
         archivebox config --set SAVE_MEDIA=False
         archivebox config --set USE_COLOR=False
         archivebox config --set SHOW_PROGRESS=False
-        archivebox config --set SAVE_ARCHIVE_DOT_ORG_ONLY=True
 
     - name: Archive URLs
       run: |
