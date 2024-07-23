@@ -1,6 +1,8 @@
 name: Check and Remove Archived URLs in Parallel
 
 on:
+  schedule:
+    - cron: '0 0 * * *'  # Run daily at midnight
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
@@ -22,27 +24,42 @@ jobs:
     - name: Check URLs and update file
       run: |
         import requests
-        from multiprocessing import Pool, cpu_count
+        from multiprocessing import Pool, Manager
+        import time
 
-        def process_url(url):
+        def process_url(args):
+            url, counter = args
             api_url = f"https://archive.org/wayback/available?url={url}"
             try:
                 response = requests.get(api_url, timeout=10)
                 data = response.json()
                 if 'archived_snapshots' not in data or not data['archived_snapshots']:
-                    return url
+                    result = url
+                else:
+                    result = None
             except:
-                return url  # Assume not archived if there's an error
-            return None
+                result = url  # Assume not archived if there's an error
+
+            with counter.get_lock():
+                counter.value += 1
+                if counter.value % 1000 == 0:
+                    print(f"Processed {counter.value} URLs")
+
+            return result
 
         with open('output_urls.txt', 'r') as file:
             urls = file.read().splitlines()
 
-        # Use 20 processes or the number of CPUs, whichever is smaller
-        num_processes = min(20, cpu_count())
+        # Use 50 processes (adjust as needed)
+        num_processes = 50
         
+        manager = Manager()
+        counter = manager.Value('i', 0)
+
+        start_time = time.time()
         with Pool(num_processes) as pool:
-            new_urls = pool.map(process_url, urls)
+            new_urls = pool.map(process_url, [(url, counter) for url in urls])
+        end_time = time.time()
 
         # Filter out None values (archived URLs)
         new_urls = [url for url in new_urls if url is not None]
@@ -51,6 +68,7 @@ jobs:
             file.write('\n'.join(new_urls))
 
         print(f"Processed {len(urls)} URLs. Kept {len(new_urls)} URLs.")
+        print(f"Total time: {end_time - start_time:.2f} seconds")
       shell: python
 
     - name: Commit changes
