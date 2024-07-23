@@ -8,7 +8,7 @@ import concurrent.futures
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 URLS_TO_PROCESS = 1000
-MAX_WORKERS = 20  # Adjust this based on your system's capabilities
+MAX_WORKERS = 20  # Adjust based on system capabilities
 
 def is_github_repo(url):
     parsed = urlparse(url)
