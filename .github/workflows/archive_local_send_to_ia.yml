@@ -1,7 +1,7 @@
 name: Archive Locally and Send to IA
 on:
-  schedule:
-    - cron: '0 */12 * * *'  # Run every 12 hours
+  #schedule:
+  #  - cron: '0 */12 * * *'  # Run every 12 hours
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
