@@ -8,18 +8,18 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Select and split URLs
       run: |
         shuf -n 200 output_urls.txt > selected_urls.txt
         split -n l/10 -d selected_urls.txt url_part_
     - name: Upload URL parts
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: url-parts
         path: url_part_*
     - name: Upload selected URLs
-      uses: actions/upload-artifact@v3
+      uses: actions/upload-artifact@v4
       with:
         name: selected-urls
         path: selected_urls.txt
@@ -31,16 +31,16 @@ jobs:
       matrix:
         part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Set up Python 3.11
-      uses: actions/setup-python@v4
+      uses: actions/setup-python@v5
       with:
         python-version: '3.11'
     - name: Install ArchiveBox
       run: |
         pip install archivebox
     - name: Download URL part
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: url-parts
     - name: Initialize and configure ArchiveBox
@@ -79,9 +79,9 @@ jobs:
     needs: archive-urls
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v3
+    - uses: actions/checkout@v4
     - name: Download selected URLs
-      uses: actions/download-artifact@v3
+      uses: actions/download-artifact@v4
       with:
         name: selected-urls
     - name: Remove archived URLs from output file
