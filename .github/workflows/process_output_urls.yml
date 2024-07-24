@@ -3,25 +3,27 @@ on:
   schedule:
     - cron: '0 * * * *'  # Run every hour
   workflow_dispatch:  # Allow manual triggering
+
 jobs:
   prepare:
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Select and split URLs
       run: |
         shuf -n 200 output_urls.txt > selected_urls.txt
         split -n l/10 -d selected_urls.txt url_part_
     - name: Upload URL parts
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: url-parts
         path: url_part_*
     - name: Upload selected URLs
-      uses: actions/upload-artifact@v2
+      uses: actions/upload-artifact@v3
       with:
         name: selected-urls
         path: selected_urls.txt
+
   archive-urls:
     needs: prepare
     runs-on: ubuntu-latest
@@ -29,16 +31,16 @@ jobs:
       matrix:
         part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9]
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Set up Python 3.11
-      uses: actions/setup-python@v2
+      uses: actions/setup-python@v4
       with:
         python-version: '3.11'
     - name: Install ArchiveBox
       run: |
         pip install archivebox
     - name: Download URL part
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: url-parts
     - name: Initialize and configure ArchiveBox
@@ -72,13 +74,14 @@ jobs:
     - name: Clean up
       run: |
         rm -rf archivebox_data
+
   update-output-file:
     needs: archive-urls
     runs-on: ubuntu-latest
     steps:
-    - uses: actions/checkout@v2
+    - uses: actions/checkout@v3
     - name: Download selected URLs
-      uses: actions/download-artifact@v2
+      uses: actions/download-artifact@v3
       with:
         name: selected-urls
     - name: Remove archived URLs from output file
@@ -94,12 +97,13 @@ jobs:
         git add output_urls.txt
         git diff --quiet && git diff --staged --quiet || git commit -m "Remove archived URLs from output_urls.txt"
         git push
+
   cleanup:
     needs: update-output-file
     runs-on: ubuntu-latest
     steps:
     - name: Remove artifacts
-      uses: geekyeggo/delete-artifact@v1
+      uses: geekyeggo/delete-artifact@v2
       with:
         name: |
           url-parts
