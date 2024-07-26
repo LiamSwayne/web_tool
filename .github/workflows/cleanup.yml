@@ -1,11 +1,10 @@
-name: Delete old workflow runs
+name: Delete all workflow runs
 on:
   schedule:
     - cron: '0 0 * * *'  # Run daily at midnight UTC
   workflow_dispatch:  # Allow manual triggering
-
 jobs:
-  delete-old-runs:
+  delete-all-runs:
     runs-on: ubuntu-latest
     steps:
     - name: Delete workflow runs
@@ -13,4 +12,5 @@ jobs:
       with:
         token: ${{ secrets.GITHUB_TOKEN }}
         repository: ${{ github.repository }}
-        retain_days: 1
+        retain_days: 0
+        keep_minimum_runs: 0
