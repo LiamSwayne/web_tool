@@ -1,8 +1,8 @@
 name: Check and Remove Archived URLs in Parallel
 
 on:
-  schedule:
-    - cron: '0 0 * * *'  # Run daily at midnight
+  #schedule:
+  #  - cron: '0 0 * * *'  # Run daily at midnight
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
