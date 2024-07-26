@@ -1,4 +1,4 @@
-name: Delete all workflow runs
+name: Absolute cleanup
 on:
   schedule:
     - cron: '0 0 * * *'  # Run daily at midnight UTC
