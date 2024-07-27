@@ -32,11 +32,18 @@ def get_github_urls(repo_url):
             response.raise_for_status()
             releases = response.json()
             
-            for release in releases:
-                for asset in release['assets']:
-                    urls.append(asset['browser_download_url'])
-        except Exception as e:
+            if isinstance(releases, list):
+                for release in releases:
+                    if isinstance(release, dict) and 'assets' in release:
+                        for asset in release['assets']:
+                            if isinstance(asset, dict) and 'browser_download_url' in asset:
+                                urls.append(asset['browser_download_url'])
+            else:
+                print(f"Unexpected response format for releases: {releases}")
+        except requests.exceptions.RequestException as e:
             print(f"Error fetching releases: {e}")
+        except Exception as e:
+            print(f"Unexpected error fetching releases: {e}")
         
         # Get issues
         try:
@@ -45,10 +52,16 @@ def get_github_urls(repo_url):
             response.raise_for_status()
             issues = response.json()
             
-            for issue in issues:
-                urls.append(issue['html_url'])
-        except Exception as e:
+            if isinstance(issues, list):
+                for issue in issues:
+                    if isinstance(issue, dict) and 'html_url' in issue:
+                        urls.append(issue['html_url'])
+            else:
+                print(f"Unexpected response format for issues: {issues}")
+        except requests.exceptions.RequestException as e:
             print(f"Error fetching issues: {e}")
+        except Exception as e:
+            print(f"Unexpected error fetching issues: {e}")
         
         # Get pull requests
         try:
@@ -57,10 +70,16 @@ def get_github_urls(repo_url):
             response.raise_for_status()
             pulls = response.json()
             
-            for pull in pulls:
-                urls.append(pull['html_url'])
-        except Exception as e:
+            if isinstance(pulls, list):
+                for pull in pulls:
+                    if isinstance(pull, dict) and 'html_url' in pull:
+                        urls.append(pull['html_url'])
+            else:
+                print(f"Unexpected response format for pulls: {pulls}")
+        except requests.exceptions.RequestException as e:
             print(f"Error fetching pull requests: {e}")
+        except Exception as e:
+            print(f"Unexpected error fetching pull requests: {e}")
     
     return urls
 
