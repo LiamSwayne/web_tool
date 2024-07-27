@@ -154,6 +154,7 @@ def append_urls_to_output(new_urls):
         if not check_archive_status(url):
             existing_urls.add(url)
             urls_added += 1
+            print(f"Added new URL: {url}")  # Print each new URL as it's added
 
     # Write all unique URLs to the file
     with open(output_file, 'w') as f:
@@ -188,6 +189,9 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
     for source_url, urls_to_archive in zip(source_urls_to_process, results):
         all_urls_to_archive.update(urls_to_archive)
         processed_source_urls.add(source_url)
+        if source_url not in urls_to_archive:
+            all_urls_to_archive.add(source_url)
+            print(f"Added source URL: {source_url}")  # Print each source URL as it's added
 
 append_urls_to_output(all_urls_to_archive)
 remove_urls_from_file(processed_source_urls, "source_urls.txt")
