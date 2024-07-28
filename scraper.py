@@ -80,7 +80,7 @@ def fetch_urls(url):
     except Exception:
         return []
 
-def check_archive_status(url):
+def needs_archive(url):
     try:
         response = requests.get(f"http://archive.org/wayback/available?url={url}", timeout=10)
         return response.json()['archived_snapshots'] == {}
@@ -93,7 +93,7 @@ def process_url(url):
     all_urls.append(url)
     
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        archive_results = list(executor.map(check_archive_status, all_urls))
+        archive_results = list(executor.map(needs_archive, all_urls))
     
     return sorted({url for url, needs_archive in zip(all_urls, archive_results) if needs_archive})
 
@@ -110,7 +110,8 @@ def append_urls_to_output(new_urls):
 
     with open(output_file, 'w') as f:
         for url in sorted(existing_urls):
-            f.write(f"{url}\n")
+            if needs_archive(url):
+                f.write(f"{url}\n")
 
     print(f"Added {len(unique_new_urls)} new unarchived URLs to output_urls.txt")
 
