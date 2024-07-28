@@ -1,0 +1,3 @@
+https://github.com/mopires/pretty-markup/archive/refs/heads/main.zip
+https://github.com/mopires/pretty-markup
+https://github.com/mopires/pretty-markup#readme
