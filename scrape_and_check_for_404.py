@@ -86,7 +86,7 @@ def needs_archive(url):
         #print(f"RESPONSE for {url}: {response.json()}")
         return response.json()['archived_snapshots'] == {}
     except Exception as e:
-        print(e)
+        print("ERROR: "+str(e))
         return False
 
 def process_url(url):
@@ -115,8 +115,6 @@ def append_urls_to_output(new_urls):
             if needs_archive(url):
                 print("need archive for"+str(url))
                 f.write(f"{url}\n")
-
-    # print(f"Added {len(unique_new_urls)} new unarchived URLs to output_urls.txt")
 
 with open("source_urls.txt", "r") as f:
     source_urls = sorted(set(f.read().splitlines()))
