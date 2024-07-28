@@ -84,7 +84,8 @@ def check_archive_status(url):
     try:
         response = requests.get(f"http://archive.org/wayback/available?url={url}", timeout=10)
         return response.json()['archived_snapshots'] == {}
-    except Exception:
+    except Exception as e:
+        print(e)
         return False
 
 def process_url(url):
