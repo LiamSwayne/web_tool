@@ -112,6 +112,7 @@ def append_urls_to_output(new_urls):
         print(sorted(existing_urls[:100]))
         for url in sorted(existing_urls):
             if needs_archive(url):
+                print("need archive for"+str(url))
                 f.write(f"{url}\n")
 
     # print(f"Added {len(unique_new_urls)} new unarchived URLs to output_urls.txt")
