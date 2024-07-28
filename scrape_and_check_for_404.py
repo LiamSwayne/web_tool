@@ -110,7 +110,7 @@ def append_urls_to_output(new_urls):
     existing_urls.update(unique_new_urls)
 
     with open(output_file, 'w') as f:
-        print(sorted(existing_urls[:100]))
+        print(sorted(existing_urls)[:100])
         for url in sorted(existing_urls):
             if needs_archive(url):
                 print("need archive for"+str(url))
