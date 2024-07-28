@@ -83,6 +83,7 @@ def fetch_urls(url):
 def needs_archive(url):
     try:
         response = requests.get(f"http://archive.org/wayback/available?url={url}", timeout=10)
+        print(f"RESPONSE for {url}: {response.json()}")
         return response.json()['archived_snapshots'] == {}
     except Exception as e:
         print(e)
