@@ -24,62 +24,47 @@ jobs:
     - name: Check URLs and update file
       run: |
         import requests
-        from multiprocessing import Pool, Manager, Process
+        from multiprocessing import Pool
         import time
-
-        def process_url(args):
-            url, counter = args
+        
+        def process_url(url):
             api_url = f"https://archive.org/wayback/available?url={url}"
             try:
                 response = requests.get(api_url, timeout=10)
                 data = response.json()
                 if 'archived_snapshots' not in data or not data['archived_snapshots']:
-                    result = url
+                    return url
                 else:
-                    result = None
+                    return None
             except:
-                result = url  # Assume not archived if there's an error
-
-            counter.value += 1
-            return result
-
-        def print_progress(counter, total_urls):
-            while counter.value < total_urls:
-                print(f"Processed {counter.value} out of {total_urls} URLs")
-                time.sleep(5)  # Print every 5 seconds
-
-        with open('output_urls.txt', 'r') as file:
-            urls = file.read().splitlines()
-
-        # Use 50 processes (adjust as needed)
-        num_processes = 50
+                return url  # Assume not archived if there's an error
         
-        manager = Manager()
-        counter = manager.Value('i', 0)
-
-        start_time = time.time()
-
-        # Start the progress printing process
-        progress_process = Process(target=print_progress, args=(counter, len(urls)))
-        progress_process.start()
-
-        with Pool(num_processes) as pool:
-            new_urls = pool.map(process_url, [(url, counter) for url in urls])
-
-        # Stop the progress printing process
-        progress_process.terminate()
-        progress_process.join()
-
-        end_time = time.time()
-
-        # Filter out None values (archived URLs)
-        new_urls = [url for url in new_urls if url is not None]
-
+        def process_batch(urls):
+            with Pool(50) as pool:
+                new_urls = pool.map(process_url, urls)
+            return [url for url in new_urls if url is not None]
+        
+        # Read all URLs
+        with open('output_urls.txt', 'r') as file:
+            all_urls = sorted(file.read().splitlines())
+        
+        new_all_urls = []
+        total_processed = 0
+        batch_size = 1000
+        
+        while total_processed < len(all_urls):
+            batch = all_urls[total_processed:total_processed + batch_size]
+            new_batch = process_batch(batch)
+            new_all_urls.extend(new_batch)
+            
+            urls_deleted = len(batch) - len(new_batch)
+            print(f"{urls_deleted}")
+            
+            total_processed += batch_size
+        
+        # Write the updated list back to the file
         with open('output_urls.txt', 'w') as file:
-            file.write('\n'.join(new_urls))
-
-        print(f"Processed {len(urls)} URLs. Kept {len(new_urls)} URLs.")
-        print(f"Total time: {end_time - start_time:.2f} seconds")
+            file.write('\n'.join(new_all_urls))
       shell: python
 
     - name: Commit changes
