@@ -12,7 +12,7 @@ jobs:
 
     - name: Select and split URLs
       run: |
-        shuf -n 8000 output_urls.txt > selected_urls.txt
+        shuf -n 800 output_urls.txt > selected_urls.txt
         split -n l/20 -d selected_urls.txt url_part_
 
     - name: Upload URL parts
