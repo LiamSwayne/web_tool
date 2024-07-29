@@ -116,17 +116,17 @@ def fetch_urls(url):
     except Exception:
         return set()
 
+errset = set()
 def check_archive_status(url):
     api_url = f"http://archive.org/wayback/available?url={url}"
     ua = UserAgent()
     headers = {'User-Agent': ua.random}
     try:
         response = requests.get(api_url, headers=headers, timeout=10)
-        print("RESPONSE: "+str(response))
         data = response.json()
         return data['archived_snapshots'] != {}
     except Exception as e:
-        print("ERROR: "+str(e))
+        errset.add(str(e))
         return False
 
 def check_url_status(url):
