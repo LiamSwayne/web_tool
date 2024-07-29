@@ -202,3 +202,6 @@ with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
 
 append_urls_to_output(all_unarchived_urls)
 remove_urls_from_file(processed_source_urls, "source_urls.txt")
+
+print("Errors:")
+print(errset)
