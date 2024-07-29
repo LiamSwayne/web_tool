@@ -4,11 +4,10 @@ from urllib.parse import urljoin, urlparse
 from fake_useragent import UserAgent
 import os
 import random
-import concurrent.futures
+import time
 
 GITHUB_TOKEN = os.getenv('GITHUB_TOKEN')
 URLS_TO_PROCESS = 5000
-MAX_WORKERS = 20  # Adjust this based on your system's capabilities
 
 def is_github_repo(url):
     parsed = urlparse(url)
@@ -123,9 +122,9 @@ def check_archive_status(url):
     headers = {'User-Agent': ua.random}
     try:
         response = requests.get(api_url, headers=headers, timeout=15)
-        if str(response) == "<Response [429]>":
+        if response.status_code == 429:
             print("waiting")
-            sleep(30)
+            time.sleep(30)
             response = requests.get(api_url, headers=headers, timeout=15)
         data = response.json()
         return data['archived_snapshots'] != {}
@@ -161,9 +160,9 @@ def append_urls_to_output(urls):
     new_urls = urls - existing_urls
     unarchived_urls = set()
 
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        archive_results = executor.map(check_archive_status, new_urls)
-        unarchived_urls = set(url for url, is_archived in zip(new_urls, archive_results) if not is_archived)
+    for url in new_urls:
+        if not check_archive_status(url):
+            unarchived_urls.add(url)
 
     all_urls = sorted(existing_urls.union(unarchived_urls))
 
@@ -179,10 +178,9 @@ def process_url(url):
     print(f"Found {len(all_urls)} URLs in {url}")
     
     unarchived_urls = set()
-    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-        archive_results = executor.map(check_archive_status, all_urls)
-        status_results = executor.map(check_url_status, all_urls)
-        unarchived_urls = set(url for url, is_archived, is_not_404 in zip(all_urls, archive_results, status_results) if not is_archived and is_not_404)
+    for url in all_urls:
+        if not check_archive_status(url) and check_url_status(url):
+            unarchived_urls.add(url)
     
     return unarchived_urls
 
@@ -194,14 +192,12 @@ source_urls_to_process = random.sample(source_urls, min(URLS_TO_PROCESS, len(sou
 all_unarchived_urls = set()
 processed_source_urls = set()
 
-with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
-    results = executor.map(process_url, source_urls_to_process)
-    for source_url, unarchived_urls in zip(source_urls_to_process, results):
-        all_unarchived_urls.update(unarchived_urls)
-        processed_source_urls.add(source_url)
-
-append_urls_to_output(all_unarchived_urls)
-remove_urls_from_file(processed_source_urls, "source_urls.txt")
+for source_url in source_urls_to_process:
+    unarchived_urls = process_url(source_url)
+    all_unarchived_urls.update(unarchived_urls)
+    processed_source_urls.add(source_url)
+    append_urls_to_output(unarchived_urls)
+    remove_urls_from_file({source_url}, "source_urls.txt")
 
 print("Errors:")
 print(errset)
