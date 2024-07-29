@@ -122,7 +122,8 @@ def check_archive_status(url):
         response = requests.get(api_url, timeout=10)
         data = response.json()
         return data['archived_snapshots'] != {}
-    except Exception:
+    except Exception as e:
+        print("ERROR: "+str(e))
         return False
 
 def check_url_status(url):
