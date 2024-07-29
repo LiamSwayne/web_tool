@@ -150,40 +150,47 @@ def append_urls_to_output(urls):
         with open(output_file, 'r') as f:
             existing_urls = set(line.strip() for line in f)
 
-    all_urls = existing_urls.union(urls)
+    new_urls = urls - existing_urls
+    unarchived_urls = set()
+
+    with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
+        archive_results = executor.map(check_archive_status, new_urls)
+        unarchived_urls = set(url for url, is_archived in zip(new_urls, archive_results) if not is_archived)
+
+    all_urls = sorted(existing_urls.union(unarchived_urls))
 
     with open(output_file, 'w') as f:
         for url in all_urls:
             f.write(f"{url}\n")
 
-    print(f"Added {len(all_urls)} to output_urls.txt")
+    print(f"Added {len(unarchived_urls)} new unarchived URLs to output_urls.txt")
 
 def process_url(url):
     all_urls = fetch_urls(url)
     all_urls.add(url)
     print(f"Found {len(all_urls)} URLs in {url}")
     
-    urls_to_archive = set()
+    unarchived_urls = set()
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         archive_results = executor.map(check_archive_status, all_urls)
         status_results = executor.map(check_url_status, all_urls)
-        urls_to_archive = set(url for url, has_archive, is_not_404 in zip(all_urls, archive_results, status_results) if not has_archive and is_not_404)
+        unarchived_urls = set(url for url, is_archived, is_not_404 in zip(all_urls, archive_results, status_results) if not is_archived and is_not_404)
     
-    return urls_to_archive
+    return unarchived_urls
 
 with open("source_urls.txt", "r") as f:
     source_urls = f.read().splitlines()
 
 source_urls_to_process = random.sample(source_urls, min(URLS_TO_PROCESS, len(source_urls)))
 
-all_urls_to_archive = set()
+all_unarchived_urls = set()
 processed_source_urls = set()
 
 with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
     results = executor.map(process_url, source_urls_to_process)
-    for source_url, urls_to_archive in zip(source_urls_to_process, results):
-        all_urls_to_archive.update(urls_to_archive)
+    for source_url, unarchived_urls in zip(source_urls_to_process, results):
+        all_unarchived_urls.update(unarchived_urls)
         processed_source_urls.add(source_url)
 
-append_urls_to_output(all_urls_to_archive)
+append_urls_to_output(all_unarchived_urls)
 remove_urls_from_file(processed_source_urls, "source_urls.txt")
