@@ -167,7 +167,7 @@ def process_url(url):
     with concurrent.futures.ThreadPoolExecutor(max_workers=MAX_WORKERS) as executor:
         archive_results = executor.map(check_archive_status, all_urls)
         status_results = executor.map(check_url_status, all_urls)
-        urls_to_archive = set(url for url, needs_archive, is_not_404 in zip(all_urls, archive_results, status_results) if not needs_archive and is_not_404)
+        urls_to_archive = set(url for url, has_archive, is_not_404 in zip(all_urls, archive_results, status_results) if not has_archive and is_not_404)
     
     return urls_to_archive
 
