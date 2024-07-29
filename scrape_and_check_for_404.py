@@ -122,7 +122,10 @@ def check_archive_status(url):
     ua = UserAgent()
     headers = {'User-Agent': ua.random}
     try:
-        response = requests.get(api_url, headers=headers, timeout=10)
+        response = requests.get(api_url, headers=headers, timeout=15)
+        if str(response) == "<Response [429]>":
+            sleep(30)
+            response = requests.get(api_url, headers=headers, timeout=15)
         data = response.json()
         return data['archived_snapshots'] != {}
     except Exception as e:
