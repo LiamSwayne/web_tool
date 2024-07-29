@@ -124,6 +124,7 @@ def check_archive_status(url):
     try:
         response = requests.get(api_url, headers=headers, timeout=15)
         if str(response) == "<Response [429]>":
+            print("waiting")
             sleep(30)
             response = requests.get(api_url, headers=headers, timeout=15)
         data = response.json()
