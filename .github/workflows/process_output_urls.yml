@@ -108,9 +108,10 @@ jobs:
       run: |
         git config --local user.email "action@github.com"
         git config --local user.name "GitHub Action"
+        git fetch origin main
+        git merge origin/main --no-edit
         git add output_urls.txt
-        git diff --quiet && git diff --staged --quiet || git commit -m "Remove archived URLs from output_urls.txt"
-        git push
+        git diff --quiet && git diff --staged --quiet || (git commit -m "Remove archived URLs from output_urls.txt" && git push)
 
   cleanup:
     needs: update-output-file
