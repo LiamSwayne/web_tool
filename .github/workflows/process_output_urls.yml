@@ -75,11 +75,22 @@ jobs:
       run: |
         cd archivebox_data
         while IFS= read -r url; do
-          if curl -s "http://archive.org/wayback/available?url=$url" | grep -q '"archived_snapshots":{}'; then
-            echo "Archiving: $url"
-            archivebox add "$url" > /dev/null 2>&1
+          echo "Processing: $url"
+          api_response=$(curl -s -w "\n%{http_code}" "http://archive.org/wayback/available?url=$url")
+          http_code=$(echo "$api_response" | tail -n1)
+          api_content=$(echo "$api_response" | sed '$d')
+          
+          if [ "$http_code" = "200" ]; then
+            archived_snapshots=$(echo "$api_content" | jq -r '.archived_snapshots')
+            if [ "$archived_snapshots" = "{}" ]; then
+              echo "Not archived. Archiving: $url"
+              archivebox add "$url" > /dev/null 2>&1
+            else
+              echo "Already archived. Skipping: $url"
+            fi
           else
-            echo "Skipping: $url"
+            echo "API call failed or rate limited. Archiving to be safe: $url"
+            archivebox add "$url" > /dev/null 2>&1
           fi
         done < ../url_part_$(printf "%02d" ${{ matrix.part }})
 
