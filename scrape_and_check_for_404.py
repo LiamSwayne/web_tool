@@ -118,17 +118,6 @@ def fetch_urls(url):
 
 def check_archive_status(url):
     api_url = f"http://archive.org/wayback/available?url={url}"
-    try:
-        response = requests.get(api_url, timeout=10)
-        print("RESPONSE: "+str(response))
-        data = response.json()
-        return data['archived_snapshots'] != {}
-    except Exception as e:
-        print("ERROR: "+str(e))
-        return False
-
-def check_archive_status(url):
-    api_url = f"http://archive.org/wayback/available?url={url}"
     ua = UserAgent()
     headers = {'User-Agent': ua.random}
     try:
@@ -138,6 +127,15 @@ def check_archive_status(url):
         return data['archived_snapshots'] != {}
     except Exception as e:
         print("ERROR: "+str(e))
+        return False
+
+def check_url_status(url):
+    ua = UserAgent()
+    headers = {'User-Agent': ua.random}
+    try:
+        response = requests.head(url, headers=headers, timeout=10, allow_redirects=True)
+        return response.status_code != 404
+    except Exception:
         return False
 
 def remove_urls_from_file(urls, filename):
