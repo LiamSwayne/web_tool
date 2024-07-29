@@ -75,12 +75,11 @@ jobs:
       run: |
         cd archivebox_data
         while IFS= read -r url; do
-          echo "Checking: $url"
           if curl -s "http://archive.org/wayback/available?url=$url" | grep -q '"archived_snapshots":{}'; then
-            echo "Not archived. Archiving: $url"
+            echo "Archiving: $url"
             archivebox add "$url" > /dev/null 2>&1
           else
-            echo "Already archived. Skipping: $url"
+            echo "Skipping: $url"
           fi
         done < ../url_part_$(printf "%02d" ${{ matrix.part }})
 
