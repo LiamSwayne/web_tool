@@ -1,4 +1,5 @@
 https://formulae.brew.sh/formula/openssl@3
+
 https://formulae.brew.sh/formula/ca-certificates
 https://formulae.brew.sh/formula/sqlite
 https://formulae.brew.sh/formula/python@3.12
