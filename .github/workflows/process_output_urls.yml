@@ -71,35 +71,17 @@ jobs:
         archivebox config --set USE_COLOR=False
         archivebox config --set SHOW_PROGRESS=False
 
-        - name: Check Archive Status
-          id: check_archive
-          run: |
-            import requests
-            import sys
-            
-            def check_archive_status(url):
-                api_url = f"http://archive.org/wayback/available?url={url}"
-                response = requests.get(api_url)
-                data = response.json()
-                return 'archived' if data['archived_snapshots'] else 'not_archived'
-            
-            url = sys.argv[1]
-            status = check_archive_status(url)
-            print(f"::set-output name=archive_status::{status}")
-          shell: python
-        - name: Archive URL if not already archived
-          run: |
-            while IFS= read -r url; do
-              status=$(python3 -c "import requests; import sys; def check_archive_status(url): api_url = f'http://archive.org/wayback/available?url={url}'; response = requests.get(api_url); data = response.json(); return 'archived' if data['archived_snapshots'] else 'not_archived'; print(check_archive_status('$url'))")
-              if [ "$status" = "not_archived" ]; then
-                echo "Archiving: $url"
-                cd archivebox_data
-                archivebox add "$url" > /dev/null 2>&1
-                cd ..
-              else
-                echo "URL already archived: $url"
-              fi
-            done < url_part_$(printf "%02d" ${{ matrix.part }})
+    - name: Check and Archive URLs
+      run: |
+        cd archivebox_data
+        while IFS= read -r url; do
+          if ! curl -s "http://archive.org/wayback/available?url=$url" | grep -q '"archived_snapshots":{}' || ! curl -s -o /dev/null -w "%{http_code}" "http://archive.org/wayback/available?url=$url" | grep -q "200"; then
+            echo "Archiving: $url"
+            archivebox add "$url" > /dev/null 2>&1
+          else
+            echo "URL already archived: $url"
+          fi
+        done < ../url_part_$(printf "%02d" ${{ matrix.part }})
 
     - name: Clean up
       run: |
