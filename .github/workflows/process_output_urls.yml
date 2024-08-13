@@ -92,16 +92,24 @@ jobs:
     runs-on: ubuntu-latest
     steps:
     - uses: actions/checkout@v4
-
     - name: Download selected URLs
       uses: actions/download-artifact@v4
       with:
         name: selected-urls
-
     - name: Remove archived URLs from output file
       run: |
-        grep -vFf selected_urls.txt output_urls.txt > temp_urls.txt
-        mv temp_urls.txt output_urls.txt
+        if [ ! -s selected_urls.txt ] || [ ! -s output_urls.txt ]; then
+          echo "Either selected_urls.txt or output_urls.txt is empty. Skipping update."
+        else
+          grep -vFf selected_urls.txt output_urls.txt > temp_urls.txt || true
+          if [ -s temp_urls.txt ]; then
+            mv temp_urls.txt output_urls.txt
+            echo "Updated output_urls.txt"
+          else
+            echo "All URLs processed. Clearing output_urls.txt"
+            > output_urls.txt
+          fi
+        fi
 
     - name: Commit changes
       run: |
