@@ -1,0 +1,2 @@
+https://archive.ph/PFmWw
+https://www.google.com/recaptcha/api.js?hl=en&onload=onloadCallback&render=explicit
