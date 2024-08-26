@@ -1,2 +1,0 @@
-https://www.colfax-intl.com/nvidia/nvidia-h100
-https://github.com/dominiclet/obsidian-note-definitions
