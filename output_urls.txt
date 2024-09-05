@@ -1,0 +1,17 @@
+https://accounts.google.com/ServiceLogin?service=youtube&uilel=3&passive=true&continue=https%3A%2F%2Fwww.youtube.com%2Fsignin%3Faction_handle_signin%3Dtrue%26app%3Ddesktop%26hl%3Den%26next%3D%252Fsignin_passive%26feature%3Dpassive&hl=en
+https://i.ytimg.com/generate_204
+https://m.youtube.com/watch?v=VyP1rEA88ts
+https://rr3---sn-vgqskn66.googlevideo.com/generate_204
+https://rr3---sn-vgqskn66.googlevideo.com/generate_204?conn2
+https://www.youtube.com/
+https://www.youtube.com/about/
+https://www.youtube.com/about/copyright/
+https://www.youtube.com/creators/
+https://www.youtube.com/howyoutubeworks?utm_campaign=ytgen&utm_source=ythp&utm_medium=LeftNav&utm_content=txt&u=https%3A%2F%2Fwww.youtube.com%2Fhowyoutubeworks%3Futm_source%3Dythp%26utm_medium%3DLeftNav%26utm_campaign%3Dytgen
+https://www.youtube.com/new
+https://www.youtube.com/s/desktop/e0e63f49/cssbin/www-main-desktop-watch-page-skeleton.css
+https://www.youtube.com/s/desktop/e0e63f49/img/favicon.ico
+https://www.youtube.com/s/desktop/e0e63f49/jsbin/intersection-observer.min.vflset/intersection-observer.min.js
+https://www.youtube.com/s/desktop/e0e63f49/jsbin/network.vflset/network.js
+https://www.youtube.com/s/desktop/e0e63f49/jsbin/web-animations-next-lite.min.vflset/web-animations-next-lite.min.js
+https://www.youtube.com/watch?v=VyP1rEA88ts
