@@ -1,5 +1,0 @@
-https://codeload.github.com/quarto-dev/quarto-cli#start-of-content/zip/refs/heads/main
-https://github.githubassets.com/assets/code-14def43eef8d.css
-https://github.githubassets.com/assets/notifications-global-54f34167118d.js
-https://github.githubassets.com/assets/vendors-node_modules_github_session-resume_dist_index_js-node_modules_primer_behaviors_dist_e-ba698a-df35a0bdc37f.js
-https://github.githubassets.com/assets/vendors-node_modules_primer_react_lib-esm_TooltipV2_Tooltip_js-4d5019830e3c.js
