@@ -1,0 +1,12 @@
+http://www.w3.org/2000/svg
+https://codeload.github.com/stanko//zip/refs/heads/main
+https://muffinman.io/
+https://muffinman.io/art/
+https://muffinman.io/art/dreamy-little-towns-postcards/#content
+https://muffinman.io/art/dreamy-little-towns-postcards/0.jpg
+https://muffinman.io/art/dreamy-little-towns-postcards/1.jpg
+https://muffinman.io/art/dreamy-little-towns-postcards/2.jpg
+https://muffinman.io/art/dreamy-little-towns-postcards/4.jpg
+https://muffinman.io/art/moon/
+https://muffinman.io/processed_images/0.8868825fcc4a4501.jpg
+https://muffinman.io/processed_images/04.f451db2b249081b0.jpg
