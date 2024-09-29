@@ -1,7 +1,7 @@
 name: Parallel Process Output URLs
 on:
   schedule:
-    - cron: '0 * * * *'  # Run every hour
+    - cron: '*/30 * * * *'  # Run every 30 minutes
   workflow_dispatch:  # Allow manual triggering
 
 jobs:
