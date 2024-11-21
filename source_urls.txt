@@ -10,6 +10,7 @@ https://github.com/ziglang/zig/issues/3
 https://github.com/ziglang/zig/issues/4
 https://github.com/ziglang/zig/issues/9
 https://github.com/ziglang/zig/issues/15
+https://obsidian.md/images/wallpapers/wp-fractal-5k.png
 https://github.com/ziglang/zig/issues/16
 https://github.com/ziglang/zig/issues/22
 https://github.com/ziglang/zig/issues/29
