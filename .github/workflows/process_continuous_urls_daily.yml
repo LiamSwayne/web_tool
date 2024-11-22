@@ -15,7 +15,7 @@ jobs:
 
     - name: Split URLs
       run: |
-        split -n l/20 -d continuously_updated_urls_daily.txt url_part_
+        split -n l/20 -d continuously_updated_urls_daily_hourly.txt url_part_
 
     - name: Upload URL parts
       uses: actions/upload-artifact@v4
