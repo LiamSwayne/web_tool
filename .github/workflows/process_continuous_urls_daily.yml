@@ -1,4 +1,4 @@
-name: Continuous URL Archiving Hourly
+name: Continuous URL Archiving Hourly Daily
 on:
   push:
     paths:
