@@ -1,8 +1,8 @@
-name: Continuous URL Archiving Hourly Daily
+name: Continuous URL Archiving Daily
 on:
   push:
     paths:
-      - 'continuously_updated_urls_hourly.txt'
+      - 'continuously_updated_urls_daily.txt'
   schedule:
     - cron: '0 * * * *'  # Run once an hour
   workflow_dispatch:  # Allow manual triggering
