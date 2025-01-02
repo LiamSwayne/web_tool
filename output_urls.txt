@@ -1,0 +1,6 @@
+https://doom-captcha.vercel.app/
+https://doom-captcha.vercel.app/_vercel/insights/script.js
+https://doom-captcha.vercel.app/index.js
+chrome-extension://mpiodijhokgodhhofbcjdecpffjipkle/lib/single-file-hooks-frames.js
+https://doom-captcha.vercel.app/index.data
+https://doom-captcha.vercel.app/index.wasm
