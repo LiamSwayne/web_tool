@@ -7,6 +7,7 @@ https://cohost.org/bruxisma?page=0
 https://rateyourmusic.com/charts/top/album/all-time/deweight:live,archival,soundtrack/
 https://kristoff.it/index.xml
 https://muffinman.io/atom.xml
+https://www.merriam-webster.com/word-of-the-day
 https://www.mecabricks.com/
 https://open.spotify.com/artist/6qqNVTkY8uBg9cP3Jd7DAH
 https://open.spotify.com/artist/1Xyo4u8uXC1ZmMpatF05PJ
