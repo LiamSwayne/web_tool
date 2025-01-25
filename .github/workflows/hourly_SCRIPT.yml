@@ -1,0 +1,101 @@
+name: Archive URLs to Wayback Machine
+on:
+ schedule:
+   - cron: '0 * * * *'  # Run hourly
+ workflow_dispatch:      # Allow manual triggers
+
+jobs:
+ archive:
+   runs-on: ubuntu-latest
+   steps:
+     - uses: actions/checkout@v4
+     
+     - name: Save URLs to Wayback Machine
+       run: |
+         urls=(
+           "https://en.wikipedia.org/wiki/GNX_%28album%29"
+           "https://www.usdebtclock.org/"
+           "https://open.spotify.com/"
+           "https://open.spotify.com/download"
+           "https://open.spotify.com/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/artist/2YZyLoL8N0Wb9xBt1NhZWg"
+           "https://open.spotify.com/track/5gOfC9UzZQzTyShqPMrpjT"
+           "https://open.spotify.com/track/0nj9Bq5sHDiTxSHunhgkFb"
+           "https://open.spotify.com/track/45J4avUb9Ni0bnETYaYFVJ"
+           "https://open.spotify.com/track/5ho7VSXSmI2KM2nDjcnLyz"
+           "https://open.spotify.com/track/5S8VwnB4sLi6W0lYTWYylu"
+           "https://open.spotify.com/track/0RgjEkSbeuStKfT2Pa4Zai"
+           "https://open.spotify.com/track/0aB0v4027ukVziUGwVGYpG"
+           "https://open.spotify.com/track/4K1Pg0FLno1ltzX3jeqT83"
+           "https://open.spotify.com/track/2Uts1QFB4u2YNIMiqcb4de"
+           "https://open.spotify.com/track/1SGvjfc85yzqKXsfKcCxn2"
+           "https://open.spotify.com/track/3aZptNYC6Z1YoumeqZcDcQ"
+           "https://open.spotify.com/track/0wgOhYnqZKjOHr6bmdz0aN"
+           "https://open.spotify.com/artist/2YZyLoL8N0Wb9xBt1NhZWg/discography"
+           "https://open.spotify.com/album/4eLPsYPBmXABThSJ821sqY"
+           "https://open.spotify.com/album/79ONNoS4M9tfIA1mYLBYVX"
+           "https://www.metacritic.com/music/gnx/kendrick-lamar"
+           "https://open.spotify.com/album/5JjnoGJyOxfSZUZtk2rRwZ"
+           "https://open.spotify.com/album/3pLdWdkj83EYfDN6H2N8MR"
+           "https://open.spotify.com/album/7ycBtnsMtyVbbwTfJwRjSP"
+           "https://open.spotify.com/album/3DGQ1iZ9XKUQxAUWjfC34w"
+           "https://open.spotify.com/album/6PBZN8cbwkqm1ERj2BGXJ1"
+           "https://open.spotify.com/album/1bkN9nIkkCnXeG4yitVS1J"
+           "https://open.spotify.com/album/32bR4LcEc1PvJEhaKoo4ZN"
+           "https://open.spotify.com/album/2XPrwlaAHHXnJzP9tBcIzH"
+           "https://www.spotify.com/us/about-us/contact/"
+           "https://rateyourmusic.com/release/album/kendrick-lamar/gnx/"
+           "https://www.lifeatspotify.com/"
+           "https://newsroom.spotify.com/"
+           "https://artists.spotify.com/"
+           "https://developer.spotify.com/"
+           "https://ads.spotify.com/"
+           "https://investors.spotify.com/"
+           "https://spotifyforvendors.com/"
+           "https://support.spotify.com/"
+           "https://www.spotify.com/us/download/"
+           "https://www.spotify.com/us/premium/#ref=spotifycom_footer_premium_individual"
+           "https://www.spotify.com/us/duo/#ref=spotifycom_footer_premium_duo"
+           "https://www.spotify.com/us/family/#ref=spotifycom_footer_premium_family"
+           "https://www.spotify.com/us/student/#ref=spotifycom_footer_premium_student"
+           "https://www.spotify.com/us/free/#ref=spotifycom_footer_free"
+           "https://www.spotify.com/us/audiobooks/#plans"
+           "https://instagram.com/spotify"
+           "https://twitter.com/spotify"
+           "https://www.facebook.com/Spotify"
+           "https://www.spotify.com/us/legal/"
+           "https://www.spotify.com/us/safetyandprivacy/"
+           "https://www.spotify.com/us/legal/privacy-policy/"
+           "https://www.spotify.com/us/legal/cookies-policy/"
+           "https://www.spotify.com/us/legal/privacy-policy/#s3"
+           "https://www.spotify.com/us/accessibility/"
+           "https://www.spotify.com/us/legal/notice-at-collection/"
+           "https://www.spotify.com/us/account/privacy/"
+           "https://open.spotify.com/album/0hvT3yIEysuuvkK73vgdcW?uid=044bc77accc43910af43&uri=spotify:track:0aB0v4027ukVziUGwVGYpG"
+           "https://open.spotify.com/album/0hvT3yIEysuuvkK73vgdcW?uid=044bc77accc43910af43&uri=spotify%3Atrack%3A0aB0v4027ukVziUGwVGYpG"
+           "https://open.spotify.com/intl-ar/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/intl-de/album/0hvT3yIEysuuvkK73vgdcW" 
+           "https://open.spotify.com/intl-es/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/intl-fr/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/intl-id/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/intl-it/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/intl-ja/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/intl-pt/album/0hvT3yIEysuuvkK73vgdcW"
+           "https://open.spotify.com/intl-tr/album/0hvT3yIEysuuvkK73vgdcW"
+         )
+         
+         for url in "${urls[@]}"; do
+           curl -X POST "https://web.archive.org/save/$url"
+           sleep 5  # Rate limiting
+         done
+
+     - name: Create archive timestamp
+       run: date > last_archive.txt
+     
+     - name: Commit timestamp
+       run: |
+         git config --local user.email "action@github.com"
+         git config --local user.name "GitHub Action"
+         git add last_archive.txt
+         git commit -m "Archive timestamp update" || echo "No changes"
+         git push
