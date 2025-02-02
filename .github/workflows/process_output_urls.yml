@@ -1,11 +1,10 @@
 name: Archive URLs to Wayback Machine (Parallel Processing)
 on:
   schedule:
-    - cron: '0 * * * *'  # Run hourly
-  workflow_dispatch:      # Allow manual triggers
+    - cron: '0 * * * *'
+  workflow_dispatch:
 
 jobs:
-  # First create a job to split the file
   prepare:
     runs-on: ubuntu-latest
     outputs:
@@ -24,20 +23,15 @@ jobs:
           total_lines=$(wc -l < output_urls.txt)
           echo "total_lines=$total_lines" >> $GITHUB_OUTPUT
           
-          # Create directory for splits
-          mkdir -p splits
+          mkdir -p splits 2>/dev/null
+          split -l 500 output_urls.txt splits/batch_ >/dev/null 2>&1
           
-          # Calculate lines per split (500 URLs per job)
-          split -l 500 output_urls.txt splits/batch_
-          
-          # Commit splits
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add splits/
-          git commit -m "Create URL batches for parallel processing" || echo "No changes"
-          git push
+          git config --local user.email "action@github.com" >/dev/null 2>&1
+          git config --local user.name "GitHub Action" >/dev/null 2>&1
+          git add splits/ >/dev/null 2>&1
+          git commit -m "Create URL batches" >/dev/null 2>&1 || true
+          git push >/dev/null 2>&1
 
-  # Process URLs in parallel
   archive:
     needs: prepare
     runs-on: ubuntu-latest
@@ -45,70 +39,57 @@ jobs:
       matrix:
         job_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
       max-parallel: 20
-      fail-fast: false  # Continue other jobs if one fails
+      fail-fast: false
     
     steps:
       - uses: actions/checkout@v4
       
       - name: Process URL batch
         run: |
-          # Find batch file for this job
-          batch_file=$(ls splits/batch_* | sed -n "${matrix.job_id}p")
+          batch_file=$(ls splits/batch_* 2>/dev/null | sed -n "${matrix.job_id}p")
           
           if [ ! -f "$batch_file" ]; then
-            echo "No more URLs to process in batch ${{ matrix.job_id }}"
+            echo "No more URLs for batch ${{ matrix.job_id }}"
             exit 0
           fi
           
-          # Process URLs in this batch
           while IFS= read -r url; do
             if [ ! -z "$url" ]; then
-              echo "Archiving: $url"
-              curl -X POST "https://web.archive.org/save/$url"
-              sleep 5  # Rate limiting
+              echo "Batch ${{ matrix.job_id }}: $url"
+              curl -s -X POST "https://web.archive.org/save/$url" >/dev/null 2>&1
+              sleep 5
             fi
           done < "$batch_file"
           
-          # Remove processed batch file
-          rm "$batch_file"
+          rm "$batch_file" 2>/dev/null
           
-          # Commit removal with retries
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com" >/dev/null 2>&1
+          git config --local user.name "GitHub Action" >/dev/null 2>&1
           
-          # Function to attempt commit and push
           push_changes() {
-            git add -u
-            git commit -m "Process batch ${{ matrix.job_id }} URLs" || echo "No changes"
-            git push
+            git add -u >/dev/null 2>&1
+            git commit -m "Process batch ${{ matrix.job_id }}" >/dev/null 2>&1 || true
+            git push 2>/dev/null
           }
           
-          # Retry logic
-          max_retries=10
           retry_count=0
-          
-          while [ $retry_count -lt $max_retries ]; do
+          while [ $retry_count -lt 10 ]; do
             if [ $retry_count -gt 0 ]; then
-              git pull --rebase origin main
+              git pull --rebase origin main >/dev/null 2>&1
             fi
             
             if push_changes; then
-              echo "Push successful on attempt $((retry_count + 1))"
+              echo "Batch ${{ matrix.job_id }} complete"
               exit 0
             fi
             
             retry_count=$((retry_count + 1))
-            if [ $retry_count -lt $max_retries ]; then
-              sleep $((retry_count * 5))
-            fi
+            [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
           done
           
-          if [ $retry_count -eq $max_retries ]; then
-            echo "Failed to push after $max_retries attempts"
-            exit 1
-          fi
+          echo "Failed to push batch ${{ matrix.job_id }}"
+          exit 1
 
-  # Cleanup job
   cleanup:
     needs: [archive]
     runs-on: ubuntu-latest
@@ -117,49 +98,35 @@ jobs:
       
       - name: Cleanup and consolidate
         run: |
-          # Check if any unprocessed URLs remain
           remaining_urls=""
           if [ -d "splits" ]; then
             for batch in splits/batch_*; do
-              if [ -f "$batch" ]; then
-                remaining_urls="$remaining_urls$(cat $batch)\n"
-              fi
+              [ -f "$batch" ] && remaining_urls="$remaining_urls$(cat $batch)\n"
             done
           fi
           
-          # Update output_urls.txt with remaining URLs
           echo -e "$remaining_urls" > output_urls.txt
-          rm -rf splits/
-          
-          # Create timestamp
+          rm -rf splits/ 2>/dev/null
           date > last_archive.txt
           
-          # Commit final state
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
+          git config --local user.email "action@github.com" >/dev/null 2>&1
+          git config --local user.name "GitHub Action" >/dev/null 2>&1
           
-          # Retry logic for final commit
-          max_retries=10
           retry_count=0
-          
-          while [ $retry_count -lt $max_retries ]; do
+          while [ $retry_count -lt 10 ]; do
             if [ $retry_count -gt 0 ]; then
-              git pull --rebase origin main
+              git pull --rebase origin main >/dev/null 2>&1
             fi
             
-            git add -A
-            if git commit -m "Cleanup and consolidate remaining URLs" && git push; then
-              echo "Final cleanup push successful on attempt $((retry_count + 1))"
+            git add -A >/dev/null 2>&1
+            if git commit -m "Cleanup remaining URLs" >/dev/null 2>&1 && git push >/dev/null 2>&1; then
+              echo "Cleanup complete"
               exit 0
             fi
             
             retry_count=$((retry_count + 1))
-            if [ $retry_count -lt $max_retries ]; then
-              sleep $((retry_count * 5))
-            fi
+            [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
           done
           
-          if [ $retry_count -eq $max_retries ]; then
-            echo "Failed to push cleanup after $max_retries attempts"
-            exit 1
-          fi
+          echo "Cleanup failed"
+          exit 1
