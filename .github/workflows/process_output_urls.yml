@@ -8,7 +8,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      total_lines: ${{ steps.split.outputs.total_lines }}
+      batch_count: ${{ steps.split.outputs.batch_count }}
     steps:
       - uses: actions/checkout@v4
       
@@ -20,11 +20,19 @@ jobs:
             exit 1
           fi
           
+          # Count lines and create splits of 25 lines each
           total_lines=$(wc -l < output_urls.txt)
-          echo "total_lines=$total_lines" >> $GITHUB_OUTPUT
+          echo "Found $total_lines URLs to process"
           
           mkdir -p splits 2>/dev/null
-          split -l 500 output_urls.txt splits/batch_ >/dev/null 2>&1
+          split -l 25 output_urls.txt splits/batch_
+          
+          batch_count=$(ls splits/batch_* 2>/dev/null | wc -l)
+          echo "Created $batch_count batch files"
+          echo "batch_count=$batch_count" >> $GITHUB_OUTPUT
+          
+          echo "Batch files created:"
+          ls -l splits/
           
           git config --local user.email "action@github.com" >/dev/null 2>&1
           git config --local user.name "GitHub Action" >/dev/null 2>&1
@@ -48,13 +56,15 @@ jobs:
         env:
           JOB_ID: ${{ matrix.job_id }}
         run: |
-          batch_file=$(ls splits/batch_* 2>/dev/null | sed -n "${JOB_ID}p")
+          # Get the specific batch file for this job using sort
+          batch_file=$(ls -v splits/batch_* 2>/dev/null | sed -n "${JOB_ID}p")
           
           if [ ! -f "$batch_file" ]; then
-            echo "No more URLs for batch ${JOB_ID}"
+            echo "No batch for job ${JOB_ID}"
             exit 0
           fi
           
+          echo "Processing $batch_file"
           while IFS= read -r url; do
             if [ ! -z "$url" ]; then
               echo "Batch ${JOB_ID}: $url"
