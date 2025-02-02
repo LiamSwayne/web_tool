@@ -70,7 +70,10 @@ jobs:
                 echo "Archiving: $url"
                 if curl -sS -X POST "https://web.archive.org/save/$url" >/dev/null; then
                   echo "$url" >> "$processed_file"
+                  echo "Successfully archived: $url"
                   sleep 2  # Rate limit
+                else
+                  echo "Failed to archive: $url"
                 fi
               fi
             done < "$batch_file"
@@ -105,6 +108,10 @@ jobs:
       
       - name: Update URL List
         run: |
+          # Sort both files before using comm
+          sort -o output_urls.txt output_urls.txt
+          sort -o all_processed.txt all_processed.txt
+          
           # Remove successfully archived URLs
           comm -23 output_urls.txt all_processed.txt > remaining_urls.txt
           mv remaining_urls.txt output_urls.txt
