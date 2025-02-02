@@ -45,17 +45,19 @@ jobs:
       - uses: actions/checkout@v4
       
       - name: Process URL batch
+        env:
+          JOB_ID: ${{ matrix.job_id }}
         run: |
-          batch_file=$(ls splits/batch_* 2>/dev/null | sed -n "${matrix.job_id}p")
+          batch_file=$(ls splits/batch_* 2>/dev/null | sed -n "${JOB_ID}p")
           
           if [ ! -f "$batch_file" ]; then
-            echo "No more URLs for batch ${{ matrix.job_id }}"
+            echo "No more URLs for batch ${JOB_ID}"
             exit 0
           fi
           
           while IFS= read -r url; do
             if [ ! -z "$url" ]; then
-              echo "Batch ${{ matrix.job_id }}: $url"
+              echo "Batch ${JOB_ID}: $url"
               curl -s -X POST "https://web.archive.org/save/$url" >/dev/null 2>&1
               sleep 5
             fi
@@ -68,7 +70,7 @@ jobs:
           
           push_changes() {
             git add -u >/dev/null 2>&1
-            git commit -m "Process batch ${{ matrix.job_id }}" >/dev/null 2>&1 || true
+            git commit -m "Process batch ${JOB_ID}" >/dev/null 2>&1 || true
             git push 2>/dev/null
           }
           
@@ -79,7 +81,7 @@ jobs:
             fi
             
             if push_changes; then
-              echo "Batch ${{ matrix.job_id }} complete"
+              echo "Batch ${JOB_ID} complete"
               exit 0
             fi
             
@@ -87,7 +89,7 @@ jobs:
             [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
           done
           
-          echo "Failed to push batch ${{ matrix.job_id }}"
+          echo "Failed to push batch ${JOB_ID}"
           exit 1
 
   cleanup:
