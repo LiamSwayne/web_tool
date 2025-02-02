@@ -8,7 +8,7 @@ jobs:
   prepare:
     runs-on: ubuntu-latest
     outputs:
-      batch_count: ${{ steps.split.outputs.batch_count }}
+      total_urls: ${{ steps.split.outputs.total_urls }}
     steps:
       - uses: actions/checkout@v4
       
@@ -20,20 +20,19 @@ jobs:
             exit 1
           fi
           
-          # Count lines and create splits of 25 lines each
-          total_lines=$(wc -l < output_urls.txt)
-          echo "Found $total_lines URLs to process"
+          total_urls=$(wc -l < output_urls.txt)
+          echo "total_urls=$total_urls" >> $GITHUB_OUTPUT
+          
+          # Calculate URLs per job (rounded up)
+          urls_per_job=$(( (total_urls + 19) / 20 ))
+          echo "Splitting into chunks of $urls_per_job URLs"
           
           mkdir -p splits 2>/dev/null
-          split -l 25 output_urls.txt splits/batch_
+          split -l "$urls_per_job" output_urls.txt splits/batch_
           
-          batch_count=$(ls splits/batch_* 2>/dev/null | wc -l)
-          echo "Created $batch_count batch files"
-          echo "batch_count=$batch_count" >> $GITHUB_OUTPUT
-          
-          echo "Batch files created:"
+          echo "Created splits:"
           ls -l splits/
-          
+
           git config --local user.email "action@github.com" >/dev/null 2>&1
           git config --local user.name "GitHub Action" >/dev/null 2>&1
           git add splits/ >/dev/null 2>&1
@@ -55,52 +54,48 @@ jobs:
       - name: Process URL batch
         env:
           JOB_ID: ${{ matrix.job_id }}
+          TOTAL_URLS: ${{ needs.prepare.outputs.total_urls }}
         run: |
-          # Get the specific batch file for this job using sort
-          batch_file=$(ls -v splits/batch_* 2>/dev/null | sed -n "${JOB_ID}p")
+          # Use a more reliable way to get the batch file
+          readarray -t batch_files < <(ls -v splits/batch_* 2>/dev/null)
+          job_index=$((JOB_ID - 1))
           
-          if [ ! -f "$batch_file" ]; then
-            echo "No batch for job ${JOB_ID}"
+          if [ $job_index -lt ${#batch_files[@]} ]; then
+            batch_file="${batch_files[$job_index]}"
+            echo "Job ${JOB_ID} processing: $batch_file"
+            
+            while IFS= read -r url; do
+              if [ ! -z "$url" ]; then
+                echo "Processing: $url"
+                curl -s -X POST "https://web.archive.org/save/$url" >/dev/null 2>&1
+                sleep 5
+              fi
+            done < "$batch_file"
+            
+            rm "$batch_file" 2>/dev/null
+            
+            git config --local user.email "action@github.com" >/dev/null 2>&1
+            git config --local user.name "GitHub Action" >/dev/null 2>&1
+            
+            retry_count=0
+            while [ $retry_count -lt 10 ]; do
+              if [ $retry_count -gt 0 ]; then
+                git pull --rebase origin main >/dev/null 2>&1
+              fi
+              
+              git add -u >/dev/null 2>&1
+              if git commit -m "Process batch ${JOB_ID}" >/dev/null 2>&1 && git push >/dev/null 2>&1; then
+                echo "Batch ${JOB_ID} complete"
+                exit 0
+              fi
+              
+              retry_count=$((retry_count + 1))
+              [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
+            done
+          else
+            echo "No work for job ${JOB_ID}"
             exit 0
           fi
-          
-          echo "Processing $batch_file"
-          while IFS= read -r url; do
-            if [ ! -z "$url" ]; then
-              echo "Batch ${JOB_ID}: $url"
-              curl -s -X POST "https://web.archive.org/save/$url" >/dev/null 2>&1
-              sleep 5
-            fi
-          done < "$batch_file"
-          
-          rm "$batch_file" 2>/dev/null
-          
-          git config --local user.email "action@github.com" >/dev/null 2>&1
-          git config --local user.name "GitHub Action" >/dev/null 2>&1
-          
-          push_changes() {
-            git add -u >/dev/null 2>&1
-            git commit -m "Process batch ${JOB_ID}" >/dev/null 2>&1 || true
-            git push 2>/dev/null
-          }
-          
-          retry_count=0
-          while [ $retry_count -lt 10 ]; do
-            if [ $retry_count -gt 0 ]; then
-              git pull --rebase origin main >/dev/null 2>&1
-            fi
-            
-            if push_changes; then
-              echo "Batch ${JOB_ID} complete"
-              exit 0
-            fi
-            
-            retry_count=$((retry_count + 1))
-            [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
-          done
-          
-          echo "Failed to push batch ${JOB_ID}"
-          exit 1
 
   cleanup:
     needs: [archive]
@@ -139,6 +134,3 @@ jobs:
             retry_count=$((retry_count + 1))
             [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
           done
-          
-          echo "Cleanup failed"
-          exit 1
