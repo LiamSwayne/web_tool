@@ -1,4 +1,4 @@
-name: Archive URLs to Wayback Machine (Parallel Processing)
+name: Archive URLs to Wayback Machine (Balanced Parallel)
 on:
   schedule:
     - cron: '0 * * * *'
@@ -13,38 +13,38 @@ jobs:
       - uses: actions/checkout@v4
       
       - id: split
-        name: Split URLs file
+        name: Prepare and split URLs
         run: |
           if [ ! -f output_urls.txt ]; then
             echo "output_urls.txt not found"
             exit 1
           fi
           
+          # Remove duplicates and sort
+          sort -u output_urls.txt -o output_urls.txt
+          
           total_urls=$(wc -l < output_urls.txt)
           echo "total_urls=$total_urls" >> $GITHUB_OUTPUT
           
-          # Calculate URLs per job (rounded up)
-          urls_per_job=$(( (total_urls + 19) / 20 ))
-          echo "Splitting into chunks of $urls_per_job URLs"
+          # Create split directory
+          mkdir -p splits
           
-          mkdir -p splits 2>/dev/null
-          split -l "$urls_per_job" output_urls.txt splits/batch_
+          # Split into exactly 20 balanced chunks (round-robin)
+          split -n l/20 output_urls.txt splits/batch_
           
-          # Number the files sequentially
+          # Rename split files to sequential numbering
           i=1
           for file in splits/batch_*; do
             mv "$file" "splits/batch_$(printf "%02d" $i)"
             ((i++))
           done
           
-          echo "Created splits:"
-          ls -l splits/
-
-          git config --local user.email "action@github.com" >/dev/null 2>&1
-          git config --local user.name "GitHub Action" >/dev/null 2>&1
-          git add splits/ >/dev/null 2>&1
-          git commit -m "Create URL batches" >/dev/null 2>&1 || true
-          git push >/dev/null 2>&1
+          # Commit the splits
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add splits/
+          git commit -m "Create URL batches" || echo "No changes to commit"
+          git push
 
   archive:
     needs: prepare
@@ -62,50 +62,40 @@ jobs:
         env:
           JOB_ID: ${{ matrix.job_id }}
         run: |
-          # Try to process specific numbered batch for this job
           batch_file="splits/batch_$(printf "%02d" $JOB_ID)"
           
-          if [ ! -f "$batch_file" ]; then
-            echo "No batch file for job ${JOB_ID}"
+          # Check if batch exists and has content
+          if [ ! -f "$batch_file" ] || [ ! -s "$batch_file" ]; then
+            echo "No URLs to process in batch $JOB_ID"
             exit 0
           fi
           
-          # Atomic move to mark file as being processed
+          # Atomic file lock
           if ! mv "$batch_file" "$batch_file.processing" 2>/dev/null; then
-            echo "Batch file already being processed"
+            echo "Batch $JOB_ID already being processed"
             exit 0
           fi
           
-          echo "Job ${JOB_ID} processing: $batch_file"
+          echo "Processing batch $JOB_ID ($(wc -l < "$batch_file.processing") URLs)"
           while IFS= read -r url; do
-            if [ ! -z "$url" ]; then
-              echo "Processing: $url"
-              curl -s -X POST "https://web.archive.org/save/$url" >/dev/null 2>&1
-              sleep 5
+            if [ -n "$url" ]; then
+              echo "Archiving: $url"
+              curl -sS -X POST "https://web.archive.org/save/$url" >/dev/null
+              sleep 3 # Rate limit
             fi
           done < "$batch_file.processing"
           
-          # Remove the processed file
+          # Cleanup processed batch
           rm "$batch_file.processing"
           
-          git config --local user.email "action@github.com" >/dev/null 2>&1
-          git config --local user.name "GitHub Action" >/dev/null 2>&1
-          
-          retry_count=0
-          while [ $retry_count -lt 10 ]; do
-            if [ $retry_count -gt 0 ]; then
-              git pull --rebase origin main >/dev/null 2>&1
-            fi
-            
-            git add -u >/dev/null 2>&1
-            if git commit -m "Process batch ${JOB_ID}" >/dev/null 2>&1 && git push >/dev/null 2>&1; then
-              echo "Batch ${JOB_ID} complete"
-              exit 0
-            fi
-            
-            retry_count=$((retry_count + 1))
-            [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
-          done
+          # Update git
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -u
+          if ! git commit -m "Processed batch $JOB_ID"; then
+            echo "No changes to commit"
+          fi
+          git push
 
   cleanup:
     needs: [archive]
@@ -113,37 +103,22 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Cleanup and consolidate
+      - name: Consolidate remaining URLs
         run: |
-          remaining_urls=""
-          if [ -d "splits" ]; then
-            # Include both unprocessed and interrupted batches
-            for batch in splits/batch_* splits/batch_*.processing; do
-              if [ -f "$batch" ]; then
-                remaining_urls="$remaining_urls$(cat "$batch")\n"
-              fi
-            done
-          fi
+          # Combine any remaining batches
+          find splits/ -type f -name 'batch_*' ! -name '*.processing' -exec cat {} + > output_urls.txt
+          find splits/ -type f -name 'batch_*.processing' -exec cat {} + >> output_urls.txt
           
-          echo -e "$remaining_urls" > output_urls.txt
-          rm -rf splits/ 2>/dev/null
+          # Deduplicate again
+          sort -u output_urls.txt -o output_urls.txt
+          
+          # Cleanup
+          rm -rf splits/
           date > last_archive.txt
           
-          git config --local user.email "action@github.com" >/dev/null 2>&1
-          git config --local user.name "GitHub Action" >/dev/null 2>&1
-          
-          retry_count=0
-          while [ $retry_count -lt 10 ]; do
-            if [ $retry_count -gt 0 ]; then
-              git pull --rebase origin main >/dev/null 2>&1
-            fi
-            
-            git add -A >/dev/null 2>&1
-            if git commit -m "Cleanup remaining URLs" >/dev/null 2>&1 && git push >/dev/null 2>&1; then
-              echo "Cleanup complete"
-              exit 0
-            fi
-            
-            retry_count=$((retry_count + 1))
-            [ $retry_count -lt 10 ] && sleep $((retry_count * 5))
-          done
+          # Commit results
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add -A
+          git commit -m "Cleanup remaining URLs" || echo "No changes to commit"
+          git push
