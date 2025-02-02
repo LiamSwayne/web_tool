@@ -1,4 +1,4 @@
-name: Archive URLs to Wayback Machine (Balanced Parallel)
+name: Archive URLs to Wayback Machine (Non-Commit Splits)
 on:
   schedule:
     - cron: '0 * * * *'
@@ -13,38 +13,30 @@ jobs:
       - uses: actions/checkout@v4
       
       - id: split
-        name: Prepare and split URLs
+        name: Prepare URLs
         run: |
-          if [ ! -f output_urls.txt ]; then
-            echo "output_urls.txt not found"
-            exit 1
-          fi
-          
-          # Remove duplicates and sort
+          # Deduplicate and sort URLs
           sort -u output_urls.txt -o output_urls.txt
           
-          total_urls=$(wc -l < output_urls.txt)
-          echo "total_urls=$total_urls" >> $GITHUB_OUTPUT
-          
-          # Create split directory
+          # Split into 20 balanced chunks
           mkdir -p splits
-          
-          # Split into exactly 20 balanced chunks (round-robin)
           split -n l/20 output_urls.txt splits/batch_
           
-          # Rename split files to sequential numbering
+          # Rename files sequentially
           i=1
-          for file in splits/batch_*; do
-            mv "$file" "splits/batch_$(printf "%02d" $i)"
+          for f in splits/batch_*; do
+            mv "$f" "splits/batch_$(printf "%02d" $i)"
             ((i++))
           done
           
-          # Commit the splits
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add splits/
-          git commit -m "Create URL batches" || echo "No changes to commit"
-          git push
+          # Output total URLs count
+          echo "total_urls=$(wc -l < output_urls.txt)" >> $GITHUB_OUTPUT
+      
+      - name: Upload Splits
+        uses: actions/upload-artifact@v4
+        with:
+          name: url-splits
+          path: splits/
 
   archive:
     needs: prepare
@@ -58,44 +50,44 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Process URL batch
+      - name: Get Splits
+        uses: actions/download-artifact@v4
+        with:
+          name: url-splits
+          path: splits/
+      
+      - name: Process Batch
         env:
           JOB_ID: ${{ matrix.job_id }}
         run: |
           batch_file="splits/batch_$(printf "%02d" $JOB_ID)"
+          processed_file="processed_$JOB_ID.txt"
           
-          # Check if batch exists and has content
-          if [ ! -f "$batch_file" ] || [ ! -s "$batch_file" ]; then
-            echo "No URLs to process in batch $JOB_ID"
-            exit 0
+          # Process URLs
+          if [ -f "$batch_file" ]; then
+            while IFS= read -r url; do
+              if [ -n "$url" ]; then
+                echo "Archiving: $url"
+                if curl -sS -X POST "https://web.archive.org/save/$url" >/dev/null; then
+                  echo "$url" >> "$processed_file"
+                  sleep 2  # Rate limit
+                fi
+              fi
+            done < "$batch_file"
           fi
           
-          # Atomic file lock
-          if ! mv "$batch_file" "$batch_file.processing" 2>/dev/null; then
-            echo "Batch $JOB_ID already being processed"
-            exit 0
+          # Upload successful archives
+          if [ -f "$processed_file" ]; then
+            mv "$processed_file" "processed_urls_$JOB_ID.txt"
+          else
+            touch "processed_urls_$JOB_ID.txt"
           fi
-          
-          echo "Processing batch $JOB_ID ($(wc -l < "$batch_file.processing") URLs)"
-          while IFS= read -r url; do
-            if [ -n "$url" ]; then
-              echo "Archiving: $url"
-              curl -sS -X POST "https://web.archive.org/save/$url" >/dev/null
-              sleep 3 # Rate limit
-            fi
-          done < "$batch_file.processing"
-          
-          # Cleanup processed batch
-          rm "$batch_file.processing"
-          
-          # Update git
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -u
-          if ! git commit -m "Processed batch $JOB_ID"; then
-            echo "No changes to commit"
-          fi
-          git push
+      
+      - name: Upload Processed
+        uses: actions/upload-artifact@v4
+        with:
+          name: processed-${{ matrix.job_id }}
+          path: processed_urls_${{ matrix.job_id }}.txt
 
   cleanup:
     needs: [archive]
@@ -103,22 +95,28 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       
-      - name: Consolidate remaining URLs
+      - name: Collect Processed
         run: |
-          # Combine any remaining batches
-          find splits/ -type f -name 'batch_*' ! -name '*.processing' -exec cat {} + > output_urls.txt
-          find splits/ -type f -name 'batch_*.processing' -exec cat {} + >> output_urls.txt
-          
-          # Deduplicate again
-          sort -u output_urls.txt -o output_urls.txt
-          
-          # Cleanup
-          rm -rf splits/
-          date > last_archive.txt
-          
-          # Commit results
-          git config --local user.email "action@github.com"
-          git config --local user.name "GitHub Action"
-          git add -A
-          git commit -m "Cleanup remaining URLs" || echo "No changes to commit"
-          git push
+          mkdir -p processed
+          for job in {1..20}; do
+            gh run download $GITHUB_RUN_ID -n processed-$job -D processed/ || true
+          done
+          cat processed/*.txt | sort -u > all_processed.txt
+      
+      - name: Update URL List
+        run: |
+          # Remove successfully archived URLs
+          comm -23 output_urls.txt all_processed.txt > remaining_urls.txt
+          mv remaining_urls.txt output_urls.txt
+          date > last_run.txt
+      
+      - name: Commit Changes
+        run: |
+          git config --local user.email "actions@github.com"
+          git config --local user.name "URL Archiver"
+          git add output_urls.txt last_run.txt
+          if git commit -m "Update URLs ($(date +'%Y-%m-%d %H:%M'))"; then
+            git push
+          else
+            echo "No changes to commit"
+          fi
