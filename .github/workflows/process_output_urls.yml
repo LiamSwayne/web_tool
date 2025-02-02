@@ -1,132 +1,165 @@
-name: Parallel Process Output URLs
+name: Archive URLs to Wayback Machine (Parallel Processing)
 on:
   schedule:
-    - cron: '*/30 * * * *'  # Run every 30 minutes
-  workflow_dispatch:  # Allow manual triggering
+    - cron: '0 * * * *'  # Run hourly
+  workflow_dispatch:      # Allow manual triggers
 
 jobs:
+  # First create a job to split the file
   prepare:
     runs-on: ubuntu-latest
+    outputs:
+      total_lines: ${{ steps.split.outputs.total_lines }}
     steps:
-    - uses: actions/checkout@v4
+      - uses: actions/checkout@v4
+      
+      - id: split
+        name: Split URLs file
+        run: |
+          if [ ! -f output_urls.txt ]; then
+            echo "output_urls.txt not found"
+            exit 1
+          fi
+          
+          total_lines=$(wc -l < output_urls.txt)
+          echo "total_lines=$total_lines" >> $GITHUB_OUTPUT
+          
+          # Create directory for splits
+          mkdir -p splits
+          
+          # Calculate lines per split (500 URLs per job)
+          split -l 500 output_urls.txt splits/batch_
+          
+          # Commit splits
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add splits/
+          git commit -m "Create URL batches for parallel processing" || echo "No changes"
+          git push
 
-    - name: Select and split URLs
-      run: |
-        shuf -n 600 output_urls.txt > selected_urls.txt
-        split -n l/20 -d selected_urls.txt url_part_
-
-    - name: Upload URL parts
-      uses: actions/upload-artifact@v4
-      with:
-        name: url-parts
-        path: url_part_*
-
-    - name: Upload selected URLs
-      uses: actions/upload-artifact@v4
-      with:
-        name: selected-urls
-        path: selected_urls.txt
-
-  archive-urls:
+  # Process URLs in parallel
+  archive:
     needs: prepare
     runs-on: ubuntu-latest
     strategy:
       matrix:
-        part: [0, 1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19]
+        job_id: [1, 2, 3, 4, 5, 6, 7, 8, 9, 10, 11, 12, 13, 14, 15, 16, 17, 18, 19, 20]
+      max-parallel: 20
+      fail-fast: false  # Continue other jobs if one fails
+    
     steps:
-    - uses: actions/checkout@v4
-
-    - name: Set up Python 3.11
-      uses: actions/setup-python@v5
-      with:
-        python-version: '3.11'
-
-    - name: Install ArchiveBox
-      run: |
-        pip install archivebox
-
-    - name: Download URL part
-      uses: actions/download-artifact@v4
-      with:
-        name: url-parts
-
-    - name: Initialize and configure ArchiveBox
-      run: |
-        mkdir archivebox_data
-        cd archivebox_data
-        archivebox init > /dev/null 2>&1
-        archivebox config --set SAVE_ARCHIVE_DOT_ORG=True
-        archivebox config --set SAVE_TITLE=False
-        archivebox config --set SAVE_FAVICON=False
-        archivebox config --set SAVE_WGET=False
-        archivebox config --set SAVE_WARC=False
-        archivebox config --set SAVE_PDF=False
-        archivebox config --set SAVE_SCREENSHOT=False
-        archivebox config --set SAVE_DOM=False
-        archivebox config --set SAVE_SINGLEFILE=False
-        archivebox config --set SAVE_READABILITY=False
-        archivebox config --set SAVE_MERCURY=False
-        archivebox config --set SAVE_GIT=False
-        archivebox config --set SAVE_MEDIA=False
-        archivebox config --set USE_COLOR=False
-        archivebox config --set SHOW_PROGRESS=False
-
-    - name: Check and Archive URLs
-      run: |
-        cd archivebox_data
-        while IFS= read -r url; do
-          if ! curl -s "http://archive.org/wayback/available?url=$url" | grep -q '"archived_snapshots":{}' || ! curl -s -o /dev/null -w "%{http_code}" "http://archive.org/wayback/available?url=$url" | grep -q "200"; then
-            echo "Archiving: $url"
-            archivebox add "$url" > /dev/null 2>&1
-          else
-            echo "URL already archived: $url"
+      - uses: actions/checkout@v4
+      
+      - name: Process URL batch
+        run: |
+          # Find batch file for this job
+          batch_file=$(ls splits/batch_* | sed -n "${matrix.job_id}p")
+          
+          if [ ! -f "$batch_file" ]; then
+            echo "No more URLs to process in batch ${{ matrix.job_id }}"
+            exit 0
           fi
-        done < ../url_part_$(printf "%02d" ${{ matrix.part }})
-
-    - name: Clean up
-      run: |
-        rm -rf archivebox_data
-
-  update-output-file:
-    needs: archive-urls
-    runs-on: ubuntu-latest
-    steps:
-    - uses: actions/checkout@v4
-    - name: Download selected URLs
-      uses: actions/download-artifact@v4
-      with:
-        name: selected-urls
-    - name: Remove archived URLs from output file
-      run: |
-        if [ ! -s selected_urls.txt ] || [ ! -s output_urls.txt ]; then
-          echo "Either selected_urls.txt or output_urls.txt is empty. Skipping update."
-        else
-          grep -vFf selected_urls.txt output_urls.txt > temp_urls.txt || true
-          if [ -s temp_urls.txt ]; then
-            mv temp_urls.txt output_urls.txt
-            echo "Updated output_urls.txt"
-          else
-            echo "All URLs processed. Clearing output_urls.txt"
-            > output_urls.txt
+          
+          # Process URLs in this batch
+          while IFS= read -r url; do
+            if [ ! -z "$url" ]; then
+              echo "Archiving: $url"
+              curl -X POST "https://web.archive.org/save/$url"
+              sleep 5  # Rate limiting
+            fi
+          done < "$batch_file"
+          
+          # Remove processed batch file
+          rm "$batch_file"
+          
+          # Commit removal with retries
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Function to attempt commit and push
+          push_changes() {
+            git add -u
+            git commit -m "Process batch ${{ matrix.job_id }} URLs" || echo "No changes"
+            git push
+          }
+          
+          # Retry logic
+          max_retries=10
+          retry_count=0
+          
+          while [ $retry_count -lt $max_retries ]; do
+            if [ $retry_count -gt 0 ]; then
+              git pull --rebase origin main
+            fi
+            
+            if push_changes; then
+              echo "Push successful on attempt $((retry_count + 1))"
+              exit 0
+            fi
+            
+            retry_count=$((retry_count + 1))
+            if [ $retry_count -lt $max_retries ]; then
+              sleep $((retry_count * 5))
+            fi
+          done
+          
+          if [ $retry_count -eq $max_retries ]; then
+            echo "Failed to push after $max_retries attempts"
+            exit 1
           fi
-        fi
 
-    - name: Commit changes
-      run: |
-        git config --local user.email "action@github.com"
-        git config --local user.name "GitHub Action"
-        git fetch origin main
-        git merge origin/main --no-edit
-        git add output_urls.txt
-        git diff --quiet && git diff --staged --quiet || (git commit -m "Remove archived URLs from output_urls.txt" && git push)
-
+  # Cleanup job
   cleanup:
-    needs: update-output-file
+    needs: [archive]
     runs-on: ubuntu-latest
     steps:
-    - name: Remove artifacts
-      uses: geekyeggo/delete-artifact@v2
-      with:
-        name: |
-          url-parts
-          selected-urls
+      - uses: actions/checkout@v4
+      
+      - name: Cleanup and consolidate
+        run: |
+          # Check if any unprocessed URLs remain
+          remaining_urls=""
+          if [ -d "splits" ]; then
+            for batch in splits/batch_*; do
+              if [ -f "$batch" ]; then
+                remaining_urls="$remaining_urls$(cat $batch)\n"
+              fi
+            done
+          fi
+          
+          # Update output_urls.txt with remaining URLs
+          echo -e "$remaining_urls" > output_urls.txt
+          rm -rf splits/
+          
+          # Create timestamp
+          date > last_archive.txt
+          
+          # Commit final state
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          
+          # Retry logic for final commit
+          max_retries=10
+          retry_count=0
+          
+          while [ $retry_count -lt $max_retries ]; do
+            if [ $retry_count -gt 0 ]; then
+              git pull --rebase origin main
+            fi
+            
+            git add -A
+            if git commit -m "Cleanup and consolidate remaining URLs" && git push; then
+              echo "Final cleanup push successful on attempt $((retry_count + 1))"
+              exit 0
+            fi
+            
+            retry_count=$((retry_count + 1))
+            if [ $retry_count -lt $max_retries ]; then
+              sleep $((retry_count * 5))
+            fi
+          done
+          
+          if [ $retry_count -eq $max_retries ]; then
+            echo "Failed to push cleanup after $max_retries attempts"
+            exit 1
+          fi
