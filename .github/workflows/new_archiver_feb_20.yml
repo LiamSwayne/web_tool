@@ -52,15 +52,11 @@ jobs:
            echo "$content" | grep -oP 'https?://[^\s<>"'"'"')\]}]+' | grep -E "^https?://" || true
          }
          
-         # First pass: collect URLs from HTML and XML pages
+         # First pass: collect URLs from HTML/XML pages
          echo "Crawling HTML/XML pages for additional URLs..."
          if [ -s all_urls.txt ]; then
            while read url; do
-             # Get content type header
-             content_type=$(curl -sI "$url" | grep -i 'content-type:' | head -n1)
-             
-             # Only process if it's explicitly HTML or XML
-             if [[ $content_type =~ text/html.*$ ]] || [[ $content_type =~ text/xml.*$ ]] || [[ $content_type =~ application/xml.*$ ]]; then
+             if [[ $url =~ \.(html?|xml)$ ]] || [[ $(curl -sI "$url" | grep -i content-type) =~ text/html|text/xml|application/xml ]]; then
                echo "Crawling: $url"
                content=$(curl -s "$url")
                extract_urls "$content" >> all_urls.txt
