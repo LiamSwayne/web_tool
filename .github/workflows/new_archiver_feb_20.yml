@@ -1,5 +1,4 @@
 name: Archive URLs (Feb 20)
-
 on:
  workflow_dispatch:
  schedule:
@@ -7,7 +6,6 @@ on:
  push:
    paths:
      - 'pasted_urls.txt'
-
 jobs:
  archive:
    runs-on: ubuntu-latest
@@ -32,6 +30,7 @@ jobs:
          # Create temporary files
          touch processed_urls.txt
          touch all_urls.txt
+         touch already_archived.txt
          
          # Copy initial URLs to all_urls
          grep -E "^https?://" pasted_urls.txt > all_urls.txt
@@ -70,17 +69,30 @@ jobs:
            fi
            
            for process_url in "${urls[@]}"; do
+             # Skip if already archived previously
+             if grep -Fxq "$process_url" already_archived.txt; then
+               echo "$(date): URL already archived previously: $process_url"
+               continue
+             fi
+             
              archived=$(curl -s "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
              
              if [ "$archived" = "[]" ]; then
                echo "$(date): Archiving new URL: $process_url"
-               curl -s "https://web.archive.org/save/$process_url" > /dev/null && sleep 2
+               if curl -s "https://web.archive.org/save/$process_url" > /dev/null; then
+                 echo "$process_url" >> already_archived.txt
+                 sleep 2
+               fi
              else
                echo "$(date): Skipping already archived URL: $process_url"
+               echo "$process_url" >> already_archived.txt
              fi
            done
          done
          echo "Archive check complete."
+         
+         # Sort already_archived.txt
+         sort -u already_archived.txt -o already_archived.txt
          
          # Check if original file has changed
          current_hash=$(git hash-object pasted_urls.txt)
@@ -88,8 +100,10 @@ jobs:
            # Remove processed URLs and sort remaining ones
            grep -vxFf processed_urls.txt all_urls.txt | sort -u > pasted_urls.txt
            rm processed_urls.txt all_urls.txt
-           git add pasted_urls.txt
-           git commit -m "Remove processed URLs and sort remaining" && git push || echo "Skipping commit due to conflict"
+           
+           # Commit both files
+           git add pasted_urls.txt already_archived.txt
+           git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
          else
            echo "File has changed during execution, skipping commit"
          fi
