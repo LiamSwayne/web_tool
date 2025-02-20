@@ -1,74 +1,95 @@
 name: Archive URLs to Internet Archive
 
 on:
-  push:
-    paths:
-      - 'pasted_urls.txt'
+ workflow_dispatch:
+ schedule:
+   - cron: '0 * * * *'  # Run every hour
+ push:
+   paths:
+     - 'pasted_urls.txt'
 
 jobs:
-  archive:
-    runs-on: ubuntu-latest
-    
-    steps:
-      - uses: actions/checkout@v4
-        with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Configure Git
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-      
-      - name: Archive URLs and Clean File
-        run: |
-          while read url; do 
-            # Check if it's a reddit URL and create old.reddit version
-            if [[ $url == *"reddit.com"* && $url != *"old.reddit.com"* ]]; then
-              old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
-              urls=("$url" "$old_url")
-            else
-              urls=("$url")
-            fi
-            
-            # Process each URL (original and old.reddit if applicable)
-            for process_url in "${urls[@]}"; do
-              archived=$(curl -s "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
-              
-              if [ "$archived" = "[]" ]; then
-                echo "$(date): Archiving new URL: $process_url"
-                curl -s "https://web.archive.org/save/$process_url" > /dev/null && sleep 2
-              else
-                echo "$(date): Skipping already archived URL: $process_url"
-              fi
-            done
-          done < pasted_urls.txt
-          echo "Archive check complete."
-          
-          # Empty the file after archiving
-          echo "" > pasted_urls.txt
-          
-          # Try to commit and push changes up to 10 times
-          max_attempts=10
-          attempt=1
-          
-          while [ $attempt -le $max_attempts ]; do
-            echo "Attempt $attempt to commit and push changes..."
-            
-            git pull --rebase origin main
-            git add pasted_urls.txt
-            git commit -m "Clear archived URLs"
-            
-            if git push; then
-              echo "Successfully pushed changes on attempt $attempt"
-              break
-            else
-              echo "Push failed on attempt $attempt"
-              if [ $attempt -eq $max_attempts ]; then
-                echo "Failed to push after $max_attempts attempts"
-                exit 1
-              fi
-              sleep 5
-            fi
-            
-            attempt=$((attempt + 1))
-          done
+ archive:
+   runs-on: ubuntu-latest
+   
+   steps:
+     - uses: actions/checkout@v4
+       with:
+         token: ${{ secrets.GITHUB_TOKEN }}
+     
+     - name: Install xmllint
+       run: sudo apt-get install -y libxml2-utils
+     
+     - name: Configure Git
+       run: |
+         git config user.name "GitHub Action"
+         git config user.email "action@github.com"
+     
+     - name: Archive URLs
+       run: |
+         original_hash=$(git hash-object pasted_urls.txt)
+         
+         # Create temporary files
+         touch processed_urls.txt
+         touch all_urls.txt
+         
+         # Copy initial URLs to all_urls
+         grep -E "^https?://" pasted_urls.txt > all_urls.txt
+         
+         # Function to extract URLs from HTML/XML content
+         extract_urls() {
+           local content="$1"
+           # Extract from href and src attributes
+           echo "$content" | grep -oP '(?<=href=")[^"]*|(?<=src=")[^"]*' | grep -E "^https?://"
+           # Extract from XML
+           echo "$content" | grep -oP 'https?://[^\s<>"'"'"')\]}]+' | grep -E "^https?://"
+         }
+         
+         # First pass: collect URLs from HTML and XML pages
+         echo "Crawling HTML/XML pages for additional URLs..."
+         while read url; do
+           if [[ $url =~ \.(html?|xml)$ ]] || [[ $(curl -sI "$url" | grep -i content-type) =~ text/html|text/xml|application/xml ]]; then
+             echo "Crawling: $url"
+             content=$(curl -s "$url")
+             extract_urls "$content" >> all_urls.txt
+           fi
+         done < <(grep -E "^https?://" pasted_urls.txt)
+         
+         # Remove duplicates and sort
+         sort -u all_urls.txt -o all_urls.txt
+         
+         # Pick 1000 random URLs to archive
+         shuf -n 1000 all_urls.txt | while read url; do 
+           echo "$url" >> processed_urls.txt
+           
+           if [[ $url == *"reddit.com"* && $url != *"old.reddit.com"* ]]; then
+             old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
+             urls=("$url" "$old_url")
+           else
+             urls=("$url")
+           fi
+           
+           for process_url in "${urls[@]}"; do
+             archived=$(curl -s "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
+             
+             if [ "$archived" = "[]" ]; then
+               echo "$(date): Archiving new URL: $process_url"
+               curl -s "https://web.archive.org/save/$process_url" > /dev/null && sleep 2
+             else
+               echo "$(date): Skipping already archived URL: $process_url"
+             fi
+           done
+         done
+         echo "Archive check complete."
+         
+         # Check if original file has changed
+         current_hash=$(git hash-object pasted_urls.txt)
+         if [ "$original_hash" = "$current_hash" ]; then
+           # Remove processed URLs and sort remaining ones
+           grep -vxFf processed_urls.txt all_urls.txt | sort -u > pasted_urls.txt
+           rm processed_urls.txt all_urls.txt
+           git add pasted_urls.txt
+           git commit -m "Remove processed URLs and sort remaining" && git push || echo "Skipping commit due to conflict"
+         else
+           echo "File has changed during execution, skipping commit"
+         fi
