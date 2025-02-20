@@ -1,0 +1,74 @@
+name: Archive URLs to Internet Archive
+
+on:
+  push:
+    paths:
+      - 'pasted_urls.txt'
+
+jobs:
+  archive:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+      
+      - name: Archive URLs and Clean File
+        run: |
+          while read url; do 
+            # Check if it's a reddit URL and create old.reddit version
+            if [[ $url == *"reddit.com"* && $url != *"old.reddit.com"* ]]; then
+              old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
+              urls=("$url" "$old_url")
+            else
+              urls=("$url")
+            fi
+            
+            # Process each URL (original and old.reddit if applicable)
+            for process_url in "${urls[@]}"; do
+              archived=$(curl -s "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
+              
+              if [ "$archived" = "[]" ]; then
+                echo "$(date): Archiving new URL: $process_url"
+                curl -s "https://web.archive.org/save/$process_url" > /dev/null && sleep 2
+              else
+                echo "$(date): Skipping already archived URL: $process_url"
+              fi
+            done
+          done < pasted_urls.txt
+          echo "Archive check complete."
+          
+          # Empty the file after archiving
+          echo "" > pasted_urls.txt
+          
+          # Try to commit and push changes up to 10 times
+          max_attempts=10
+          attempt=1
+          
+          while [ $attempt -le $max_attempts ]; do
+            echo "Attempt $attempt to commit and push changes..."
+            
+            git pull --rebase origin main
+            git add pasted_urls.txt
+            git commit -m "Clear archived URLs"
+            
+            if git push; then
+              echo "Successfully pushed changes on attempt $attempt"
+              break
+            else
+              echo "Push failed on attempt $attempt"
+              if [ $attempt -eq $max_attempts ]; then
+                echo "Failed to push after $max_attempts attempts"
+                exit 1
+              fi
+              sleep 5
+            fi
+            
+            attempt=$((attempt + 1))
+          done
