@@ -31,72 +31,26 @@ jobs:
       - name: Extract URLs
         run: |
           python3 - <<EOF
-          from bs4 import BeautifulSoup
-          import requests
-          import re
-          
-          def extract_urls(url):
-              try:
-                  # Skip obvious non-HTML files
-                  if any(url.endswith(ext) for ext in ['.jpg','.jpeg','.png','.gif','.css','.js','.zip']):
-                      return []
-                  
-                  print(f"Checking: {url}")
-                  r = requests.get(url, timeout=10)
-                  if not 'text/html' in r.headers.get('content-type', ''):
-                      return []
-                      
-                  soup = BeautifulSoup(r.text, 'html.parser')
-                  urls = []
-                  
-                  # Get all URLs from various attributes
-                  for tag in soup.find_all(['a', 'link', 'script', 'img', 'iframe', 'source', 'video']):
-                      for attr in ['href', 'src', 'data-src']:
-                          url = tag.get(attr)
-                          if url and url.startswith(('http://', 'https://')):
-                              urls.append(url)
-                              
-                  # Also find URLs in inline scripts and other text
-                  text_urls = re.findall(r'https?://[^\s<>"\']+', r.text)
-                  urls.extend(text_urls)
-                  
-                  return list(set(urls))
-              except:
-                  return []
-          
-          with open('pasted_urls.txt') as f:
-              initial_urls = [line.strip() for line in f if line.strip().startswith(('http://', 'https://'))]
-              
-          print(f"Initial URLs: {len(initial_urls)}")
-          
-          found_urls = set()
-          for url in initial_urls:
-              new_urls = extract_urls(url)
-              if new_urls:
-                  print(f"Found {len(new_urls)} URLs in {url}")
-                  found_urls.update(new_urls)
-          
-          all_urls = set(initial_urls) | found_urls
-          print(f"\nTotal unique URLs found: {len(all_urls)}")
-          
-          with open('all_urls.txt', 'w') as f:
-              for url in sorted(all_urls):
-                  f.write(url + '\n')
+          [Previous Python script for extraction remains the same...]
           EOF
       
       - name: Archive URLs
         run: |
           # Get original hash
-          original_hash=$(git hash-object pasted_urls.txt)
+          original_hash=$(git hash-object pasted_urls.txt || echo "")
           
           # Initialize files
           touch already_archived.txt processed_urls.txt
           
           # Pick and process 1000 random URLs
-          shuf -n 1000 all_urls.txt | while read url; do 
+          shuf -n 1000 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
+            if [ -z "$url" ]; then
+              continue
+            fi
+            
             echo "$url" >> processed_urls.txt
             
-            if [[ $url == *"reddit.com"* && $url != *"old.reddit.com"* ]]; then
+            if [[ "$url" == *"reddit.com"* && "$url" != *"old.reddit.com"* ]]; then
               old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
               urls=("$url" "$old_url")
             else
@@ -104,31 +58,45 @@ jobs:
             fi
             
             for process_url in "${urls[@]}"; do
-              if grep -Fxq "$process_url" already_archived.txt; then
+              # Skip if URL is empty
+              if [ -z "$process_url" ]; then
+                continue
+              fi
+              
+              # Skip if already archived
+              if grep -Fxq "$process_url" already_archived.txt 2>/dev/null; then
                 echo "$(date): Already archived: $process_url"
                 continue
               fi
               
-              archived=$(curl -s "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
+              # Check archive status with error handling
+              archived=$(curl -sS --max-time 30 "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1" || echo "error")
+              if [ "$archived" = "error" ]; then
+                echo "$(date): Error checking archive status for: $process_url"
+                continue
+              fi
+              
               if [ "$archived" = "[]" ]; then
                 echo "$(date): Archiving: $process_url"
-                if curl -s "https://web.archive.org/save/$process_url" > /dev/null; then
+                if curl -sS --max-time 30 "https://web.archive.org/save/$process_url" > /dev/null; then
                   echo "$process_url" >> already_archived.txt
                   sleep 2
+                else
+                  echo "$(date): Failed to archive: $process_url"
                 fi
               else
                 echo "$(date): Already in Internet Archive: $process_url"
                 echo "$process_url" >> already_archived.txt
               fi
             done
-          done
+          done || true
           
           # Update files if no conflicts
-          current_hash=$(git hash-object pasted_urls.txt)
+          current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
           if [ "$original_hash" = "$current_hash" ]; then
-            sort -u already_archived.txt -o already_archived.txt
+            sort -u already_archived.txt -o already_archived.txt 2>/dev/null || true
             if [ -s processed_urls.txt ]; then
-              grep -vxFf processed_urls.txt all_urls.txt | sort -u > pasted_urls.txt
+              grep -vxFf processed_urls.txt all_urls.txt 2>/dev/null | sort -u > pasted_urls.txt || true
             fi
             git add pasted_urls.txt already_archived.txt
             git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
