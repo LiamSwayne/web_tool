@@ -31,20 +31,23 @@ jobs:
          initial_count=$(wc -l < initial_urls.txt)
          echo "Initial URLs found: $initial_count"
          
-         # Process HTML/XML files
+         # Process HTML/XML files with better URL extraction
          echo "Processing HTML/XML files..."
-         grep -E "^https?://.*\.(html?|xml)$" pasted_urls.txt | while read url; do
-           echo "Checking: $url"
-           curl -sL --max-time 10 "$url" | grep -oP 'https?://[^\s<>"'"'"')\]}]+' >> found_urls.txt || true
+         html_count=0
+         grep -E "^https?://.*\.(html?|xml)$|^https?://[^.]*$|^https?://[^.]*\.[^.]*$" pasted_urls.txt | while read url; do
+           echo "Checking HTML/XML: $url"
+           curl -sL --max-time 10 "$url" | grep -oE 'https?://[^"'"'"')<>[:space:]]+' > temp_urls.txt
+           if [ -s temp_urls.txt ]; then
+             found_in_file=$(wc -l < temp_urls.txt)
+             echo "Found $found_in_file URLs in $url"
+             html_count=$((html_count + found_in_file))
+             cat temp_urls.txt >> found_urls.txt
+           fi
          done
+         rm -f temp_urls.txt
          
-         # Count found URLs
-         if [ -s found_urls.txt ]; then
-           found_count=$(wc -l < found_urls.txt)
-           echo "Additional URLs found from HTML/XML: $found_count"
-         else
-           echo "No additional URLs found from HTML/XML"
-         fi
+         # Show HTML/XML results
+         echo "Total URLs found from HTML/XML scanning: $html_count"
          
          # Combine and deduplicate all URLs
          cat initial_urls.txt found_urls.txt > all_urls.txt
@@ -97,4 +100,4 @@ jobs:
          fi
          
          # Cleanup
-         rm -f processed_urls.txt all_urls.txt initial_urls.txt found_urls.txt
+         rm -f processed_urls.txt all_urls.txt initial_urls.txt found_urls.txt temp_urls.txt
