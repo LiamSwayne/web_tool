@@ -1,103 +1,138 @@
 name: Archive URLs (Feb 20)
 on:
- workflow_dispatch:
- schedule:
-   - cron: '0 * * * *'
- push:
-   paths:
-     - 'pasted_urls.txt'
+  workflow_dispatch:
+  schedule:
+    - cron: '0 * * * *'
+  push:
+    paths:
+      - 'pasted_urls.txt'
 jobs:
- archive:
-   runs-on: ubuntu-latest
-   
-   steps:
-     - uses: actions/checkout@v4
-       with:
-         token: ${{ secrets.GITHUB_TOKEN }}
-     
-     - name: Configure Git
-       run: |
-         git config user.name "GitHub Action"
-         git config user.email "action@github.com"
-     
-     - name: Archive URLs
-       run: |
-         # Ensure files exist
-         touch pasted_urls.txt already_archived.txt processed_urls.txt all_urls.txt initial_urls.txt found_urls.txt
-         original_hash=$(git hash-object pasted_urls.txt)
-         
-         # Save initial URL count
-         grep -E "^https?://" pasted_urls.txt > initial_urls.txt
-         initial_count=$(wc -l < initial_urls.txt)
-         echo "Initial URLs found: $initial_count"
-         
-         # Process HTML/XML files with better URL extraction
-         echo "Processing HTML/XML files..."
-         html_count=0
-         grep -E "^https?://.*\.(html?|xml)$|^https?://[^.]*$|^https?://[^.]*\.[^.]*$" pasted_urls.txt | while read url; do
-           echo "Checking HTML/XML: $url"
-           curl -sL --max-time 10 "$url" | grep -oE 'https?://[^"'"'"')<>[:space:]]+' > temp_urls.txt
-           if [ -s temp_urls.txt ]; then
-             found_in_file=$(wc -l < temp_urls.txt)
-             echo "Found $found_in_file URLs in $url"
-             html_count=$((html_count + found_in_file))
-             cat temp_urls.txt >> found_urls.txt
-           fi
-         done
-         rm -f temp_urls.txt
-         
-         # Show HTML/XML results
-         echo "Total URLs found from HTML/XML scanning: $html_count"
-         
-         # Combine and deduplicate all URLs
-         cat initial_urls.txt found_urls.txt > all_urls.txt
-         sort -u all_urls.txt -o all_urls.txt
-         final_count=$(wc -l < all_urls.txt)
-         echo "Total unique URLs after deduplication: $final_count"
-         
-         # Pick and process 1000 random URLs
-         if [ -s all_urls.txt ]; then
-           shuf -n 1000 all_urls.txt | while read url; do 
-             echo "$url" >> processed_urls.txt
-             
-             if [[ $url == *"reddit.com"* && $url != *"old.reddit.com"* ]]; then
-               old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
-               urls=("$url" "$old_url")
-             else
-               urls=("$url")
-             fi
-             
-             for process_url in "${urls[@]}"; do
-               if grep -Fxq "$process_url" already_archived.txt; then
-                 echo "$(date): Already archived: $process_url"
-                 continue
-               fi
-               
-               archived=$(curl -s "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
-               if [ "$archived" = "[]" ]; then
-                 echo "$(date): Archiving: $process_url"
-                 if curl -s "https://web.archive.org/save/$process_url" > /dev/null; then
-                   echo "$process_url" >> already_archived.txt
-                   sleep 2
-                 fi
-               else
-                 echo "$(date): Already in Internet Archive: $process_url"
-                 echo "$process_url" >> already_archived.txt
-               fi
-             done
-           done
-         fi
-         
-         # Update files if no conflicts
-         current_hash=$(git hash-object pasted_urls.txt)
-         if [ "$original_hash" = "$current_hash" ]; then
-           sort -u already_archived.txt -o already_archived.txt
-           if [ -s processed_urls.txt ]; then
-             grep -vxFf processed_urls.txt all_urls.txt | sort -u > pasted_urls.txt
-           fi
-           git add pasted_urls.txt already_archived.txt
-           git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
-         fi
-         
-         # Cleanup
-         rm -f processed_urls.txt all_urls.txt initial_urls.txt found_urls.txt temp_urls.txt
+  archive:
+    runs-on: ubuntu-latest
+    
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          token: ${{ secrets.GITHUB_TOKEN }}
+      
+      - name: Configure Git
+        run: |
+          git config user.name "GitHub Action"
+          git config user.email "action@github.com"
+      
+      - name: Setup Python
+        uses: actions/setup-python@v4
+        with:
+          python-version: '3.x'
+          
+      - name: Install dependencies
+        run: pip install beautifulsoup4 requests
+      
+      - name: Extract URLs
+        run: |
+          python3 - <<EOF
+          from bs4 import BeautifulSoup
+          import requests
+          import re
+          
+          def extract_urls(url):
+              try:
+                  # Skip obvious non-HTML files
+                  if any(url.endswith(ext) for ext in ['.jpg','.jpeg','.png','.gif','.css','.js','.zip']):
+                      return []
+                  
+                  print(f"Checking: {url}")
+                  r = requests.get(url, timeout=10)
+                  if not 'text/html' in r.headers.get('content-type', ''):
+                      return []
+                      
+                  soup = BeautifulSoup(r.text, 'html.parser')
+                  urls = []
+                  
+                  # Get all URLs from various attributes
+                  for tag in soup.find_all(['a', 'link', 'script', 'img', 'iframe', 'source', 'video']):
+                      for attr in ['href', 'src', 'data-src']:
+                          url = tag.get(attr)
+                          if url and url.startswith(('http://', 'https://')):
+                              urls.append(url)
+                              
+                  # Also find URLs in inline scripts and other text
+                  text_urls = re.findall(r'https?://[^\s<>"\']+', r.text)
+                  urls.extend(text_urls)
+                  
+                  return list(set(urls))
+              except:
+                  return []
+          
+          with open('pasted_urls.txt') as f:
+              initial_urls = [line.strip() for line in f if line.strip().startswith(('http://', 'https://'))]
+              
+          print(f"Initial URLs: {len(initial_urls)}")
+          
+          found_urls = set()
+          for url in initial_urls:
+              new_urls = extract_urls(url)
+              if new_urls:
+                  print(f"Found {len(new_urls)} URLs in {url}")
+                  found_urls.update(new_urls)
+          
+          all_urls = set(initial_urls) | found_urls
+          print(f"\nTotal unique URLs found: {len(all_urls)}")
+          
+          with open('all_urls.txt', 'w') as f:
+              for url in sorted(all_urls):
+                  f.write(url + '\n')
+          EOF
+      
+      - name: Archive URLs
+        run: |
+          # Get original hash
+          original_hash=$(git hash-object pasted_urls.txt)
+          
+          # Initialize files
+          touch already_archived.txt processed_urls.txt
+          
+          # Pick and process 1000 random URLs
+          shuf -n 1000 all_urls.txt | while read url; do 
+            echo "$url" >> processed_urls.txt
+            
+            if [[ $url == *"reddit.com"* && $url != *"old.reddit.com"* ]]; then
+              old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
+              urls=("$url" "$old_url")
+            else
+              urls=("$url")
+            fi
+            
+            for process_url in "${urls[@]}"; do
+              if grep -Fxq "$process_url" already_archived.txt; then
+                echo "$(date): Already archived: $process_url"
+                continue
+              fi
+              
+              archived=$(curl -s "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
+              if [ "$archived" = "[]" ]; then
+                echo "$(date): Archiving: $process_url"
+                if curl -s "https://web.archive.org/save/$process_url" > /dev/null; then
+                  echo "$process_url" >> already_archived.txt
+                  sleep 2
+                fi
+              else
+                echo "$(date): Already in Internet Archive: $process_url"
+                echo "$process_url" >> already_archived.txt
+              fi
+            done
+          done
+          
+          # Update files if no conflicts
+          current_hash=$(git hash-object pasted_urls.txt)
+          if [ "$original_hash" = "$current_hash" ]; then
+            sort -u already_archived.txt -o already_archived.txt
+            if [ -s processed_urls.txt ]; then
+              grep -vxFf processed_urls.txt all_urls.txt | sort -u > pasted_urls.txt
+            fi
+            git add pasted_urls.txt already_archived.txt
+            git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
+          fi
+          
+          # Cleanup
+          rm -f processed_urls.txt all_urls.txt
