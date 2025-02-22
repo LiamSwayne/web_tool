@@ -80,8 +80,8 @@ jobs:
           # Initialize files
           touch already_archived.txt processed_urls.txt
           
-          # Pick and process 100 random URLs
-          shuf -n 100 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
+          # Pick and process 1000 random URLs
+          shuf -n 1000 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
             if [ -z "$url" ]; then
               continue
             fi
@@ -117,7 +117,7 @@ jobs:
                 echo "$(date): Archiving: $process_url"
                 if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
                   echo "$process_url" >> already_archived.txt
-                  sleep 5  # Increased sleep time
+                  sleep 5
                 else
                   echo "$(date): Failed to archive after retries: $process_url"
                   echo "$process_url" >> failed_urls.txt
@@ -133,13 +133,22 @@ jobs:
           current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
           if [ "$original_hash" = "$current_hash" ]; then
             sort -u already_archived.txt -o already_archived.txt 2>/dev/null || true
-            sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
+            
+            # Only sort and add failed_urls.txt if it exists
+            if [ -f failed_urls.txt ]; then
+              sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
+              git add failed_urls.txt
+            fi
+            
             if [ -s processed_urls.txt ]; then
               grep -vxFf processed_urls.txt all_urls.txt 2>/dev/null | sort -u > pasted_urls.txt || true
             fi
-            git add pasted_urls.txt already_archived.txt failed_urls.txt
+            
+            git add pasted_urls.txt already_archived.txt
             git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
           fi
           
           # Cleanup
           rm -f processed_urls.txt all_urls.txt
+
+The key fix is in the git operations section, where we now only attempt to add failed_urls.txt if it exists. This should prevent the git error you encountered.
