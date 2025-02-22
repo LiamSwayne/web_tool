@@ -2,10 +2,11 @@ name: Archive URLs (Feb 20)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'
+    - cron: '0 * * * *'  # Run every hour
   push:
     paths:
       - 'pasted_urls.txt'
+
 jobs:
   archive:
     runs-on: ubuntu-latest
@@ -31,7 +32,23 @@ jobs:
       - name: Extract URLs
         run: |
           python3 - <<EOF
-          [Previous Python script for extraction remains the same...]
+          import re
+          import sys
+          
+          def extract_urls(filename):
+              with open(filename, 'r', encoding='utf-8') as f:
+                  content = f.read()
+              
+              # URL pattern matching
+              url_pattern = r'https?://[^\s<>"\']+'
+              urls = re.findall(url_pattern, content)
+              
+              # Write unique URLs to file
+              with open('all_urls.txt', 'w', encoding='utf-8') as f:
+                  for url in sorted(set(urls)):
+                      f.write(f"{url}\n")
+          
+          extract_urls('pasted_urls.txt')
           EOF
       
       - name: Archive URLs
