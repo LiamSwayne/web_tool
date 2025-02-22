@@ -1,4 +1,4 @@
-name: Archive URLs (Feb 20)
+name: Archive URLs (Feb 22)
 on:
   workflow_dispatch:
   schedule:
@@ -150,5 +150,3 @@ jobs:
           
           # Cleanup
           rm -f processed_urls.txt all_urls.txt
-
-The key fix is in the git operations section, where we now only attempt to add failed_urls.txt if it exists. This should prevent the git error you encountered.
