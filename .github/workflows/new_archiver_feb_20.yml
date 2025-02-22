@@ -80,8 +80,8 @@ jobs:
           # Initialize files
           touch already_archived.txt processed_urls.txt
           
-          # Pick and process 1000 random URLs
-          shuf -n 1000 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
+          # Pick and process 100 random URLs
+          shuf -n 100 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
             if [ -z "$url" ]; then
               continue
             fi
