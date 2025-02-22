@@ -1,8 +1,8 @@
-name: Archive URLs (Feb 20)
+name: Archive URLs (Feb 22)
 on:
   workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'  # Run every hour
+    - cron: '0 * * * *'
   push:
     paths:
       - 'pasted_urls.txt'
@@ -27,8 +27,8 @@ jobs:
           python-version: '3.x'
           
       - name: Install dependencies
-        run: pip install beautifulsoup4 requests
-      
+        run: pip install beautifulsoup4 requests urllib3
+
       - name: Extract URLs
         run: |
           python3 - <<EOF
@@ -39,11 +39,9 @@ jobs:
               with open(filename, 'r', encoding='utf-8') as f:
                   content = f.read()
               
-              # URL pattern matching
               url_pattern = r'https?://[^\s<>"\']+'
               urls = re.findall(url_pattern, content)
               
-              # Write unique URLs to file
               with open('all_urls.txt', 'w', encoding='utf-8') as f:
                   for url in sorted(set(urls)):
                       f.write(f"{url}\n")
@@ -53,6 +51,29 @@ jobs:
       
       - name: Archive URLs
         run: |
+          # Function to retry curl with backoff
+          function retry_curl() {
+            local url=$1
+            local max_attempts=3
+            local attempt=1
+            local wait_time=5
+            
+            while [ $attempt -le $max_attempts ]; do
+              response=$(curl -sS --max-time 30 "$url" 2>&1)
+              if [ $? -eq 0 ]; then
+                echo "$response"
+                return 0
+              fi
+              echo "$(date): Attempt $attempt failed for $url. Retrying in ${wait_time}s..."
+              sleep $wait_time
+              wait_time=$((wait_time * 2))
+              attempt=$((attempt + 1))
+            done
+            
+            echo "error"
+            return 1
+          }
+          
           # Get original hash
           original_hash=$(git hash-object pasted_urls.txt || echo "")
           
@@ -75,31 +96,31 @@ jobs:
             fi
             
             for process_url in "${urls[@]}"; do
-              # Skip if URL is empty
               if [ -z "$process_url" ]; then
                 continue
               fi
               
-              # Skip if already archived
               if grep -Fxq "$process_url" already_archived.txt 2>/dev/null; then
                 echo "$(date): Already archived: $process_url"
                 continue
               fi
               
-              # Check archive status with error handling
-              archived=$(curl -sS --max-time 30 "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1" || echo "error")
+              # Check archive status with retry
+              archived=$(retry_curl "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
               if [ "$archived" = "error" ]; then
-                echo "$(date): Error checking archive status for: $process_url"
+                echo "$(date): Failed all attempts to check archive status for: $process_url"
+                echo "$process_url" >> failed_urls.txt
                 continue
               fi
               
               if [ "$archived" = "[]" ]; then
                 echo "$(date): Archiving: $process_url"
-                if curl -sS --max-time 30 "https://web.archive.org/save/$process_url" > /dev/null; then
+                if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
                   echo "$process_url" >> already_archived.txt
-                  sleep 2
+                  sleep 5  # Increased sleep time
                 else
-                  echo "$(date): Failed to archive: $process_url"
+                  echo "$(date): Failed to archive after retries: $process_url"
+                  echo "$process_url" >> failed_urls.txt
                 fi
               else
                 echo "$(date): Already in Internet Archive: $process_url"
@@ -112,10 +133,11 @@ jobs:
           current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
           if [ "$original_hash" = "$current_hash" ]; then
             sort -u already_archived.txt -o already_archived.txt 2>/dev/null || true
+            sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
             if [ -s processed_urls.txt ]; then
               grep -vxFf processed_urls.txt all_urls.txt 2>/dev/null | sort -u > pasted_urls.txt || true
             fi
-            git add pasted_urls.txt already_archived.txt
+            git add pasted_urls.txt already_archived.txt failed_urls.txt
             git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
           fi
           
