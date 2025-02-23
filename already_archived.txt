@@ -1,6 +1,7 @@
 https://ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js
 https://ajax.googleapis.com/ajax/libs/jquery/3.3.1/jquery.min.js
 https://ajax.googleapis.com/ajax/libs/jqueryui/1.10.4/jquery-ui.min.js
+https://apps.studentaffairs.cmu.edu/dining/conceptinfo
 https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f44d.svg
 https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f525.svg
 https://cdn.jsdelivr.net/gh/twitter/twemoji@14.0.2/assets/svg/1f602.svg
