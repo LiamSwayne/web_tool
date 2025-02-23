@@ -1,4 +1,5 @@
-name: Archive URLs (Feb 22)
+Here's the modified script that includes recursive scraping of mecabricks.com when no source URLs are found:
+yamlCopyname: Archive URLs (Feb 22)
 on:
   workflow_dispatch:
   schedule:
@@ -29,24 +30,91 @@ jobs:
       - name: Install dependencies
         run: pip install beautifulsoup4 requests urllib3
 
-      - name: Extract URLs
+      - name: Extract and Scrape URLs
         run: |
           python3 - <<EOF
           import re
           import sys
+          import requests
+          from bs4 import BeautifulSoup
+          from collections import deque
+          from urllib.parse import urljoin, urlparse
+          
+          def is_valid_url(url):
+              try:
+                  result = urlparse(url)
+                  return all([result.scheme, result.netloc])
+              except:
+                  return False
           
           def extract_urls(filename):
-              with open(filename, 'r', encoding='utf-8') as f:
-                  content = f.read()
-              
-              url_pattern = r'https?://[^\s<>"\']+'
-              urls = re.findall(url_pattern, content)
-              
-              with open('all_urls.txt', 'w', encoding='utf-8') as f:
-                  for url in sorted(set(urls)):
-                      f.write(f"{url}\n")
+              try:
+                  with open(filename, 'r', encoding='utf-8') as f:
+                      content = f.read()
+                  
+                  url_pattern = r'https?://[^\s<>"\']+'
+                  return sorted(set(re.findall(url_pattern, content)))
+              except:
+                  return []
           
-          extract_urls('pasted_urls.txt')
+          def scrape_mecabricks(target_count=500):
+              base_url = 'https://mecabricks.com'
+              visited = set()
+              queue = deque([base_url])
+              found_urls = set()
+              headers = {'User-Agent': 'Mozilla/5.0 (compatible; ArchiveBot/1.0)'}
+              
+              while queue and len(found_urls) < target_count:
+                  current_url = queue.popleft()
+                  if current_url in visited:
+                      continue
+                      
+                  visited.add(current_url)
+                  print(f"Scraping: {current_url}")
+                  
+                  try:
+                      response = requests.get(current_url, headers=headers, timeout=30)
+                      if response.status_code != 200:
+                          continue
+                      
+                      soup = BeautifulSoup(response.text, 'html.parser')
+                      
+                      # Extract all links
+                      for link in soup.find_all('a', href=True):
+                          href = link['href']
+                          full_url = urljoin(current_url, href)
+                          
+                          # Only process mecabricks.com URLs
+                          if not is_valid_url(full_url) or 'mecabricks.com' not in full_url:
+                              continue
+                          
+                          found_urls.add(full_url)
+                          if full_url not in visited:
+                              queue.append(full_url)
+                      
+                      # Sleep to be nice to the server
+                      time.sleep(2)
+                      
+                  except Exception as e:
+                      print(f"Error scraping {current_url}: {str(e)}")
+                  
+                  # Update progress
+                  print(f"Found {len(found_urls)} URLs so far")
+              
+              return list(found_urls)
+          
+          # First try to get URLs from file
+          urls = extract_urls('pasted_urls.txt')
+          
+          # If no URLs found, scrape mecabricks.com
+          if not urls:
+              print("No URLs found in file, scraping mecabricks.com...")
+              urls = scrape_mecabricks(500)
+          
+          # Write URLs to file
+          with open('all_urls.txt', 'w', encoding='utf-8') as f:
+              for url in urls:
+                  f.write(f"{url}\n")
           EOF
       
       - name: Archive URLs
