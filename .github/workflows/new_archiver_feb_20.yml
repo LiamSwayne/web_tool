@@ -1,4 +1,5 @@
-name: Archive URLs (Feb 22)on:
+name: Archive URLs (Feb 22)
+on:
   workflow_dispatch:
   schedule:
     - cron: '0 * * * *'
