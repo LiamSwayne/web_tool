@@ -1403,3 +1403,4 @@ https://www.mecabricks.com/image/oK2wYOLzv9k.png
 https://www.mecabricks.com/libraries/jszip3/jszip.min.js
 https://www.mecabricks.com/libraries/postprocessing/build/postprocessing.min.js
 https://www.mecabricks.com/libraries/signals/signals.min.js
+https://www.worldofreel.com/blog/2025/2/16/captain-america-brave-new-world-earns-92m-negative-reviews-brushed-off-by-audiences
