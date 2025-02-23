@@ -1160,6 +1160,7 @@ https://www.mecabricks.com/en/models/mkjAAKQMjZG
 https://www.mecabricks.com/en/models/mkjAAwl8jZG#DmQ55D
 https://www.mecabricks.com/en/models/mkjAAwl8jZG#jGw8Wj
 https://www.mecabricks.com/en/models/mkjALyzM2ZG
+https://www.mecabricks.com/en/models/o8v0D38lvr3
 https://www.mecabricks.com/en/models/o8v0bpxO2r3
 https://www.mecabricks.com/en/models/o8v0dod1vr3
 https://www.mecabricks.com/en/models/o8v0g4J1jr3
@@ -1340,6 +1341,7 @@ https://www.mecabricks.com/en/user/sb_lego
 https://www.mecabricks.com/en/user/scrubs
 https://www.mecabricks.com/en/user/shipmaster
 https://www.mecabricks.com/en/user/sickbricks_studio
+https://www.mecabricks.com/en/user/slight_band37
 https://www.mecabricks.com/en/user/spodermen
 https://www.mecabricks.com/en/user/spyderdroid
 https://www.mecabricks.com/en/user/squigglegm
