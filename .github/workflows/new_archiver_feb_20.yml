@@ -57,11 +57,11 @@ jobs:
               except:
                   return []
           
-          def scrape_mecabricks(target_count=500):
+          def scrape_mecabricks(target_new_urls=100):
               base_url = 'https://mecabricks.com'
               visited = set()
               queue = deque([base_url])
-              found_urls = set()
+              new_urls_to_archive = set()
               headers = {
                   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -69,7 +69,15 @@ jobs:
                   'Connection': 'keep-alive',
               }
               
-              while queue and len(found_urls) < target_count:
+              # Load already archived URLs
+              already_archived = set()
+              try:
+                  with open('already_archived.txt', 'r', encoding='utf-8') as f:
+                      already_archived = set(line.strip() for line in f)
+              except FileNotFoundError:
+                  pass
+          
+              while queue and len(new_urls_to_archive) < target_new_urls:
                   current_url = queue.popleft()
                   if current_url in visited:
                       continue
@@ -84,7 +92,7 @@ jobs:
                           timeout=30,
                           allow_redirects=True
                       )
-                      response.raise_for_status()  # Raise an error for bad status codes
+                      response.raise_for_status()
                       
                       soup = BeautifulSoup(response.text, 'html.parser')
                       
@@ -94,11 +102,30 @@ jobs:
                           href = link.get('href')
                           if href:
                               full_url = urljoin(base_url, href)
-                              if is_valid_url(full_url):
-                                  found_urls.add(full_url)
-                                  if full_url not in visited:
-                                      queue.append(full_url)
+                              if not is_valid_url(full_url):
+                                  continue
+                                  
+                              if full_url in already_archived:
+                                  continue
+                                  
+                              # Check if URL is already in Internet Archive
+                              archive_check = requests.get(
+                                  f"https://web.archive.org/cdx/search/cdx?url={full_url}&output=json&limit=1",
+                                  timeout=30
+                              )
+                              
+                              if archive_check.text == "[]":  # Not in Internet Archive
+                                  new_urls_to_archive.add(full_url)
+                                  print(f"Found new URL to archive: {full_url}")
+                                  if len(new_urls_to_archive) >= target_new_urls:
+                                      break
+                              
+                              if full_url not in visited:
+                                  queue.append(full_url)
                       
+                      if len(new_urls_to_archive) >= target_new_urls:
+                          break
+                          
                       # Then get other mecabricks URLs
                       for link in soup.find_all('a', href=True):
                           href = link['href']
@@ -106,39 +133,40 @@ jobs:
                           
                           if not is_valid_url(full_url) or 'mecabricks.com' not in full_url:
                               continue
-                          
-                          found_urls.add(full_url)
+                              
+                          if full_url in already_archived:
+                              continue
+                              
                           if full_url not in visited:
                               queue.append(full_url)
                       
-                      print(f"Found {len(found_urls)} URLs so far")
+                      print(f"Found {len(new_urls_to_archive)} new URLs to archive so far")
                       
-                      # Sleep between requests
                       time.sleep(3)
                       
                   except requests.exceptions.RequestException as e:
                       print(f"Network error scraping {current_url}: {str(e)}")
-                      time.sleep(5)  # Longer sleep on error
+                      time.sleep(5)
                   except Exception as e:
                       print(f"Error scraping {current_url}: {str(e)}")
                       time.sleep(2)
               
-              return list(found_urls)
+              return list(new_urls_to_archive)
           
           # First try to get URLs from file
           urls = extract_urls('pasted_urls.txt')
           
-          # If no URLs found, scrape mecabricks.com
+          # If no URLs found, scrape mecabricks.com for new URLs
           if not urls:
-              print("No URLs found in file, scraping mecabricks.com...")
-              urls = scrape_mecabricks(500)
+              print("No URLs found in file, scraping mecabricks.com for new URLs to archive...")
+              urls = scrape_mecabricks(100)
           
           # Write URLs to file
           with open('all_urls.txt', 'w', encoding='utf-8') as f:
               for url in urls:
                   f.write(f"{url}\n")
           
-          print(f"Total URLs found: {len(urls)}")
+          print(f"Total URLs found to archive: {len(urls)}")
           EOF
       
       - name: Archive URLs
