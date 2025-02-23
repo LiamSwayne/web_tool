@@ -200,12 +200,14 @@ https://mecabricks.com/en/forum/category/8
 https://mecabricks.com/en/forum/category/9
 https://mecabricks.com/en/inventory/0DvYDwJZj9e.csv
 https://mecabricks.com/en/inventory/0DvYxLZ8j9e.csv
+https://mecabricks.com/en/inventory/7X2RXN39vZY.csv
 https://mecabricks.com/en/inventory/GVjKAYP3anz.csv
 https://mecabricks.com/en/inventory/Gejezy6mvKX.csv
 https://mecabricks.com/en/inventory/LyjW5rJBaJr.csv
 https://mecabricks.com/en/inventory/VyvnZ5Qovl3.csv
 https://mecabricks.com/en/inventory/bricklink/0DvYDwJZj9e.zip
 https://mecabricks.com/en/inventory/bricklink/0DvYxLZ8j9e.zip
+https://mecabricks.com/en/inventory/bricklink/7X2RXN39vZY.zip
 https://mecabricks.com/en/inventory/bricklink/GVjKAYP3anz.zip
 https://mecabricks.com/en/inventory/bricklink/Gejezy6mvKX.zip
 https://mecabricks.com/en/inventory/bricklink/LyjW5rJBaJr.zip
@@ -234,6 +236,7 @@ https://mecabricks.com/en/library/selection?order=likes
 https://mecabricks.com/en/library/selection?order=parts
 https://mecabricks.com/en/library/selection?order=views
 https://mecabricks.com/en/library/selection?page=2
+https://mecabricks.com/en/library?tags=21343-1
 https://mecabricks.com/en/library?tags=Classic+Space
 https://mecabricks.com/en/library?tags=MOC
 https://mecabricks.com/en/library?tags=Neo+Classic+Space
@@ -242,6 +245,7 @@ https://mecabricks.com/en/library?tags=TF2
 https://mecabricks.com/en/library?tags=VEHICLE
 https://mecabricks.com/en/library?tags=astronaut
 https://mecabricks.com/en/library?tags=babylon
+https://mecabricks.com/en/library?tags=cave
 https://mecabricks.com/en/library?tags=custom
 https://mecabricks.com/en/library?tags=force+of+nature
 https://mecabricks.com/en/library?tags=futuristic
@@ -250,6 +254,10 @@ https://mecabricks.com/en/library?tags=gate
 https://mecabricks.com/en/library?tags=hangar
 https://mecabricks.com/en/library?tags=history
 https://mecabricks.com/en/library?tags=land+rover
+https://mecabricks.com/en/library?tags=lego
+https://mecabricks.com/en/library?tags=lego+viking
+https://mecabricks.com/en/library?tags=medieval
+https://mecabricks.com/en/library?tags=missing+printing
 https://mecabricks.com/en/library?tags=rocket
 https://mecabricks.com/en/library?tags=rover
 https://mecabricks.com/en/library?tags=scout
@@ -262,6 +270,9 @@ https://mecabricks.com/en/library?tags=team+fortress+2
 https://mecabricks.com/en/library?tags=tf2
 https://mecabricks.com/en/library?tags=vehicle
 https://mecabricks.com/en/library?tags=video+games
+https://mecabricks.com/en/library?tags=viking
+https://mecabricks.com/en/library?tags=viking+village
+https://mecabricks.com/en/library?tags=village
 https://mecabricks.com/en/library?tags=weapon
 https://mecabricks.com/en/login
 https://mecabricks.com/en/models/07vN75MWaAm
@@ -601,6 +612,8 @@ https://mecabricks.com/en/user/nanners/models?p=2
 https://mecabricks.com/en/user/nanners/renderings
 https://mecabricks.com/en/user/nitroxburner
 https://mecabricks.com/en/user/noblebunny
+https://mecabricks.com/en/user/oliver312
+https://mecabricks.com/en/user/optimistic_missile
 https://mecabricks.com/en/user/pasta.
 https://mecabricks.com/en/user/paupadros
 https://mecabricks.com/en/user/paupadros/comments
@@ -660,6 +673,7 @@ https://mecabricks.com/en/user/worrissey
 https://mecabricks.com/en/workshop
 https://mecabricks.com/en/workshop/0DvYDwJZj9e
 https://mecabricks.com/en/workshop/0DvYxLZ8j9e
+https://mecabricks.com/en/workshop/7X2RXN39vZY
 https://mecabricks.com/en/workshop/GVjKAYP3anz
 https://mecabricks.com/en/workshop/Gejezy6mvKX
 https://mecabricks.com/en/workshop/LyjW5rJBaJr
@@ -866,6 +880,7 @@ https://www.mecabricks.com/en/models/Dp2lL0Dq2MV
 https://www.mecabricks.com/en/models/Dp2lNregvMV
 https://www.mecabricks.com/en/models/Dp2ln4dkvMV
 https://www.mecabricks.com/en/models/GVjKAYP3anz
+https://www.mecabricks.com/en/models/GVjKBED32nz
 https://www.mecabricks.com/en/models/GVjKWObYjnz
 https://www.mecabricks.com/en/models/GVjKXZe6vnz
 https://www.mecabricks.com/en/models/GejeJdEJvKX
