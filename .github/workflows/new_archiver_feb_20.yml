@@ -76,99 +76,62 @@ jobs:
                   'Connection': 'keep-alive',
               }
 
-              def is_archived(url):
-                  max_attempts = 3
-                  for attempt in range(max_attempts):
-                      try:
-                          response = requests.get(
-                              f'https://web.archive.org/cdx/search/cdx?url={url}&output=json&limit=1',
-                              headers=headers,
-                              timeout=30
-                          )
-                          if response.status_code == 200:
-                              data = response.json()
-                              return len(data) > 0  # Archived if data is not empty
-                          else:
-                              print(f"IA check failed for {url}: HTTP {response.status_code}")
-                      except Exception as e:
-                          print(f"Error checking IA for {url}: {str(e)}")
-                      if attempt < max_attempts - 1:
-                          wait = 2 ** (attempt + 1)
-                          print(f"Retrying IA check for {url} in {wait} seconds...")
-                          time.sleep(wait)
-                  # If all retries fail, assume archived to avoid duplicates
-                  return True
+              def safe_ia_check(url):
+                  try:
+                      response = requests.get(
+                          f'https://web.archive.org/cdx/search/cdx?url={url}&output=json&limit=1',
+                          headers=headers,
+                          timeout=10
+                      )
+                      return len(response.json()) == 0  # Return True if needs archiving
+                  except:
+                      return True  # Assume needs archiving if check fails
 
               while queue and len(found_urls) < target_count:
                   current_url = queue.popleft()
                   if current_url in visited:
                       continue
-
                   visited.add(current_url)
+                  
                   print(f"Scraping: {current_url}")
-
+                  
                   try:
-                      response = requests.get(
-                          current_url,
-                          headers=headers,
-                          timeout=30,
-                          allow_redirects=True
-                      )
+                      response = requests.get(current_url, headers=headers, timeout=15)
                       response.raise_for_status()
-
+                      
                       soup = BeautifulSoup(response.text, 'html.parser')
-
-                      # Process model links first
-                      model_links = soup.find_all('a', href=lambda x: x and '/models/' in x)
-                      for link in model_links:
-                          href = link.get('href')
-                          if href:
-                              full_url = urljoin(base_url, href)
-                              if not is_valid_url(full_url):
-                                  continue
-                              if full_url in already_archived:
-                                  continue
-                              if full_url in found_urls or full_url in visited:
-                                  continue
-                              # Check IA
-                              if not is_archived(full_url):
-                                  found_urls.add(full_url)
-                                  print(f"Found new URL to archive: {full_url} ({len(found_urls)}/{target_count})")
-                                  queue.append(full_url)
-                                  if len(found_urls) >= target_count:
-                                      break
-                      if len(found_urls) >= target_count:
-                          break
-
-                      # Process other links
+                      
+                      # Find all links on page
                       for link in soup.find_all('a', href=True):
                           href = link['href']
                           full_url = urljoin(current_url, href)
-                          if not is_valid_url(full_url) or 'mecabricks.com' not in full_url:
+                          
+                          if not is_valid_url(full_url):
                               continue
-                          if full_url in already_archived or full_url in visited or full_url in found_urls:
+                          if 'mecabricks.com' not in full_url:
                               continue
-                          # Check IA
-                          if not is_archived(full_url):
+                          if full_url in visited or full_url in found_urls:
+                              continue
+                          if full_url in already_archived:
+                              continue
+                              
+                          # Add to queue first to explore
+                          queue.append(full_url)
+                          
+                          # Check if it's a model URL
+                          if '/models/' in full_url and safe_ia_check(full_url):
                               found_urls.add(full_url)
-                              print(f"Found new URL to archive: {full_url} ({len(found_urls)}/{target_count})")
-                              queue.append(full_url)
+                              print(f"Found new URL ({len(found_urls)}/{target_count}): {full_url}")
                               if len(found_urls) >= target_count:
                                   break
-                      if len(found_urls) >= target_count:
-                          break
-
-                      # Sleep between page scrapes
-                      time.sleep(3)
-
-                  except requests.exceptions.RequestException as e:
-                      print(f"Network error scraping {current_url}: {str(e)}")
-                      time.sleep(10)
+                      
+                      time.sleep(2)
+                      
                   except Exception as e:
                       print(f"Error scraping {current_url}: {str(e)}")
                       time.sleep(5)
 
-              return list(found_urls)
+              return list(found_urls)[:target_count]
           
           # First try to get URLs from file
           urls = extract_urls('pasted_urls.txt')
