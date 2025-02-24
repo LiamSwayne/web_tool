@@ -1,5 +1,13 @@
+https://mecabricks.com/en/forum/category/11/2
+https://mecabricks.com/en/forum/topic/71782
+https://mecabricks.com/en/models/eDa5B0qR2zg
+https://mecabricks.com/en/models/mLvzwDJbaAw
+https://mecabricks.com/en/models/pyj6JLeXjRq
+https://mecabricks.com/en/models/qxv4A0pladJ
+https://mecabricks.com/en/user/drazimov/comments
 https://www.mecabricks.com/en/inventory/GVjKANbnanz.csv
 https://www.mecabricks.com/en/inventory/GVjKGJdejnz.csv
+https://www.mecabricks.com/en/inventory/MgaXROAejz0.csv
 https://www.mecabricks.com/en/inventory/bricklink/7l2BAENpa0N.zip
 https://www.mecabricks.com/en/inventory/bricklink/GVjKGJdejnz.zip
 https://www.mecabricks.com/en/inventory/bricklink/xov7ezwk20D.zip
@@ -8,6 +16,7 @@ https://www.mecabricks.com/en/library?tags=Greece
 https://www.mecabricks.com/en/library?tags=Last+Of+Us+2
 https://www.mecabricks.com/en/library?tags=Marvel+Rivals
 https://www.mecabricks.com/en/library?tags=Mount
+https://www.mecabricks.com/en/library?tags=Russian+Soldier
 https://www.mecabricks.com/en/library?tags=The+Last+Of+Us
 https://www.mecabricks.com/en/library?tags=figurine
 https://www.mecabricks.com/en/library?tags=league+of+leagend
@@ -30,6 +39,7 @@ https://www.mecabricks.com/en/models/VzvMA4q5vJp
 https://www.mecabricks.com/en/models/VzvMAKGVvJp
 https://www.mecabricks.com/en/models/b82xwgVMa1z
 https://www.mecabricks.com/en/models/bJ2bk7pKjyB
+https://www.mecabricks.com/en/models/bJ2bkOBPjyB
 https://www.mecabricks.com/en/models/o8v0DOZ6vr3
 https://www.mecabricks.com/en/models/qxv46wD32dJ
 https://www.mecabricks.com/en/models/qxv4AYE3adJ
