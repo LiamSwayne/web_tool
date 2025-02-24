@@ -911,6 +911,7 @@ https://pagead2.googlesyndication.com/pagead/js/adsbygoogle.js
 https://platform.twitter.com/js/timeline.e108540dddc96e4b707f5cf259a582d7.js
 https://platform.twitter.com/widgets.js
 https://platform.twitter.com/widgets/widget_iframe.2f70fb173b9000da126c79afe2098f02.html?origin=https%3A%2F%2Fwww.mecabricks.com
+https://smlhelp.github.io/book/docs/concepts/hof/common/#fold
 https://syndication.twitter.com/settings?session_id=232790e412adf8d458dd11e3192af929b8bba633
 https://www.cs.cmu.edu/~./15281/#schedule
 https://www.cs.cmu.edu/~./15281/lectures/15281_S25_Lec10_AI_Ethics.pptx
