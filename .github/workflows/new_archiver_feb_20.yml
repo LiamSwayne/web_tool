@@ -76,62 +76,99 @@ jobs:
                   'Connection': 'keep-alive',
               }
 
-              def safe_ia_check(url):
-                  try:
-                      response = requests.get(
-                          f'https://web.archive.org/cdx/search/cdx?url={url}&output=json&limit=1',
-                          headers=headers,
-                          timeout=10
-                      )
-                      return len(response.json()) == 0  # Return True if needs archiving
-                  except:
-                      return True  # Assume needs archiving if check fails
+              def is_archived(url):
+                  max_attempts = 3
+                  for attempt in range(max_attempts):
+                      try:
+                          response = requests.get(
+                              f'https://web.archive.org/cdx/search/cdx?url={url}&output=json&limit=1',
+                              headers=headers,
+                              timeout=30
+                          )
+                          if response.status_code == 200:
+                              data = response.json()
+                              return len(data) > 0  # Archived if data is not empty
+                          else:
+                              print(f"IA check failed for {url}: HTTP {response.status_code}")
+                      except Exception as e:
+                          print(f"Error checking IA for {url}: {str(e)}")
+                      if attempt < max_attempts - 1:
+                          wait = 2 ** (attempt + 1)
+                          print(f"Retrying IA check for {url} in {wait} seconds...")
+                          time.sleep(wait)
+                  # If all retries fail, assume archived to avoid duplicates
+                  return True
 
               while queue and len(found_urls) < target_count:
                   current_url = queue.popleft()
                   if current_url in visited:
                       continue
+
                   visited.add(current_url)
-                  
                   print(f"Scraping: {current_url}")
-                  
+
                   try:
-                      response = requests.get(current_url, headers=headers, timeout=15)
+                      response = requests.get(
+                          current_url,
+                          headers=headers,
+                          timeout=30,
+                          allow_redirects=True
+                      )
                       response.raise_for_status()
-                      
+
                       soup = BeautifulSoup(response.text, 'html.parser')
-                      
-                      # Find all links on page
+
+                      # Process model links first
+                      model_links = soup.find_all('a', href=lambda x: x and '/models/' in x)
+                      for link in model_links:
+                          href = link.get('href')
+                          if href:
+                              full_url = urljoin(base_url, href)
+                              if not is_valid_url(full_url):
+                                  continue
+                              if full_url in already_archived:
+                                  continue
+                              if full_url in found_urls or full_url in visited:
+                                  continue
+                              # Check IA
+                              if not is_archived(full_url):
+                                  found_urls.add(full_url)
+                                  print(f"Found new URL to archive: {full_url} ({len(found_urls)}/{target_count})")
+                                  queue.append(full_url)
+                                  if len(found_urls) >= target_count:
+                                      break
+                      if len(found_urls) >= target_count:
+                          break
+
+                      # Process other links
                       for link in soup.find_all('a', href=True):
                           href = link['href']
                           full_url = urljoin(current_url, href)
-                          
-                          if not is_valid_url(full_url):
+                          if not is_valid_url(full_url) or 'mecabricks.com' not in full_url:
                               continue
-                          if 'mecabricks.com' not in full_url:
+                          if full_url in already_archived or full_url in visited or full_url in found_urls:
                               continue
-                          if full_url in visited or full_url in found_urls:
-                              continue
-                          if full_url in already_archived:
-                              continue
-                              
-                          # Add to queue first to explore
-                          queue.append(full_url)
-                          
-                          # Check if it's a model URL
-                          if '/models/' in full_url and safe_ia_check(full_url):
+                          # Check IA
+                          if not is_archived(full_url):
                               found_urls.add(full_url)
-                              print(f"Found new URL ({len(found_urls)}/{target_count}): {full_url}")
+                              print(f"Found new URL to archive: {full_url} ({len(found_urls)}/{target_count})")
+                              queue.append(full_url)
                               if len(found_urls) >= target_count:
                                   break
-                      
-                      time.sleep(2)
-                      
+                      if len(found_urls) >= target_count:
+                          break
+
+                      # Sleep between page scrapes
+                      time.sleep(3)
+
+                  except requests.exceptions.RequestException as e:
+                      print(f"Network error scraping {current_url}: {str(e)}")
+                      time.sleep(10)
                   except Exception as e:
                       print(f"Error scraping {current_url}: {str(e)}")
                       time.sleep(5)
 
-              return list(found_urls)[:target_count]
+              return list(found_urls)
           
           # First try to get URLs from file
           urls = extract_urls('pasted_urls.txt')
@@ -148,8 +185,105 @@ jobs:
           
           print(f"Total URLs found: {len(urls)}")
           EOF
-
+      
       - name: Archive URLs
         run: |
-          # [Keep the existing Archive URLs step unchanged]
-          # ... (same as previous version)
+          # Function to retry curl with backoff
+          function retry_curl() {
+            local url=$1
+            local max_attempts=3
+            local attempt=1
+            local wait_time=5
+            
+            while [ $attempt -le $max_attempts ]; do
+              response=$(curl -sS --max-time 30 "$url" 2>&1)
+              if [ $? -eq 0 ]; then
+                echo "$response"
+                return 0
+              fi
+              echo "$(date): Attempt $attempt failed for $url. Retrying in ${wait_time}s..."
+              sleep $wait_time
+              wait_time=$((wait_time * 2))
+              attempt=$((attempt + 1))
+            done
+            
+            echo "error"
+            return 1
+          }
+          
+          # Get original hash
+          original_hash=$(git hash-object pasted_urls.txt || echo "")
+          
+          # Initialize files
+          touch already_archived.txt processed_urls.txt
+          
+          # Pick and process 1000 random URLs
+          shuf -n 1000 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
+            if [ -z "$url" ]; then
+              continue
+            fi
+            
+            echo "$url" >> processed_urls.txt
+            
+            if [[ "$url" == *"reddit.com"* && "$url" != *"old.reddit.com"* ]]; then
+              old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
+              urls=("$url" "$old_url")
+            else
+              urls=("$url")
+            fi
+            
+            for process_url in "${urls[@]}"; do
+              if [ -z "$process_url" ]; then
+                continue
+              fi
+              
+              if grep -Fxq "$process_url" already_archived.txt 2>/dev/null; then
+                echo "$(date): Already archived: $process_url"
+                continue
+              fi
+              
+              # Check archive status with retry
+              archived=$(retry_curl "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
+              if [ "$archived" = "error" ]; then
+                echo "$(date): Failed all attempts to check archive status for: $process_url"
+                echo "$process_url" >> failed_urls.txt
+                continue
+              fi
+              
+              if [ "$archived" = "[]" ]; then
+                echo "$(date): Archiving: $process_url"
+                if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
+                  echo "$process_url" >> already_archived.txt
+                  sleep 5
+                else
+                  echo "$(date): Failed to archive after retries: $process_url"
+                  echo "$process_url" >> failed_urls.txt
+                fi
+              else
+                echo "$(date): Already in Internet Archive: $process_url"
+                echo "$process_url" >> already_archived.txt
+              fi
+            done
+          done || true
+          
+          # Update files if no conflicts
+          current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
+          if [ "$original_hash" = "$current_hash" ]; then
+            sort -u already_archived.txt -o already_archived.txt 2>/dev/null || true
+            
+            # Only sort and add failed_urls.txt if it exists
+            if [ -f failed_urls.txt ]; then
+              sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
+              git add failed_urls.txt
+            fi
+            
+            if [ -s processed_urls.txt ]; then
+              grep -vxFf processed_urls.txt all_urls.txt 2>/dev/null | sort -u > pasted_urls.txt || true
+            fi
+            
+            git add pasted_urls.txt already_archived.txt
+            git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
+          fi
+          
+          # Cleanup
+          rm -f processed_urls.txt all_urls.txt
