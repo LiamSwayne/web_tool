@@ -1006,6 +1006,7 @@ https://www.mecabricks.com/en/inventory/1Xjdy7K9v8b.csv
 https://www.mecabricks.com/en/inventory/1w2rlxzVv8W.csv
 https://www.mecabricks.com/en/inventory/7X2RYXAOaZY.csv
 https://www.mecabricks.com/en/inventory/BLvGAVew2Gy.csv
+https://www.mecabricks.com/en/inventory/GVjKANbnanz.csv
 https://www.mecabricks.com/en/inventory/GVjKAYP3anz.csv
 https://www.mecabricks.com/en/inventory/LyjW5EonaJr.csv
 https://www.mecabricks.com/en/inventory/LyjW5rJBaJr.csv
@@ -1037,6 +1038,7 @@ https://www.mecabricks.com/en/inventory/bricklink/o8v0g4J1jr3.zip
 https://www.mecabricks.com/en/inventory/bricklink/pyj6AO7X2Rq.zip
 https://www.mecabricks.com/en/inventory/bricklink/qxov798D20D.zip
 https://www.mecabricks.com/en/inventory/bricklink/qxv4An53adJ.zip
+https://www.mecabricks.com/en/inventory/bricklink/xov7ezwk20D.zip
 https://www.mecabricks.com/en/inventory/eDa5AZwAazg.csv
 https://www.mecabricks.com/en/inventory/eDa5D1E3vzg.csv
 https://www.mecabricks.com/en/inventory/eVaPnw1xjzB.csv
@@ -1072,6 +1074,7 @@ https://www.mecabricks.com/en/library?tags=LEGOLANDIA
 https://www.mecabricks.com/en/library?tags=LOTR
 https://www.mecabricks.com/en/library?tags=Ligue+Of+Legends
 https://www.mecabricks.com/en/library?tags=MOC
+https://www.mecabricks.com/en/library?tags=Marvel+Rivals
 https://www.mecabricks.com/en/library?tags=Master+Clipper
 https://www.mecabricks.com/en/library?tags=Mount
 https://www.mecabricks.com/en/library?tags=Mountain
@@ -1099,6 +1102,7 @@ https://www.mecabricks.com/en/library?tags=beskar+armor
 https://www.mecabricks.com/en/library?tags=custom
 https://www.mecabricks.com/en/library?tags=darksaber
 https://www.mecabricks.com/en/library?tags=fig
+https://www.mecabricks.com/en/library?tags=figurine
 https://www.mecabricks.com/en/library?tags=force+of+nature
 https://www.mecabricks.com/en/library?tags=futuristic
 https://www.mecabricks.com/en/library?tags=gaming
@@ -1106,11 +1110,14 @@ https://www.mecabricks.com/en/library?tags=gate
 https://www.mecabricks.com/en/library?tags=history
 https://www.mecabricks.com/en/library?tags=jinx
 https://www.mecabricks.com/en/library?tags=land+rover
+https://www.mecabricks.com/en/library?tags=league+of+leagend
+https://www.mecabricks.com/en/library?tags=lol
 https://www.mecabricks.com/en/library?tags=mandalorian
 https://www.mecabricks.com/en/library?tags=mandalorian+armor
 https://www.mecabricks.com/en/library?tags=moff
 https://www.mecabricks.com/en/library?tags=moff+gideon
 https://www.mecabricks.com/en/library?tags=netflix
+https://www.mecabricks.com/en/library?tags=pouder
 https://www.mecabricks.com/en/library?tags=rover
 https://www.mecabricks.com/en/library?tags=scout
 https://www.mecabricks.com/en/library?tags=space
@@ -1199,6 +1206,7 @@ https://www.mecabricks.com/en/models/Dp2lELOPjMV
 https://www.mecabricks.com/en/models/Dp2lL0Dq2MV
 https://www.mecabricks.com/en/models/Dp2lNregvMV
 https://www.mecabricks.com/en/models/Dp2ln4dkvMV
+https://www.mecabricks.com/en/models/Dp2lxVAq2MV
 https://www.mecabricks.com/en/models/Dp2lxy1r2MV
 https://www.mecabricks.com/en/models/GVjKA0X6anz
 https://www.mecabricks.com/en/models/GVjKANbnanz
@@ -1359,6 +1367,7 @@ https://www.mecabricks.com/en/models/qxv4PxxlvdJ
 https://www.mecabricks.com/en/models/qxv4kxrAjdJ
 https://www.mecabricks.com/en/models/qxv4lrqAvdJ
 https://www.mecabricks.com/en/models/qxv4nmrG2dJ
+https://www.mecabricks.com/en/models/r121KREgvlB
 https://www.mecabricks.com/en/models/r121Ko81vlB
 https://www.mecabricks.com/en/models/r121Yp7n2lB
 https://www.mecabricks.com/en/models/xov7ABr620D
@@ -1406,7 +1415,10 @@ https://www.mecabricks.com/en/user/catalano
 https://www.mecabricks.com/en/user/celego
 https://www.mecabricks.com/en/user/chiefcheeseball
 https://www.mecabricks.com/en/user/city8
+https://www.mecabricks.com/en/user/city8/comments
+https://www.mecabricks.com/en/user/city8/likes
 https://www.mecabricks.com/en/user/city8/models
+https://www.mecabricks.com/en/user/city8/renderings
 https://www.mecabricks.com/en/user/coolkid109
 https://www.mecabricks.com/en/user/corneeme
 https://www.mecabricks.com/en/user/crazycashew11
@@ -1540,6 +1552,7 @@ https://www.mecabricks.com/en/user/satriani/models?p=2
 https://www.mecabricks.com/en/user/satriani/renderings
 https://www.mecabricks.com/en/user/sb_lego
 https://www.mecabricks.com/en/user/scrubs
+https://www.mecabricks.com/en/user/secondcoolbot
 https://www.mecabricks.com/en/user/shipmaster
 https://www.mecabricks.com/en/user/sickbricks_studio
 https://www.mecabricks.com/en/user/slight_band37
@@ -1582,6 +1595,7 @@ https://www.mecabricks.com/en/workshop/1Xjdy7K9v8b
 https://www.mecabricks.com/en/workshop/1w2rlxzVv8W
 https://www.mecabricks.com/en/workshop/7X2RYXAOaZY
 https://www.mecabricks.com/en/workshop/BLvGAVew2Gy
+https://www.mecabricks.com/en/workshop/GVjKANbnanz
 https://www.mecabricks.com/en/workshop/GVjKAYP3anz
 https://www.mecabricks.com/en/workshop/LyjW5EonaJr
 https://www.mecabricks.com/en/workshop/LyjW5rJBaJr
@@ -1598,6 +1612,7 @@ https://www.mecabricks.com/en/workshop/o8v0g4J1jr3
 https://www.mecabricks.com/en/workshop/pyj6AO7X2Rq
 https://www.mecabricks.com/en/workshop/qxov798D20D
 https://www.mecabricks.com/en/workshop/qxv4An53adJ
+https://www.mecabricks.com/en/workshop/xov7ezwk20D
 https://www.mecabricks.com/image/07vNd04J2Am.png
 https://www.mecabricks.com/image/79a8AM7X28w.png
 https://www.mecabricks.com/image/7X2RYMgyaZY.png
