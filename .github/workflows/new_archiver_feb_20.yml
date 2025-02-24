@@ -57,7 +57,7 @@ jobs:
               except:
                   return []
           
-          def scrape_mecabricks(target_count=5000): # temporary fix, should be getting 100 urls that have not been archived alrady or are in already_archived.txt
+          def scrape_mecabricks(target_count=100):
               base_url = 'https://mecabricks.com'
               visited = set()
               queue = deque([base_url])
@@ -131,7 +131,7 @@ jobs:
           # If no URLs found, scrape mecabricks.com
           if not urls:
               print("No URLs found in file, scraping mecabricks.com...")
-              urls = scrape_mecabricks(500)
+              urls = scrape_mecabricks(5000) # temporary fix, should be getting 100 urls that have not been archived alrady or are in already_archived.txt, but because that's not happening we compensate by looking for 5k urls
           
           # Write URLs to file
           with open('all_urls.txt', 'w', encoding='utf-8') as f:
