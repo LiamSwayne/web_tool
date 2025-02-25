@@ -7,8 +7,10 @@ https://mecabricks.com/en/forum/topic/71782
 https://mecabricks.com/en/library?tags=Neo
 https://mecabricks.com/en/library?tags=goldfish
 https://mecabricks.com/en/library?tags=imperial+light+cruiser
+https://mecabricks.com/en/library?tags=peter+parker
 https://mecabricks.com/en/library?tags=star+ship
 https://mecabricks.com/en/models/07vN9bb7jAm
+https://mecabricks.com/en/models/0Qa33D40aMo
 https://mecabricks.com/en/models/1XjdXYMPj8b
 https://mecabricks.com/en/models/1Xjdy7Wov8b
 https://mecabricks.com/en/models/1XjdyGbzv8b
@@ -16,6 +18,7 @@ https://mecabricks.com/en/models/1k2qDW8naE0
 https://mecabricks.com/en/models/1k2qoVRGvE0
 https://mecabricks.com/en/models/1w2rZeGk28W
 https://mecabricks.com/en/models/79a8ANVY28w
+https://mecabricks.com/en/models/79a8AbpY28w
 https://mecabricks.com/en/models/79a8QXEB28w
 https://mecabricks.com/en/models/7X2R7DxYjZY
 https://mecabricks.com/en/models/7X2RYGQGaZY
@@ -67,6 +70,7 @@ https://mecabricks.com/en/user/bigzay2397/renderings
 https://mecabricks.com/en/user/brickclicker/models
 https://mecabricks.com/en/user/crocbuilder/likes
 https://mecabricks.com/en/user/crocbuilder/renderings
+https://mecabricks.com/en/user/dergaegee
 https://mecabricks.com/en/user/dragon_rider06/likes
 https://mecabricks.com/en/user/drazimov/comments
 https://mecabricks.com/en/user/drbghost
@@ -108,6 +112,7 @@ https://www.mecabricks.com/en/library?tags=league+of+leagend
 https://www.mecabricks.com/en/library?tags=lol
 https://www.mecabricks.com/en/library?tags=mayo
 https://www.mecabricks.com/en/library?tags=pouder
+https://www.mecabricks.com/en/library?tags=witch+king+of+angmar
 https://www.mecabricks.com/en/models/0DvYkB4b29e
 https://www.mecabricks.com/en/models/0Qa3A400jMo
 https://www.mecabricks.com/en/models/1Xjdyl7ov8b
@@ -124,6 +129,7 @@ https://www.mecabricks.com/en/models/7l2BWblQj0N
 https://www.mecabricks.com/en/models/7l2Bbb0o20N
 https://www.mecabricks.com/en/models/8xaD91dP2B7
 https://www.mecabricks.com/en/models/8xaDNExJjB7
+https://www.mecabricks.com/en/models/9P2kAnzZvon
 https://www.mecabricks.com/en/models/9P2kBeJQaon
 https://www.mecabricks.com/en/models/9P2kdNpZjon
 https://www.mecabricks.com/en/models/AbjpJBJQa5y
