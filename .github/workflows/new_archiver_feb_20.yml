@@ -237,7 +237,34 @@ jobs:
             fi
             
             git add pasted_urls.txt already_archived.txt
-            git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
+            
+            # Add 10 git commit retries with pull before each attempt
+            MAX_RETRIES=10
+            RETRY_COUNT=0
+            COMMIT_SUCCESS=false
+            
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$COMMIT_SUCCESS" = "false" ]; do
+              echo "Commit attempt $(($RETRY_COUNT + 1))/$MAX_RETRIES"
+              
+              # Pull the latest changes before attempting to commit
+              git pull --rebase
+              
+              # Try to commit and push
+              if git commit -m "Update archived URLs and remaining URLs" && git push; then
+                echo "Commit and push successful on attempt $(($RETRY_COUNT + 1))"
+                COMMIT_SUCCESS=true
+              else
+                echo "Commit attempt $(($RETRY_COUNT + 1)) failed, retrying..."
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                sleep 2  # Add a small delay between retries
+              fi
+            done
+            
+            if [ "$COMMIT_SUCCESS" = "false" ]; then
+              echo "Failed to commit after $MAX_RETRIES attempts"
+            fi
+          else
+            echo "Skipping commit due to file changes detected"
           fi
           
           # Cleanup
