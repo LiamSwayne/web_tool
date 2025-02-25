@@ -1,6 +1,3 @@
-Here's a comprehensive list of all URLs for the jshuieh.github.io website, including all assets:
-
-```
 https://jshuieh.github.io/JuliaShuiehResume.pdf
 https://jshuieh.github.io/README.md
 https://jshuieh.github.io/about.html
@@ -222,4 +219,3 @@ https://jshuieh.github.io/syllabus/SyllabusMATH2B.pdf
 https://jshuieh.github.io/syllabus/SyllabusMATH4A.pdf
 https://jshuieh.github.io/syllabus/SyllabusPSYC1.pdf
 https://jshuieh.github.io/syllabus/comp_sociology.pdf
-```
