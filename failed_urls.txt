@@ -23,6 +23,7 @@ https://mecabricks.com/en/models/79a8QXEB28w
 https://mecabricks.com/en/models/7X2R7DxYjZY
 https://mecabricks.com/en/models/7X2RYGQGaZY
 https://mecabricks.com/en/models/7l2B55Dqa0N
+https://mecabricks.com/en/models/BLvG1QEo2Gy
 https://mecabricks.com/en/models/BLvGP3rwaGy
 https://mecabricks.com/en/models/Dp2lL6gQ2MV
 https://mecabricks.com/en/models/GVjKGdk9jnz
@@ -76,10 +77,12 @@ https://mecabricks.com/en/user/drazimov/comments
 https://mecabricks.com/en/user/drbghost
 https://mecabricks.com/en/user/fleetway101
 https://mecabricks.com/en/user/ganderss
+https://mecabricks.com/en/user/goopbuilds
 https://mecabricks.com/en/user/kingsoccertips
 https://mecabricks.com/en/user/marcelwithlego/comments
 https://mecabricks.com/en/user/marcelwithlego/renderings
 https://mecabricks.com/en/user/mistagoofyahh
+https://mecabricks.com/en/user/mobrikz/models
 https://mecabricks.com/en/user/sbthepikmin
 https://mecabricks.com/en/user/shobhan0110/likes
 https://mecabricks.com/en/user/superjackets
@@ -89,6 +92,7 @@ https://mecabricks.com/en/user/tomibriks/models
 https://mecabricks.com/en/user/totemofdave/models?p=2
 https://mecabricks.com/en/user/vegah/comments
 https://mecabricks.com/en/user/williamcapewell
+https://mecabricks.weetpix.com/en/models/PkaJx3zZjxM
 https://www.mecabricks.com/en/inventory/Abjp0J8pj5y.csv
 https://www.mecabricks.com/en/inventory/GVjKANbnanz.csv
 https://www.mecabricks.com/en/inventory/GVjKGJdejnz.csv
@@ -107,11 +111,13 @@ https://www.mecabricks.com/en/library?tags=Russian+Soldier
 https://www.mecabricks.com/en/library?tags=Sallah+Indiana+Jones
 https://www.mecabricks.com/en/library?tags=Speeeeeeeeeeeeeeeed
 https://www.mecabricks.com/en/library?tags=The+Last+Of+Us
+https://www.mecabricks.com/en/library?tags=doctor+doom
 https://www.mecabricks.com/en/library?tags=figurine
 https://www.mecabricks.com/en/library?tags=league+of+leagend
 https://www.mecabricks.com/en/library?tags=lol
 https://www.mecabricks.com/en/library?tags=mayo
 https://www.mecabricks.com/en/library?tags=pouder
+https://www.mecabricks.com/en/library?tags=sam+wilson
 https://www.mecabricks.com/en/library?tags=witch+king+of+angmar
 https://www.mecabricks.com/en/models/0DvYkB4b29e
 https://www.mecabricks.com/en/models/0Qa3A400jMo
@@ -135,6 +141,7 @@ https://www.mecabricks.com/en/models/9P2kdNpZjon
 https://www.mecabricks.com/en/models/AbjpJBJQa5y
 https://www.mecabricks.com/en/models/AbjprGAza5y
 https://www.mecabricks.com/en/models/AbjprPGYa5y
+https://www.mecabricks.com/en/models/BLvGA0VN2Gy
 https://www.mecabricks.com/en/models/BLvGA0nL2Gy
 https://www.mecabricks.com/en/models/BLvGABmk2Gy
 https://www.mecabricks.com/en/models/BLvGArY42Gy
@@ -180,6 +187,7 @@ https://www.mecabricks.com/en/user/city8/renderings
 https://www.mecabricks.com/en/user/coolkid109/renderings
 https://www.mecabricks.com/en/user/duck12/likes
 https://www.mecabricks.com/en/user/icebear/comments
+https://www.mecabricks.com/en/user/icebear/models?p=2
 https://www.mecabricks.com/en/user/jeremiah1104
 https://www.mecabricks.com/en/user/jetan123
 https://www.mecabricks.com/en/user/kandykanestudios/models
@@ -201,9 +209,12 @@ https://www.mecabricks.com/en/user/the-illegal-builder
 https://www.mecabricks.com/en/user/thebrickboss3
 https://www.mecabricks.com/en/user/wafflez2manly/likes
 https://www.mecabricks.com/en/workshop/0DvYxdgej9e
+https://www.mecabricks.com/en/workshop/0Qa33D40aMo
 https://www.mecabricks.com/en/workshop/7l2BAENpa0N
 https://www.mecabricks.com/en/workshop/GVjKANbnanz
 https://www.mecabricks.com/en/workshop/GejeY1lxjKX
 https://www.mecabricks.com/en/workshop/LyjW5EonaJr
+https://www.mecabricks.com/en/workshop/b82xwAgba1z
 https://www.mecabricks.com/en/workshop/eDvVMqR8jBR
+https://www.mecabricks.com/en/workshop/eDvVbMkwvBR
 https://www.mecabricks.com/en/workshop/xov7ezwk20D
