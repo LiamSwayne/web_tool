@@ -256,6 +256,8 @@ https://github.com/ziglang/zig/wiki/zig-cc-compatibility-with-clang#the-differen
 https://github.com/ziglang/zig/wiki/zig-cc-compatibility-with-clang#ubsan-and-sigill-illegal-instruction
 https://github.com/ziglang/zig/wiki/zig-cc-compatibility-with-clang#wiki-pages-box
 https://github.com/ziglang/zig/wiki/zig-cc-compatibility-with-clang/_edit
+https://github.com/ziglang/zig/wiki/zig-cc-compatibility-with-clang/_history
+https://go-review.googlesource.com/c/go/+/407814
 https://jshuieh.github.io/JuliaShuiehResume.pdf
 https://jshuieh.github.io/README.md
 https://jshuieh.github.io/about.html
@@ -423,6 +425,7 @@ https://jshuieh.github.io/style/font-awesome/less/larger.less
 https://jshuieh.github.io/style/font-awesome/less/list.less
 https://jshuieh.github.io/style/font-awesome/less/mixins.less
 https://jshuieh.github.io/style/font-awesome/less/path.less
+https://jshuieh.github.io/style/font-awesome/less/rotated-flipped.less
 https://jshuieh.github.io/style/font-awesome/less/screen-reader.less
 https://jshuieh.github.io/style/font-awesome/less/stacked.less
 https://jshuieh.github.io/style/font-awesome/less/variables.less
