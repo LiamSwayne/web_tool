@@ -295,6 +295,7 @@ jobs:
           
           # Create a temporary directory for newly archived URLs
           mkdir -p temp_archived
+          touch temp_archived/new_archived.txt temp_archived/failed_archive.txt
           
           # Check if to_archive.txt exists and has content
           if [ ! -s "to_archive.txt" ]; then
@@ -322,11 +323,12 @@ jobs:
               
               echo "$(date): Archiving: $process_url"
               if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
-                # Store newly archived URL in temp directory
+                # Store successfully archived URL
                 echo "$process_url" >> temp_archived/new_archived.txt
                 sleep 5
               else
                 echo "$(date): Failed to archive after retries: $process_url"
+                echo "$process_url" >> temp_archived/failed_archive.txt
                 echo "$process_url" >> failed_urls.txt
               fi
             done
@@ -352,10 +354,10 @@ jobs:
             fi
             
             # Check if file has changes compared to the repository
-            git diff --quiet -- "$file"
+            git diff --quiet -- "$file" 2>/dev/null
             local has_changes=$?
             
-            if [ $has_changes -eq 0 ] && [ -z "$(git ls-files --exclude-standard --others "$file")" ]; then
+            if [ $has_changes -eq 0 ] && [ -z "$(git ls-files --exclude-standard --others "$file" 2>/dev/null)" ]; then
               echo "No changes to $file, skipping commit."
               return 0
             fi
@@ -386,7 +388,7 @@ jobs:
           }
           
           # Handle already_archived.txt with conflict resolution
-          if [ -f temp_archived/new_archived.txt ] && [ -s temp_archived/new_archived.txt ]; then
+          if [ -s temp_archived/new_archived.txt ]; then
             # Get domains archived in this run
             archived_domains=$(extract_domains temp_archived/new_archived.txt)
             
@@ -408,8 +410,8 @@ jobs:
           fi
           
           # Handle failed_urls.txt
-          if [ -f failed_urls.txt ] && [ -s failed_urls.txt ]; then
-            failed_domains=$(extract_domains failed_urls.txt)
+          if [ -s temp_archived/failed_archive.txt ]; then
+            failed_domains=$(extract_domains temp_archived/failed_archive.txt)
             commit_message="Update failed_urls.txt"
             commit_description="Failed to archive URLs from domains: $failed_domains"
             commit_with_retries "failed_urls.txt" "$commit_message" "$commit_description"
@@ -418,17 +420,17 @@ jobs:
           # Make a backup of original pasted_urls.txt
           cp pasted_urls.txt pasted_urls.bak
           
-          # Update pasted_urls.txt if to_archive.txt has content
-          if [ -s to_archive.txt ]; then
-            # Remove processed URLs from pasted_urls.txt
-            grep -vxFf to_archive.txt pasted_urls.bak > pasted_urls.txt 2>/dev/null || true
+          # Update pasted_urls.txt to only remove the successfully archived URLs
+          if [ -s temp_archived/new_archived.txt ]; then
+            # Only remove successfully archived URLs from pasted_urls.txt
+            grep -vxFf temp_archived/new_archived.txt pasted_urls.bak > pasted_urls.txt 2>/dev/null || true
             
             # Check if pasted_urls.txt changed
             if ! cmp -s pasted_urls.bak pasted_urls.txt; then
               # Commit pasted_urls.txt
-              domains_removed=$(extract_domains to_archive.txt)
+              domains_removed=$(extract_domains temp_archived/new_archived.txt)
               commit_message="Update pasted_urls.txt"
-              commit_description="Removed processed URLs from domains: $domains_removed"
+              commit_description="Removed successfully archived URLs from domains: $domains_removed"
               commit_with_retries "pasted_urls.txt" "$commit_message" "$commit_description"
             else
               echo "No changes to pasted_urls.txt, skipping commit."
