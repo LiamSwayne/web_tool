@@ -6,6 +6,7 @@ on:
   push:
     paths:
       - 'pasted_urls.txt'
+      - '.github/workflows/new_archiver_feb_20.yml'
 
 jobs:
   archive:
