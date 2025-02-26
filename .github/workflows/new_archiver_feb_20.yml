@@ -29,16 +29,65 @@ jobs:
       - name: Install dependencies
         run: pip install beautifulsoup4 requests urllib3
 
+      - name: Create Check Archive Helper
+        run: |
+          # Create the helper script that Python will call
+          cat > check_archive.sh << 'EOL'
+          #!/bin/bash
+          
+          # Function to retry curl with backoff
+          function retry_curl() {
+            local url=$1
+            local max_attempts=3
+            local attempt=1
+            local wait_time=5
+            
+            while [ $attempt -le $max_attempts ]; do
+              response=$(curl -sS --max-time 30 "$url" 2>&1)
+              if [ $? -eq 0 ]; then
+                echo "$response"
+                return 0
+              fi
+              echo "$(date): Attempt $attempt failed for $url. Retrying in ${wait_time}s..." >&2
+              sleep $wait_time
+              wait_time=$((wait_time * 2))
+              attempt=$((attempt + 1))
+            done
+            
+            echo "error"
+            return 1
+          }
+          
+          url="$1"
+          
+          # Check with Internet Archive API
+          archived=$(retry_curl "https://web.archive.org/cdx/search/cdx?url=$url&output=json&limit=1")
+          
+          if [ "$archived" = "error" ]; then
+            echo "error"
+            exit 1
+          elif [ "$archived" = "[]" ]; then
+            echo "not_archived"
+            exit 0
+          else
+            echo "already_archived"
+            exit 0
+          fi
+          EOL
+          
+          chmod +x check_archive.sh
+
       - name: Extract and Scrape URLs
         run: |
           python3 - <<EOF
           import re
           import sys
           import time
-          import requests
+          import subprocess
           from bs4 import BeautifulSoup
           from collections import deque
           from urllib.parse import urljoin, urlparse
+          import requests
           
           def is_valid_url(url):
               try:
@@ -63,22 +112,34 @@ jobs:
                   print(f"Already in already_archived.txt: {url}")
                   return True
               
-              # Check with Internet Archive API
+              # Use the shell script with curl to check Internet Archive API
               try:
-                  response = requests.get(
-                      f"https://web.archive.org/cdx/search/cdx?url={url}&output=json&limit=1",
-                      timeout=30
-                  )
-                  response.raise_for_status()
-                  if response.text != "[]":
+                  # Call the helper script we created
+                  result = subprocess.run(['./check_archive.sh', url], 
+                                         capture_output=True, 
+                                         text=True, 
+                                         check=False)
+                  
+                  if result.returncode != 0:
+                      print(f"Error checking archive status for {url}: {result.stderr}")
+                      return False
+                  
+                  output = result.stdout.strip()
+                  
+                  if output == "already_archived":
                       print(f"Already in Internet Archive: {url}")
                       # Add to already_archived.txt
                       with open('already_archived.txt', 'a', encoding='utf-8') as f:
                           f.write(f"{url}\n")
                       return True
+                  elif output == "not_archived":
+                      print(f"Not in Internet Archive: {url}")
+                      return False
+                  else:
+                      print(f"Unexpected output from check_archive.sh: {output}")
+                      return False
               except Exception as e:
-                  print(f"Error checking archive status for {url}: {str(e)}")
-                  # On error, be cautious and don't consider it as archived
+                  print(f"Error executing check_archive.sh for {url}: {str(e)}")
                   return False
               
               return False
@@ -215,6 +276,31 @@ jobs:
           # Initialize files if they don't exist
           touch failed_urls.txt
           
+          # Extract domains function
+          extract_domains() {
+            local file=$1
+            if [ ! -f "$file" ]; then
+              return
+            fi
+            
+            local domains=""
+            while IFS= read -r url || [ -n "$url" ]; do
+              if [[ -z "$url" ]]; then
+                continue
+              fi
+              
+              # Extract domain using sed
+              domain=$(echo "$url" | sed -E 's|^https?://([^/]+).*|\1|' | sed -E 's/^www\.//')
+              domains="$domains $domain"
+            done < "$file"
+            
+            # Get unique domains
+            echo "$domains" | tr ' ' '\n' | sort -u | tr '\n' ' '
+          }
+          
+          # Create a temporary directory for newly archived URLs
+          mkdir -p temp_archived
+          
           # Process URLs directly from to_archive.txt, no need to check again
           cat to_archive.txt | while IFS= read -r url || [ -n "$url" ]; do 
             if [ -z "$url" ]; then
@@ -235,7 +321,8 @@ jobs:
               
               echo "$(date): Archiving: $process_url"
               if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
-                echo "$process_url" >> already_archived.txt
+                # Store newly archived URL in temp directory
+                echo "$process_url" >> temp_archived/new_archived.txt
                 sleep 5
               else
                 echo "$(date): Failed to archive after retries: $process_url"
@@ -244,26 +331,90 @@ jobs:
             done
           done || true
           
-          # Update files if no conflicts
-          current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
-          if [ "$original_hash" = "$current_hash" ]; then
-            sort -u already_archived.txt -o already_archived.txt 2>/dev/null || true
+          # Sort and deduplicate the failed URLs
+          if [ -f failed_urls.txt ]; then
+            sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
+          fi
+          
+          # Function to handle git commits with retries
+          commit_with_retries() {
+            local file=$1
+            local message=$2
+            local description=$3
+            local max_attempts=10
+            local attempt=1
             
-            # Only sort and add failed_urls.txt if it exists
-            if [ -f failed_urls.txt ]; then
-              sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
-              git add failed_urls.txt
+            while [ $attempt -le $max_attempts ]; do
+              echo "Commit attempt $attempt for $file"
+              
+              # Pull latest changes before committing
+              git pull --no-edit
+              
+              # Add the specific file
+              git add "$file"
+              
+              # Commit with message and description
+              if [ -n "$description" ]; then
+                git commit -m "$message" -m "$description" && git push && return 0
+              else
+                git commit -m "$message" && git push && return 0
+              fi
+              
+              # If we're here, commit or push failed
+              echo "Attempt $attempt failed for $file. Retrying..."
+              sleep 2
+              attempt=$((attempt + 1))
+            done
+            
+            return 1
+          }
+          
+          # Handle already_archived.txt with conflict resolution
+          if [ -f temp_archived/new_archived.txt ]; then
+            # Get domains archived in this run
+            archived_domains=$(extract_domains temp_archived/new_archived.txt)
+            
+            # Pull the latest already_archived.txt to handle conflicts
+            git pull --no-edit
+            
+            # Create a union of existing and new archived URLs
+            if [ -f already_archived.txt ]; then
+              cat already_archived.txt temp_archived/new_archived.txt | sort -u > temp_archived/merged_archived.txt
+              mv temp_archived/merged_archived.txt already_archived.txt
+            else
+              sort -u temp_archived/new_archived.txt -o already_archived.txt
             fi
+            
+            # Commit already_archived.txt with domains description
+            commit_message="Update already_archived.txt"
+            commit_description="Archived URLs from domains: $archived_domains"
+            commit_with_retries "already_archived.txt" "$commit_message" "$commit_description"
+          fi
+          
+          # Handle failed_urls.txt
+          if [ -f failed_urls.txt ]; then
+            failed_domains=$(extract_domains failed_urls.txt)
+            commit_message="Update failed_urls.txt"
+            commit_description="Failed to archive URLs from domains: $failed_domains"
+            commit_with_retries "failed_urls.txt" "$commit_message" "$commit_description"
+          fi
+          
+          # Update pasted_urls.txt
+          current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
+          if [ "$original_hash" = "$current_hash" ] && [ -s to_archive.txt ]; then
+            # Pull latest to handle conflicts
+            git pull --no-edit
             
             # Remove processed URLs from pasted_urls.txt
-            if [ -s to_archive.txt ]; then
-              grep -vxFf to_archive.txt pasted_urls.txt 2>/dev/null | sort -u > pasted_urls_new.txt || true
-              mv pasted_urls_new.txt pasted_urls.txt
-            fi
+            grep -vxFf to_archive.txt pasted_urls.txt 2>/dev/null | sort -u > pasted_urls_new.txt || true
+            mv pasted_urls_new.txt pasted_urls.txt
             
-            git add pasted_urls.txt already_archived.txt
-            git commit -m "Update archived URLs and remaining URLs" && git push || echo "Skipping commit due to conflict"
+            # Commit pasted_urls.txt
+            domains_removed=$(extract_domains to_archive.txt)
+            commit_message="Update pasted_urls.txt"
+            commit_description="Removed processed URLs from domains: $domains_removed"
+            commit_with_retries "pasted_urls.txt" "$commit_message" "$commit_description"
           fi
           
           # Cleanup
-          rm -f to_archive.txt
+          rm -rf temp_archived to_archive.txt check_archive.sh
