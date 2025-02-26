@@ -270,12 +270,6 @@ jobs:
             return 1
           }
           
-          # Get original hash
-          original_hash=$(git hash-object pasted_urls.txt || echo "")
-          
-          # Initialize files if they don't exist
-          touch failed_urls.txt
-          
           # Extract domains function
           extract_domains() {
             local file=$1
@@ -300,6 +294,12 @@ jobs:
           
           # Create a temporary directory for newly archived URLs
           mkdir -p temp_archived
+          
+          # Check if to_archive.txt exists and has content
+          if [ ! -s "to_archive.txt" ]; then
+            echo "No URLs to archive. Exiting."
+            exit 0
+          fi
           
           # Process URLs directly from to_archive.txt, no need to check again
           cat to_archive.txt | while IFS= read -r url || [ -n "$url" ]; do 
@@ -344,6 +344,21 @@ jobs:
             local max_attempts=10
             local attempt=1
             
+            # Check if file exists and has changes
+            if [ ! -f "$file" ]; then
+              echo "File $file doesn't exist, skipping commit."
+              return 0
+            fi
+            
+            # Check if file has changes compared to the repository
+            git diff --quiet -- "$file"
+            local has_changes=$?
+            
+            if [ $has_changes -eq 0 ] && [ -z "$(git ls-files --exclude-standard --others "$file")" ]; then
+              echo "No changes to $file, skipping commit."
+              return 0
+            fi
+            
             while [ $attempt -le $max_attempts ]; do
               echo "Commit attempt $attempt for $file"
               
@@ -370,7 +385,7 @@ jobs:
           }
           
           # Handle already_archived.txt with conflict resolution
-          if [ -f temp_archived/new_archived.txt ]; then
+          if [ -f temp_archived/new_archived.txt ] && [ -s temp_archived/new_archived.txt ]; then
             # Get domains archived in this run
             archived_domains=$(extract_domains temp_archived/new_archived.txt)
             
@@ -392,29 +407,33 @@ jobs:
           fi
           
           # Handle failed_urls.txt
-          if [ -f failed_urls.txt ]; then
+          if [ -f failed_urls.txt ] && [ -s failed_urls.txt ]; then
             failed_domains=$(extract_domains failed_urls.txt)
             commit_message="Update failed_urls.txt"
             commit_description="Failed to archive URLs from domains: $failed_domains"
             commit_with_retries "failed_urls.txt" "$commit_message" "$commit_description"
           fi
           
-          # Update pasted_urls.txt
-          current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
-          if [ "$original_hash" = "$current_hash" ] && [ -s to_archive.txt ]; then
-            # Pull latest to handle conflicts
-            git pull --no-edit
-            
+          # Make a backup of original pasted_urls.txt
+          cp pasted_urls.txt pasted_urls.bak
+          
+          # Update pasted_urls.txt if to_archive.txt has content
+          if [ -s to_archive.txt ]; then
             # Remove processed URLs from pasted_urls.txt
-            grep -vxFf to_archive.txt pasted_urls.txt 2>/dev/null | sort -u > pasted_urls_new.txt || true
-            mv pasted_urls_new.txt pasted_urls.txt
+            grep -vxFf to_archive.txt pasted_urls.bak > pasted_urls.txt 2>/dev/null || true
             
-            # Commit pasted_urls.txt
-            domains_removed=$(extract_domains to_archive.txt)
-            commit_message="Update pasted_urls.txt"
-            commit_description="Removed processed URLs from domains: $domains_removed"
-            commit_with_retries "pasted_urls.txt" "$commit_message" "$commit_description"
+            # Check if pasted_urls.txt changed
+            if ! cmp -s pasted_urls.bak pasted_urls.txt; then
+              # Commit pasted_urls.txt
+              domains_removed=$(extract_domains to_archive.txt)
+              commit_message="Update pasted_urls.txt"
+              commit_description="Removed processed URLs from domains: $domains_removed"
+              commit_with_retries "pasted_urls.txt" "$commit_message" "$commit_description"
+            else
+              echo "No changes to pasted_urls.txt, skipping commit."
+            fi
           fi
           
           # Cleanup
-          rm -rf temp_archived to_archive.txt check_archive.sh
+          rm -f to_archive.txt check_archive.sh pasted_urls.bak
+          rm -rf temp_archived
