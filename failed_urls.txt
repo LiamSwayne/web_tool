@@ -1,3 +1,6 @@
+https://github.com/ziglang/zig/wiki/zig-cc-compatibility-with-clang/_history
+https://go-review.googlesource.com/c/go/+/407814
+https://jshuieh.github.io/style/font-awesome/less/rotated-flipped.less
 https://mecabricks.com/en/forum/category/11/2
 https://mecabricks.com/en/forum/category/4/2
 https://mecabricks.com/en/forum/topic/70758
