@@ -303,10 +303,20 @@ jobs:
             exit 0
           fi
           
-          # Process URLs directly from to_archive.txt, no need to check again
+          # Counter for consecutive failures
+          consecutive_failures=0
+          max_consecutive_failures=3
+          
+          # Process URLs directly from to_archive.txt
           cat to_archive.txt | while IFS= read -r url || [ -n "$url" ]; do 
             if [ -z "$url" ]; then
               continue
+            fi
+            
+            # Check if we should quit due to consecutive failures
+            if [ $consecutive_failures -ge $max_consecutive_failures ]; then
+              echo "$(date): Quitting early after $consecutive_failures consecutive failures"
+              break
             fi
             
             if [[ "$url" == *"reddit.com"* && "$url" != *"old.reddit.com"* ]]; then
@@ -325,11 +335,19 @@ jobs:
               if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
                 # Store successfully archived URL
                 echo "$process_url" >> temp_archived/new_archived.txt
+                consecutive_failures=0  # Reset counter on success
                 sleep 5
               else
                 echo "$(date): Failed to archive after retries: $process_url"
                 echo "$process_url" >> temp_archived/failed_archive.txt
                 echo "$process_url" >> failed_urls.txt
+                consecutive_failures=$((consecutive_failures + 1))
+                
+                # Check if we should quit after this failure
+                if [ $consecutive_failures -ge $max_consecutive_failures ]; then
+                  echo "$(date): Quitting early after $consecutive_failures consecutive failures"
+                  break 2  # Break out of both loops
+                fi
               fi
             done
           done || true
