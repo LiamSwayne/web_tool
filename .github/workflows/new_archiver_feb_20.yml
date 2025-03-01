@@ -6,7 +6,6 @@ on:
   push:
     paths:
       - 'pasted_urls.txt'
-      - '.github/workflows/new_archiver_feb_20.yml'
 
 jobs:
   archive:
@@ -30,65 +29,16 @@ jobs:
       - name: Install dependencies
         run: pip install beautifulsoup4 requests urllib3
 
-      - name: Create Check Archive Helper
-        run: |
-          # Create the helper script that Python will call
-          cat > check_archive.sh << 'EOL'
-          #!/bin/bash
-          
-          # Function to retry curl with backoff
-          function retry_curl() {
-            local url=$1
-            local max_attempts=3
-            local attempt=1
-            local wait_time=5
-            
-            while [ $attempt -le $max_attempts ]; do
-              response=$(curl -sS --max-time 30 "$url" 2>&1)
-              if [ $? -eq 0 ]; then
-                echo "$response"
-                return 0
-              fi
-              echo "$(date): Attempt $attempt failed for $url. Retrying in ${wait_time}s..." >&2
-              sleep $wait_time
-              wait_time=$((wait_time * 2))
-              attempt=$((attempt + 1))
-            done
-            
-            echo "error"
-            return 1
-          }
-          
-          url="$1"
-          
-          # Check with Internet Archive API
-          archived=$(retry_curl "https://web.archive.org/cdx/search/cdx?url=$url&output=json&limit=1")
-          
-          if [ "$archived" = "error" ]; then
-            echo "error"
-            exit 1
-          elif [ "$archived" = "[]" ]; then
-            echo "not_archived"
-            exit 0
-          else
-            echo "already_archived"
-            exit 0
-          fi
-          EOL
-          
-          chmod +x check_archive.sh
-
       - name: Extract and Scrape URLs
         run: |
           python3 - <<EOF
           import re
           import sys
           import time
-          import subprocess
+          import requests
           from bs4 import BeautifulSoup
           from collections import deque
           from urllib.parse import urljoin, urlparse
-          import requests
           
           def is_valid_url(url):
               try:
@@ -107,49 +57,11 @@ jobs:
               except:
                   return []
           
-          def check_already_archived(url, already_archived_urls):
-              # Check if URL is in already_archived.txt
-              if url in already_archived_urls:
-                  print(f"Already in already_archived.txt: {url}")
-                  return True
-              
-              # Use the shell script with curl to check Internet Archive API
-              try:
-                  # Call the helper script we created
-                  result = subprocess.run(['./check_archive.sh', url], 
-                                         capture_output=True, 
-                                         text=True, 
-                                         check=False)
-                  
-                  if result.returncode != 0:
-                      print(f"Error checking archive status for {url}: {result.stderr}")
-                      return False
-                  
-                  output = result.stdout.strip()
-                  
-                  if output == "already_archived":
-                      print(f"Already in Internet Archive: {url}")
-                      # Add to already_archived.txt
-                      with open('already_archived.txt', 'a', encoding='utf-8') as f:
-                          f.write(f"{url}\n")
-                      return True
-                  elif output == "not_archived":
-                      print(f"Not in Internet Archive: {url}")
-                      return False
-                  else:
-                      print(f"Unexpected output from check_archive.sh: {output}")
-                      return False
-              except Exception as e:
-                  print(f"Error executing check_archive.sh for {url}: {str(e)}")
-                  return False
-              
-              return False
-          
-          def scrape_mecabricks(already_archived_urls, target_count=100):
+          def scrape_mecabricks(target_count=100):
               base_url = 'https://mecabricks.com'
               visited = set()
               queue = deque([base_url])
-              need_to_archive_urls = set()
+              found_urls = set()
               headers = {
                   'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
                   'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
@@ -157,7 +69,7 @@ jobs:
                   'Connection': 'keep-alive',
               }
               
-              while queue and len(need_to_archive_urls) < target_count:
+              while queue and len(found_urls) < target_count:
                   current_url = queue.popleft()
                   if current_url in visited:
                       continue
@@ -172,7 +84,7 @@ jobs:
                           timeout=30,
                           allow_redirects=True
                       )
-                      response.raise_for_status()
+                      response.raise_for_status()  # Raise an error for bad status codes
                       
                       soup = BeautifulSoup(response.text, 'html.parser')
                       
@@ -182,8 +94,8 @@ jobs:
                           href = link.get('href')
                           if href:
                               full_url = urljoin(base_url, href)
-                              if is_valid_url(full_url) and not check_already_archived(full_url, already_archived_urls):
-                                  need_to_archive_urls.add(full_url)
+                              if is_valid_url(full_url):
+                                  found_urls.add(full_url)
                                   if full_url not in visited:
                                       queue.append(full_url)
                       
@@ -195,12 +107,11 @@ jobs:
                           if not is_valid_url(full_url) or 'mecabricks.com' not in full_url:
                               continue
                           
-                          if not check_already_archived(full_url, already_archived_urls):
-                              need_to_archive_urls.add(full_url)
-                              if full_url not in visited:
-                                  queue.append(full_url)
+                          found_urls.add(full_url)
+                          if full_url not in visited:
+                              queue.append(full_url)
                       
-                      print(f"Found {len(need_to_archive_urls)} URLs to archive so far")
+                      print(f"Found {len(found_urls)} URLs so far")
                       
                       # Sleep between requests
                       time.sleep(3)
@@ -212,38 +123,22 @@ jobs:
                       print(f"Error scraping {current_url}: {str(e)}")
                       time.sleep(2)
               
-              return list(need_to_archive_urls)
-          
-          # Load already archived URLs
-          already_archived_urls = set()
-          try:
-              with open('already_archived.txt', 'r', encoding='utf-8') as f:
-                  already_archived_urls = set(line.strip() for line in f if line.strip())
-          except:
-              print("No already_archived.txt file found, creating a new one")
-              with open('already_archived.txt', 'w', encoding='utf-8') as f:
-                  pass
+              return list(found_urls)
           
           # First try to get URLs from file
-          all_urls = extract_urls('pasted_urls.txt')
+          urls = extract_urls('pasted_urls.txt')
           
-          # Filter out already archived URLs
-          urls_to_archive = []
-          for url in all_urls:
-              if not check_already_archived(url, already_archived_urls):
-                  urls_to_archive.append(url)
+          # If no URLs found, scrape mecabricks.com
+          if not urls:
+              print("No URLs found in file, scraping mecabricks.com...")
+              urls = scrape_mecabricks(5000) # temporary fix, should be getting 100 urls that have not been archived alrady or are in already_archived.txt, but because that's not happening we compensate by looking for 5k urls
           
-          # If no URLs found or all URLs are already archived, scrape mecabricks.com
-          if not urls_to_archive:
-              print("No new URLs found in file, scraping mecabricks.com...")
-              urls_to_archive = scrape_mecabricks(already_archived_urls, 100)
-          
-          # Write URLs that need archiving to file
-          with open('to_archive.txt', 'w', encoding='utf-8') as f:
-              for url in urls_to_archive:
+          # Write URLs to file
+          with open('all_urls.txt', 'w', encoding='utf-8') as f:
+              for url in urls:
                   f.write(f"{url}\n")
           
-          print(f"Total URLs to archive: {len(urls_to_archive)}")
+          print(f"Total URLs found: {len(urls)}")
           EOF
       
       - name: Archive URLs
@@ -271,53 +166,19 @@ jobs:
             return 1
           }
           
-          # Extract domains function
-          extract_domains() {
-            local file=$1
-            if [ ! -f "$file" ]; then
-              return
-            fi
-            
-            local domains=""
-            while IFS= read -r url || [ -n "$url" ]; do
-              if [[ -z "$url" ]]; then
-                continue
-              fi
-              
-              # Extract domain using sed
-              domain=$(echo "$url" | sed -E 's|^https?://([^/]+).*|\1|' | sed -E 's/^www\.//')
-              domains="$domains $domain"
-            done < "$file"
-            
-            # Get unique domains
-            echo "$domains" | tr ' ' '\n' | sort -u | tr '\n' ' '
-          }
+          # Get original hash
+          original_hash=$(git hash-object pasted_urls.txt || echo "")
           
-          # Create a temporary directory for newly archived URLs
-          mkdir -p temp_archived
-          touch temp_archived/new_archived.txt temp_archived/failed_archive.txt
+          # Initialize files
+          touch already_archived.txt processed_urls.txt
           
-          # Check if to_archive.txt exists and has content
-          if [ ! -s "to_archive.txt" ]; then
-            echo "No URLs to archive. Exiting."
-            exit 0
-          fi
-          
-          # Counter for consecutive failures
-          consecutive_failures=0
-          max_consecutive_failures=3
-          
-          # Process URLs directly from to_archive.txt
-          cat to_archive.txt | while IFS= read -r url || [ -n "$url" ]; do 
+          # Pick and process 1000 random URLs
+          shuf -n 1000 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
             if [ -z "$url" ]; then
               continue
             fi
             
-            # Check if we should quit due to consecutive failures
-            if [ $consecutive_failures -ge $max_consecutive_failures ]; then
-              echo "$(date): Quitting early after $consecutive_failures consecutive failures"
-              break
-            fi
+            echo "$url" >> processed_urls.txt
             
             if [[ "$url" == *"reddit.com"* && "$url" != *"old.reddit.com"* ]]; then
               old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
@@ -331,130 +192,80 @@ jobs:
                 continue
               fi
               
-              echo "$(date): Archiving: $process_url"
-              if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
-                # Store successfully archived URL
-                echo "$process_url" >> temp_archived/new_archived.txt
-                consecutive_failures=0  # Reset counter on success
-                sleep 5
-              else
-                echo "$(date): Failed to archive after retries: $process_url"
-                echo "$process_url" >> temp_archived/failed_archive.txt
+              if grep -Fxq "$process_url" already_archived.txt 2>/dev/null; then
+                echo "$(date): Already archived: $process_url"
+                continue
+              fi
+              
+              # Check archive status with retry
+              archived=$(retry_curl "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
+              if [ "$archived" = "error" ]; then
+                echo "$(date): Failed all attempts to check archive status for: $process_url"
                 echo "$process_url" >> failed_urls.txt
-                consecutive_failures=$((consecutive_failures + 1))
-                
-                # Check if we should quit after this failure
-                if [ $consecutive_failures -ge $max_consecutive_failures ]; then
-                  echo "$(date): Quitting early after $consecutive_failures consecutive failures"
-                  break 2  # Break out of both loops
+                continue
+              fi
+              
+              if [ "$archived" = "[]" ]; then
+                echo "$(date): Archiving: $process_url"
+                if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
+                  echo "$process_url" >> already_archived.txt
+                  sleep 5
+                else
+                  echo "$(date): Failed to archive after retries: $process_url"
+                  echo "$process_url" >> failed_urls.txt
                 fi
+              else
+                echo "$(date): Already in Internet Archive: $process_url"
+                echo "$process_url" >> already_archived.txt
               fi
             done
           done || true
           
-          # Sort and deduplicate the failed URLs
-          if [ -f failed_urls.txt ]; then
-            sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
-          fi
-          
-          # Function to handle git commits with retries
-          commit_with_retries() {
-            local file=$1
-            local message=$2
-            local description=$3
-            local max_attempts=10
-            local attempt=1
+          # Update files if no conflicts
+          current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
+          if [ "$original_hash" = "$current_hash" ]; then
+            sort -u already_archived.txt -o already_archived.txt 2>/dev/null || true
             
-            # Check if file exists and has changes
-            if [ ! -f "$file" ]; then
-              echo "File $file doesn't exist, skipping commit."
-              return 0
+            # Only sort and add failed_urls.txt if it exists
+            if [ -f failed_urls.txt ]; then
+              sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
+              git add failed_urls.txt
             fi
             
-            # Check if file has changes compared to the repository
-            git diff --quiet -- "$file" 2>/dev/null
-            local has_changes=$?
-            
-            if [ $has_changes -eq 0 ] && [ -z "$(git ls-files --exclude-standard --others "$file" 2>/dev/null)" ]; then
-              echo "No changes to $file, skipping commit."
-              return 0
+            if [ -s processed_urls.txt ]; then
+              grep -vxFf processed_urls.txt all_urls.txt 2>/dev/null | sort -u > pasted_urls.txt || true
             fi
             
-            while [ $attempt -le $max_attempts ]; do
-              echo "Commit attempt $attempt for $file"
+            git add pasted_urls.txt already_archived.txt
+            
+            # Add 10 git commit retries with pull before each attempt
+            MAX_RETRIES=10
+            RETRY_COUNT=0
+            COMMIT_SUCCESS=false
+            
+            while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$COMMIT_SUCCESS" = "false" ]; do
+              echo "Commit attempt $(($RETRY_COUNT + 1))/$MAX_RETRIES"
               
-              # Pull latest changes before committing
-              git pull --no-edit
+              # Pull the latest changes before attempting to commit
+              git pull --rebase
               
-              # Add the specific file
-              git add "$file"
-              
-              # Commit with message and description
-              if [ -n "$description" ]; then
-                git commit -m "$message" -m "$description" && git push && return 0
+              # Try to commit and push
+              if git commit -m "Update archived URLs and remaining URLs" && git push; then
+                echo "Commit and push successful on attempt $(($RETRY_COUNT + 1))"
+                COMMIT_SUCCESS=true
               else
-                git commit -m "$message" && git push && return 0
+                echo "Commit attempt $(($RETRY_COUNT + 1)) failed, retrying..."
+                RETRY_COUNT=$((RETRY_COUNT + 1))
+                sleep 2  # Add a small delay between retries
               fi
-              
-              # If we're here, commit or push failed
-              echo "Attempt $attempt failed for $file. Retrying..."
-              sleep 2
-              attempt=$((attempt + 1))
             done
             
-            return 1
-          }
-          
-          # Handle already_archived.txt with conflict resolution
-          if [ -s temp_archived/new_archived.txt ]; then
-            # Get domains archived in this run
-            archived_domains=$(extract_domains temp_archived/new_archived.txt)
-            
-            # Pull the latest already_archived.txt to handle conflicts
-            git pull --no-edit
-            
-            # Create a union of existing and new archived URLs
-            if [ -f already_archived.txt ]; then
-              cat already_archived.txt temp_archived/new_archived.txt | sort -u > temp_archived/merged_archived.txt
-              mv temp_archived/merged_archived.txt already_archived.txt
-            else
-              sort -u temp_archived/new_archived.txt -o already_archived.txt
+            if [ "$COMMIT_SUCCESS" = "false" ]; then
+              echo "Failed to commit after $MAX_RETRIES attempts"
             fi
-            
-            # Commit already_archived.txt with domains description
-            commit_message="Update already_archived.txt"
-            commit_description="Archived URLs from domains: $archived_domains"
-            commit_with_retries "already_archived.txt" "$commit_message" "$commit_description"
-          fi
-          
-          # Handle failed_urls.txt
-          if [ -s temp_archived/failed_archive.txt ]; then
-            failed_domains=$(extract_domains temp_archived/failed_archive.txt)
-            commit_message="Update failed_urls.txt"
-            commit_description="Failed to archive URLs from domains: $failed_domains"
-            commit_with_retries "failed_urls.txt" "$commit_message" "$commit_description"
-          fi
-          
-          # Make a backup of original pasted_urls.txt
-          cp pasted_urls.txt pasted_urls.bak
-          
-          # Update pasted_urls.txt to only remove the successfully archived URLs
-          if [ -s temp_archived/new_archived.txt ]; then
-            # Only remove successfully archived URLs from pasted_urls.txt
-            grep -vxFf temp_archived/new_archived.txt pasted_urls.bak > pasted_urls.txt 2>/dev/null || true
-            
-            # Check if pasted_urls.txt changed
-            if ! cmp -s pasted_urls.bak pasted_urls.txt; then
-              # Commit pasted_urls.txt
-              domains_removed=$(extract_domains temp_archived/new_archived.txt)
-              commit_message="Update pasted_urls.txt"
-              commit_description="Removed successfully archived URLs from domains: $domains_removed"
-              commit_with_retries "pasted_urls.txt" "$commit_message" "$commit_description"
-            else
-              echo "No changes to pasted_urls.txt, skipping commit."
-            fi
+          else
+            echo "Skipping commit due to file changes detected"
           fi
           
           # Cleanup
-          rm -f to_archive.txt check_archive.sh pasted_urls.bak
-          rm -rf temp_archived
+          rm -f processed_urls.txt all_urls.txt
