@@ -29,7 +29,7 @@ jobs:
 
           # Initialize variables
           PASTED_URLS_FILE="pasted_urls.txt"
-          ARCHIVED_URLS_FILE="archived_urls.txt"
+          ARCHIVED_URLS_FILE="already_archived.txt"
           ARCHIVE_COUNT=0
           MAX_ARCHIVES=100
           RETRY_COUNT=10
@@ -104,24 +104,59 @@ jobs:
           scrape_mecabricks() {
               local start_url="https://www.mecabricks.com"
               local temp_urls_file="temp_urls.txt"
+              local visited_file="visited_urls.txt"
+              local queue_file="queue_urls.txt"
               
               echo "Starting recursive scrape of mecabricks.com..."
               
-              # Download the homepage
-              curl -s -A "$USER_AGENT" "$start_url" > homepage.html
+              # Initialize queue with starting URL
+              echo "$start_url" > "$queue_file"
+              touch "$visited_file"
               
-              # Extract URLs from homepage
-              grep -o 'https://www.mecabricks.com/[^"]*' homepage.html | grep -v '\.(jpg|jpeg|png|gif|css|js)$' > "$temp_urls_file"
-              
-              # Add URLs to pasted_urls if not already in archived_urls
-              while read -r url; do
-                  if ! grep -q "^$url$" "$ARCHIVED_URLS_FILE" 2>/dev/null; then
-                      echo "$url" >> "$PASTED_URLS_FILE"
+              # Process URLs in queue
+              while [ -s "$queue_file" ] && [ $(wc -l < "$PASTED_URLS_FILE") -lt 1000 ]; do
+                  # Get next URL from queue
+                  current_url=$(head -n 1 "$queue_file")
+                  sed -i '1d' "$queue_file"
+                  
+                  # Skip if already visited
+                  if grep -q "^$current_url$" "$visited_file"; then
+                      continue
                   fi
-              done < "$temp_urls_file"
+                  
+                  echo "Scraping: $current_url"
+                  
+                  # Mark as visited
+                  echo "$current_url" >> "$visited_file"
+                  
+                  # Download the page
+                  curl -s -A "$USER_AGENT" "$current_url" > page.html
+                  
+                  # Extract URLs from page
+                  grep -o 'https://www.mecabricks.com/[^"]*' page.html | 
+                      grep -v '\.(jpg|jpeg|png|gif|css|js)$' > "$temp_urls_file"
+                  
+                  # Add URLs to queue if not visited
+                  while read -r new_url; do
+                      if ! grep -q "^$new_url$" "$visited_file" && ! grep -q "^$new_url$" "$queue_file"; then
+                          echo "$new_url" >> "$queue_file"
+                      fi
+                      
+                      # Add to pasted_urls if not already archived
+                      if ! grep -q "^$new_url$" "$ARCHIVED_URLS_FILE" && ! grep -q "^$new_url$" "$PASTED_URLS_FILE"; then
+                          echo "$new_url" >> "$PASTED_URLS_FILE"
+                      fi
+                  done < "$temp_urls_file"
+                  
+                  # Clean up
+                  rm page.html
+                  
+                  # Sleep to avoid overloading the server
+                  sleep 2
+              done
               
               # Clean up
-              rm homepage.html "$temp_urls_file"
+              rm -f "$temp_urls_file" "$visited_file" "$queue_file"
               
               # Sort the pasted URLs file
               sort -u "$PASTED_URLS_FILE" -o "$PASTED_URLS_FILE"
@@ -141,7 +176,7 @@ jobs:
               scrape_mecabricks
           fi
 
-          # Process URLs from pasted_urls.txt
+          # Process URLs from pasted_urls.txt until we reach MAX_ARCHIVES
           while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ] && [ -s "$PASTED_URLS_FILE" ]; do
               # Read the first URL from the file
               url=$(head -n 1 "$PASTED_URLS_FILE")
@@ -149,9 +184,9 @@ jobs:
               # Remove the URL from pasted_urls.txt
               sed -i '1d' "$PASTED_URLS_FILE"
               
-              # Check if URL is already in archived_urls.txt
+              # Check if URL is already in already_archived.txt
               if grep -q "^$url$" "$ARCHIVED_URLS_FILE" 2>/dev/null; then
-                  echo "URL already in archived_urls.txt: $url"
+                  echo "URL already in $ARCHIVED_URLS_FILE: $url"
                   continue
               fi
               
@@ -172,8 +207,8 @@ jobs:
           done
 
           # If pasted_urls.txt is empty and we haven't reached max archives, scrape mecabricks
-          if [ ! -s "$PASTED_URLS_FILE" ] && [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ]; then
-              echo "No more URLs in $PASTED_URLS_FILE. Starting scrape of mecabricks.com..."
+          if [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ]; then
+              echo "Need more URLs to reach target of $MAX_ARCHIVES. Starting scrape of mecabricks.com..."
               scrape_mecabricks
               
               # Continue processing the newly scraped URLs
@@ -182,7 +217,7 @@ jobs:
                   sed -i '1d' "$PASTED_URLS_FILE"
                   
                   if grep -q "^$url$" "$ARCHIVED_URLS_FILE" 2>/dev/null; then
-                      echo "URL already in archived_urls.txt: $url"
+                      echo "URL already in $ARCHIVED_URLS_FILE: $url"
                       continue
                   fi
                   
@@ -214,6 +249,6 @@ jobs:
 
       - name: Push any remaining changes
         run: |
-          git add pasted_urls.txt archived_urls.txt
+          git add pasted_urls.txt already_archived.txt
           git commit -m "Final update of archived URLs" || echo "No changes to commit"
           git push || echo "No changes to push"
