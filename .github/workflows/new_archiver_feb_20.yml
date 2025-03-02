@@ -19,7 +19,6 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
-          git config pull.rebase false
 
       - name: Create script
         run: |
@@ -42,9 +41,7 @@ jobs:
           commit_changes() {
               local attempts=0
               while [ $attempts -lt $RETRY_COUNT ]; do
-                  # Always pull changes first to avoid conflicts
                   git pull
-                  
                   git add "$PASTED_URLS_FILE" "$ALREADY_ARCHIVED_FILE"
                   git commit -m "Update archived URLs (New: $NEW_URL_COUNT, Total Archived: $ARCHIVE_COUNT)"
                   
@@ -92,13 +89,8 @@ jobs:
               local url=$1
               
               echo "Archiving: $url"
-              http_code=$(curl -s -o /dev/null -w "%{http_code}" -A "$USER_AGENT" -X POST "${IA_ENDPOINT}${url}")
-              
-              if [[ "$http_code" -ge 200 && "$http_code" -lt 400 ]]; then
-                  echo "Archive successful (HTTP Status: $http_code)"
-              else
-                  echo "Archive may have failed (HTTP Status: $http_code)"
-              fi
+              curl_response=$(curl -s -A "$USER_AGENT" -X POST "${IA_ENDPOINT}${url}")
+              echo "Archive result: $(echo "$curl_response" | head -n 10 | grep -v "html")"
               
               # Add to already archived URLs file
               echo "$url" >> "$ALREADY_ARCHIVED_FILE"
@@ -141,7 +133,7 @@ jobs:
                   done < "$temp_urls_file"
                   
                   # Clean up
-                  rm -f homepage.html "$temp_urls_file"
+                  rm homepage.html "$temp_urls_file"
                   
                   # Sort the pasted URLs file
                   sort -u "$PASTED_URLS_FILE" -o "$PASTED_URLS_FILE"
@@ -150,28 +142,9 @@ jobs:
               fi
               
               # If we still need URLs, go deeper (recursively)
-              if [ ! -s "$PASTED_URLS_FILE" ] || [ $(wc -l < "$PASTED_URLS_FILE") -lt 100 ]; then
-                  # Get URLs to visit for deeper crawling
-                  local pages_to_crawl=()
-                  
-                  # Try to find more pages to crawl
-                  if [ -f homepage.html ]; then
-                      pages_to_crawl=($(grep -o 'https://www.mecabricks.com/[^"]*' homepage.html | grep -v '\.(jpg|jpeg|png|gif|css|js)$' | head -n 20))
-                  else
-                      # If we don't have homepage.html, grab it again
-                      curl -s -A "$USER_AGENT" "$start_url" > homepage.html
-                      pages_to_crawl=($(grep -o 'https://www.mecabricks.com/[^"]*' homepage.html | grep -v '\.(jpg|jpeg|png|gif|css|js)$' | head -n 20))
-                      rm -f homepage.html
-                  fi
-                  
-                  # Also try these known good URLs
-                  pages_to_crawl+=(
-                      "https://www.mecabricks.com/en/models/discover"
-                      "https://www.mecabricks.com/en/forum"
-                      "https://www.mecabricks.com/en/workshop"
-                  )
-                  
-                  for next_url in "${pages_to_crawl[@]}"; do
+              if [ ! -s "$PASTED_URLS_FILE" ] || [ $(wc -l < "$PASTED_URLS_FILE") -lt 50 ]; then
+                  # Get next URL to visit for deeper crawling
+                  for next_url in $(grep -o 'https://www.mecabricks.com/[^"]*' "$visited_urls_file" | head -n 10); do
                       if ! grep -q "^$next_url$" "$visited_urls_file" 2>/dev/null; then
                           echo "Deep crawling: $next_url"
                           curl -s -A "$USER_AGENT" "$next_url" > page.html
@@ -188,7 +161,7 @@ jobs:
                           done < "$temp_urls_file"
                           
                           # Clean up
-                          rm -f page.html "$temp_urls_file"
+                          rm page.html "$temp_urls_file"
                           
                           # Sort the pasted URLs file
                           sort -u "$PASTED_URLS_FILE" -o "$PASTED_URLS_FILE"
@@ -219,44 +192,8 @@ jobs:
               scrape_mecabricks
           fi
 
-          # Process URLs from pasted_urls.txt until we reach MAX_ARCHIVES
-          while [ $NEW_URL_COUNT -lt $MAX_ARCHIVES ]; do
-              # If pasted_urls.txt is empty, scrape for more URLs
-              if [ ! -s "$PASTED_URLS_FILE" ]; then
-                  echo "Need more URLs. Scraping mecabricks.com..."
-                  scrape_mecabricks
-                  
-                  # If we still don't have URLs after scraping, try once more with a different approach
-                  if [ ! -s "$PASTED_URLS_FILE" ]; then
-                      echo "Still no URLs after scraping. Trying alternative URLs..."
-                      
-                      # Try some specific sections of the site
-                      for section in "models" "forum" "workshop" "gallery" "builders" "topics"; do
-                          section_url="https://www.mecabricks.com/en/$section"
-                          echo "Trying section: $section_url"
-                          
-                          curl -s -A "$USER_AGENT" "$section_url" > section.html
-                          grep -o 'https://www.mecabricks.com/[^"]*' section.html | grep -v '\.(jpg|jpeg|png|gif|css|js)$' > "$temp_urls_file"
-                          
-                          while read -r url; do
-                              if ! grep -q "^$url$" "$ALREADY_ARCHIVED_FILE" 2>/dev/null && ! grep -q "^$url$" "$PASTED_URLS_FILE" 2>/dev/null; then
-                                  echo "$url" >> "$PASTED_URLS_FILE"
-                              fi
-                          done < "$temp_urls_file"
-                          
-                          rm -f section.html "$temp_urls_file"
-                      done
-                      
-                      sort -u "$PASTED_URLS_FILE" -o "$PASTED_URLS_FILE"
-                      
-                      # If we still have no URLs, we need to exit
-                      if [ ! -s "$PASTED_URLS_FILE" ]; then
-                          echo "Could not find any URLs to archive. Exiting."
-                          break
-                      fi
-                  fi
-              fi
-              
+          # Process URLs from pasted_urls.txt
+          while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ] && [ -s "$PASTED_URLS_FILE" ]; do
               # Read the first URL from the file
               url=$(head -n 1 "$PASTED_URLS_FILE")
               
@@ -279,13 +216,47 @@ jobs:
               fi
               
               # If we've reached 20 URLs, commit changes
-              if [ $((NEW_URL_COUNT % 20)) -eq 0 ] && [ $NEW_URL_COUNT -gt 0 ]; then
+              if [ $((ARCHIVE_COUNT % 20)) -eq 0 ] && [ $ARCHIVE_COUNT -gt 0 ]; then
                   sort_files
                   commit_changes
               fi
+          done
+
+          # If pasted_urls.txt is empty and we haven't reached max archives, scrape mecabricks
+          while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ]; do
+              if [ ! -s "$PASTED_URLS_FILE" ]; then
+                  echo "No more URLs in $PASTED_URLS_FILE. Starting scrape of mecabricks.com..."
+                  scrape_mecabricks
+                  
+                  # If we still don't have URLs, break to avoid infinite loop
+                  if [ ! -s "$PASTED_URLS_FILE" ]; then
+                      echo "No URLs found after scraping. Exiting."
+                      break
+                  fi
+              fi
               
-              # Status update
-              echo "Progress: $NEW_URL_COUNT / $MAX_ARCHIVES URLs archived"
+              # Process the newly scraped URLs
+              while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ] && [ -s "$PASTED_URLS_FILE" ]; do
+                  url=$(head -n 1 "$PASTED_URLS_FILE")
+                  sed -i '1d' "$PASTED_URLS_FILE"
+                  
+                  if grep -q "^$url$" "$ALREADY_ARCHIVED_FILE" 2>/dev/null; then
+                      echo "URL already in $ALREADY_ARCHIVED_FILE: $url"
+                      continue
+                  fi
+                  
+                  if check_archived "$url"; then
+                      echo "URL already archived in Internet Archive: $url"
+                      echo "$url" >> "$ALREADY_ARCHIVED_FILE"
+                  else
+                      archive_url "$url"
+                  fi
+                  
+                  if [ $((ARCHIVE_COUNT % 20)) -eq 0 ] && [ $ARCHIVE_COUNT -gt 0 ]; then
+                      sort_files
+                      commit_changes
+                  fi
+              done
           done
 
           # Final sort and commit
@@ -302,7 +273,6 @@ jobs:
 
       - name: Push any remaining changes
         run: |
-          git pull
           git add pasted_urls.txt already_archived.txt
           git commit -m "Final update of archived URLs" || echo "No changes to commit"
           git push || echo "No changes to push"
