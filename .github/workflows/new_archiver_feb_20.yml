@@ -1,272 +1,188 @@
-name: Archive URLs (Feb 22)
+name: Archive URLs
+
 on:
-  workflow_dispatch:
   schedule:
-    - cron: '0 * * * *'
-  push:
-    paths:
-      - 'pasted_urls.txt'
-      - '.github/workflows/new_archiver_feb_20.yml'
+    - cron: '0 */6 * * *'  # Run every 6 hours
+  workflow_dispatch:  # Allow manual triggering
 
 jobs:
-  archive:
+  archive-urls:
     runs-on: ubuntu-latest
-    
     steps:
-      - uses: actions/checkout@v4
+      - name: Checkout repository
+        uses: actions/checkout@v3
         with:
-          token: ${{ secrets.GITHUB_TOKEN }}
-      
-      - name: Configure Git
-        run: |
-          git config user.name "GitHub Action"
-          git config user.email "action@github.com"
-      
-      - name: Setup Python
+          fetch-depth: 0
+
+      - name: Set up Python
         uses: actions/setup-python@v4
         with:
-          python-version: '3.x'
-          
-      - name: Install dependencies
-        run: pip install beautifulsoup4 requests urllib3
+          python-version: '3.10'
 
-      - name: Extract and Scrape URLs
+      - name: Install dependencies
         run: |
-          python3 - <<EOF
-          import re
-          import sys
+          python -m pip install --upgrade pip
+          pip install requests beautifulsoup4
+
+      - name: Create archive script
+        run: |
+          cat > archive_url.sh << 'EOF'
+          #!/bin/bash
+          url=$1
+          
+          # Try to archive the URL
+          response=$(curl -s -w "%{http_code}" -o /dev/null "https://web.archive.org/save/$url")
+          
+          # Check if archiving was successful (2xx status code)
+          if [[ $response =~ ^2[0-9][0-9]$ ]]; then
+            echo "SUCCESS"
+          else
+            echo "FAILED: $response"
+          fi
+          EOF
+          
+          chmod +x archive_url.sh
+
+      - name: Process URLs
+        id: process_urls
+        run: |
+          python - << 'EOF'
+          import os
           import time
           import requests
+          import subprocess
           from bs4 import BeautifulSoup
-          from collections import deque
-          from urllib.parse import urljoin, urlparse
           
-          def is_valid_url(url):
+          # Initialize sets for tracking URLs
+          archived_urls = set()
+          urls_to_process = set()
+          
+          # Load existing archived URLs
+          if os.path.exists('archived_urls.txt'):
+              with open('archived_urls.txt', 'r') as f:
+                  archived_urls = set(line.strip() for line in f if line.strip())
+          
+          # Load URLs from pasted_urls.txt
+          if os.path.exists('pasted_urls.txt'):
+              with open('pasted_urls.txt', 'r') as f:
+                  urls_to_process = set(line.strip() for line in f if line.strip())
+          
+          # Function to check if URL is already archived in Internet Archive
+          def is_archived(url):
               try:
-                  result = urlparse(url)
-                  return all([result.scheme, result.netloc])
-              except:
+                  response = requests.get(f"https://archive.org/wayback/available?url={url}", timeout=10)
+                  data = response.json()
+                  return len(data.get('archived_snapshots', {})) > 0
+              except Exception as e:
+                  print(f"Error checking archive status for {url}: {e}")
                   return False
           
-          def extract_urls(filename):
+          # Function to archive a URL using the bash script
+          def archive_url(url):
               try:
-                  with open(filename, 'r', encoding='utf-8') as f:
-                      content = f.read()
-                  
-                  url_pattern = r'https?://[^\s<>"\']+'
-                  return sorted(set(re.findall(url_pattern, content)))
-              except:
-                  return []
+                  result = subprocess.run(['./archive_url.sh', url], 
+                                         capture_output=True, text=True, check=True)
+                  return "SUCCESS" in result.stdout
+              except subprocess.CalledProcessError as e:
+                  print(f"Error archiving {url}: {e}")
+                  return False
           
-          def scrape_mecabricks(target_count=100):
-              base_url = 'https://mecabricks.com'
-              visited = set()
-              queue = deque([base_url])
-              found_urls = set()
-              headers = {
-                  'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.124 Safari/537.36',
-                  'Accept': 'text/html,application/xhtml+xml,application/xml;q=0.9,image/webp,*/*;q=0.8',
-                  'Accept-Language': 'en-US,en;q=0.5',
-                  'Connection': 'keep-alive',
-              }
+          # Function to scrape Mecabricks for new URLs
+          def scrape_mecabricks():
+              new_urls = set()
+              try:
+                  response = requests.get("https://www.mecabricks.com/en/models/discover", timeout=15)
+                  soup = BeautifulSoup(response.text, 'html.parser')
+                  
+                  # Find model links
+                  for link in soup.find_all('a', href=True):
+                      href = link['href']
+                      if '/en/models/' in href and not href.startswith('http'):
+                          full_url = f"https://www.mecabricks.com{href}"
+                          if full_url not in archived_urls and full_url not in urls_to_process:
+                              new_urls.add(full_url)
+              except Exception as e:
+                  print(f"Error scraping Mecabricks: {e}")
               
-              while queue and len(found_urls) < target_count:
-                  current_url = queue.popleft()
-                  if current_url in visited:
+              return new_urls
+          
+          # Main processing logic
+          archived_count = 0
+          max_archives = 100
+          
+          # Process URLs from pasted_urls.txt first
+          remaining_urls = set()
+          for url in urls_to_process:
+              if archived_count >= max_archives:
+                  remaining_urls.add(url)
+                  continue
+                  
+              if url in archived_urls:
+                  print(f"URL already in archived list: {url}")
+                  continue
+                  
+              if is_archived(url):
+                  print(f"URL already archived in Internet Archive: {url}")
+                  archived_urls.add(url)
+                  archived_count += 1
+              else:
+                  print(f"Archiving URL: {url}")
+                  if archive_url(url):
+                      archived_urls.add(url)
+                      archived_count += 1
+                      print(f"Successfully archived: {url}")
+                  else:
+                      remaining_urls.add(url)
+                      print(f"Failed to archive: {url}")
+              
+              # Avoid rate limiting
+              time.sleep(2)
+          
+          # If we haven't reached our quota, scrape Mecabricks for more URLs
+          if archived_count < max_archives:
+              print("Scraping Mecabricks for additional URLs...")
+              mecabricks_urls = scrape_mecabricks()
+              
+              for url in mecabricks_urls:
+                  if archived_count >= max_archives:
+                      break
+                      
+                  if url in archived_urls:
                       continue
                       
-                  visited.add(current_url)
-                  print(f"Scraping: {current_url}")
-                  
-                  try:
-                      response = requests.get(
-                          current_url, 
-                          headers=headers, 
-                          timeout=30,
-                          allow_redirects=True
-                      )
-                      response.raise_for_status()  # Raise an error for bad status codes
+                  if is_archived(url):
+                      print(f"URL already archived in Internet Archive: {url}")
+                      archived_urls.add(url)
+                      archived_count += 1
+                  else:
+                      print(f"Archiving URL: {url}")
+                      if archive_url(url):
+                          archived_urls.add(url)
+                          archived_count += 1
+                          print(f"Successfully archived: {url}")
                       
-                      soup = BeautifulSoup(response.text, 'html.parser')
-                      
-                      # First try to find model URLs (priority)
-                      model_links = soup.find_all('a', href=lambda x: x and '/models/' in x)
-                      for link in model_links:
-                          href = link.get('href')
-                          if href:
-                              full_url = urljoin(base_url, href)
-                              if is_valid_url(full_url):
-                                  found_urls.add(full_url)
-                                  if full_url not in visited:
-                                      queue.append(full_url)
-                      
-                      # Then get other mecabricks URLs
-                      for link in soup.find_all('a', href=True):
-                          href = link['href']
-                          full_url = urljoin(current_url, href)
-                          
-                          if not is_valid_url(full_url) or 'mecabricks.com' not in full_url:
-                              continue
-                          
-                          found_urls.add(full_url)
-                          if full_url not in visited:
-                              queue.append(full_url)
-                      
-                      print(f"Found {len(found_urls)} URLs so far")
-                      
-                      # Sleep between requests
-                      time.sleep(3)
-                      
-                  except requests.exceptions.RequestException as e:
-                      print(f"Network error scraping {current_url}: {str(e)}")
-                      time.sleep(5)  # Longer sleep on error
-                  except Exception as e:
-                      print(f"Error scraping {current_url}: {str(e)}")
-                      time.sleep(2)
-              
-              return list(found_urls)
+                  # Avoid rate limiting
+                  time.sleep(2)
           
-          # First try to get URLs from file
-          urls = extract_urls('pasted_urls.txt')
-          
-          # If no URLs found, scrape mecabricks.com
-          if not urls:
-              print("No URLs found in file, scraping mecabricks.com...")
-              urls = scrape_mecabricks(5000) # temporary fix, should be getting 100 urls that have not been archived alrady or are in already_archived.txt, but because that's not happening we compensate by looking for 5k urls
-          
-          # Write URLs to file
-          with open('all_urls.txt', 'w', encoding='utf-8') as f:
-              for url in urls:
+          # Save updated archived_urls.txt
+          with open('archived_urls.txt', 'w') as f:
+              for url in sorted(archived_urls):
                   f.write(f"{url}\n")
           
-          print(f"Total URLs found: {len(urls)}")
+          # Save remaining URLs back to pasted_urls.txt
+          with open('pasted_urls.txt', 'w') as f:
+              for url in sorted(remaining_urls):
+                  f.write(f"{url}\n")
+          
+          print(f"Archived {archived_count} URLs in this run")
+          print(f"Total archived URLs: {len(archived_urls)}")
+          print(f"Remaining URLs to process: {len(remaining_urls)}")
           EOF
-      
-      - name: Archive URLs
+
+      - name: Commit changes
         run: |
-          # Function to retry curl with backoff
-          function retry_curl() {
-            local url=$1
-            local max_attempts=3
-            local attempt=1
-            local wait_time=5
-            
-            while [ $attempt -le $max_attempts ]; do
-              response=$(curl -sS --max-time 30 "$url" 2>&1)
-              if [ $? -eq 0 ]; then
-                echo "$response"
-                return 0
-              fi
-              echo "$(date): Attempt $attempt failed for $url. Retrying in ${wait_time}s..."
-              sleep $wait_time
-              wait_time=$((wait_time * 2))
-              attempt=$((attempt + 1))
-            done
-            
-            echo "error"
-            return 1
-          }
-          
-          # Get original hash
-          original_hash=$(git hash-object pasted_urls.txt || echo "")
-          
-          # Initialize files
-          touch already_archived.txt processed_urls.txt
-          
-          # Pick and process 1000 random URLs
-          shuf -n 1000 all_urls.txt | while IFS= read -r url || [ -n "$url" ]; do 
-            if [ -z "$url" ]; then
-              continue
-            fi
-            
-            echo "$url" >> processed_urls.txt
-            
-            if [[ "$url" == *"reddit.com"* && "$url" != *"old.reddit.com"* ]]; then
-              old_url=$(echo "$url" | sed 's/reddit.com/old.reddit.com/')
-              urls=("$url" "$old_url")
-            else
-              urls=("$url")
-            fi
-            
-            for process_url in "${urls[@]}"; do
-              if [ -z "$process_url" ]; then
-                continue
-              fi
-              
-              if grep -Fxq "$process_url" already_archived.txt 2>/dev/null; then
-                echo "$(date): Already archived: $process_url"
-                continue
-              fi
-              
-              # Check archive status with retry
-              archived=$(retry_curl "https://web.archive.org/cdx/search/cdx?url=$process_url&output=json&limit=1")
-              if [ "$archived" = "error" ]; then
-                echo "$(date): Failed all attempts to check archive status for: $process_url"
-                echo "$process_url" >> failed_urls.txt
-                continue
-              fi
-              
-              if [ "$archived" = "[]" ]; then
-                echo "$(date): Archiving: $process_url"
-                if retry_curl "https://web.archive.org/save/$process_url" > /dev/null; then
-                  echo "$process_url" >> already_archived.txt
-                  sleep 5
-                else
-                  echo "$(date): Failed to archive after retries: $process_url"
-                  echo "$process_url" >> failed_urls.txt
-                fi
-              else
-                echo "$(date): Already in Internet Archive: $process_url"
-                echo "$process_url" >> already_archived.txt
-              fi
-            done
-          done || true
-          
-          # Update files if no conflicts
-          current_hash=$(git hash-object pasted_urls.txt 2>/dev/null || echo "")
-          if [ "$original_hash" = "$current_hash" ]; then
-            sort -u already_archived.txt -o already_archived.txt 2>/dev/null || true
-            
-            # Only sort and add failed_urls.txt if it exists
-            if [ -f failed_urls.txt ]; then
-              sort -u failed_urls.txt -o failed_urls.txt 2>/dev/null || true
-              git add failed_urls.txt
-            fi
-            
-            if [ -s processed_urls.txt ]; then
-              grep -vxFf processed_urls.txt all_urls.txt 2>/dev/null | sort -u > pasted_urls.txt || true
-            fi
-            
-            git add pasted_urls.txt already_archived.txt
-            
-            # Add 10 git commit retries with pull before each attempt
-            MAX_RETRIES=10
-            RETRY_COUNT=0
-            COMMIT_SUCCESS=false
-            
-            while [ $RETRY_COUNT -lt $MAX_RETRIES ] && [ "$COMMIT_SUCCESS" = "false" ]; do
-              echo "Commit attempt $(($RETRY_COUNT + 1))/$MAX_RETRIES"
-              
-              # Pull the latest changes before attempting to commit
-              git pull --rebase
-              
-              # Try to commit and push
-              if git commit -m "Update archived URLs and remaining URLs" && git push; then
-                echo "Commit and push successful on attempt $(($RETRY_COUNT + 1))"
-                COMMIT_SUCCESS=true
-              else
-                echo "Commit attempt $(($RETRY_COUNT + 1)) failed, retrying..."
-                RETRY_COUNT=$((RETRY_COUNT + 1))
-                sleep 2  # Add a small delay between retries
-              fi
-            done
-            
-            if [ "$COMMIT_SUCCESS" = "false" ]; then
-              echo "Failed to commit after $MAX_RETRIES attempts"
-            fi
-          else
-            echo "Skipping commit due to file changes detected"
-          fi
-          
-          # Cleanup
-          rm -f processed_urls.txt all_urls.txt
+          git config --local user.email "action@github.com"
+          git config --local user.name "GitHub Action"
+          git add archived_urls.txt pasted_urls.txt
+          git diff --staged --quiet || git commit -m "Update archived URLs [skip ci]"
+          git push
