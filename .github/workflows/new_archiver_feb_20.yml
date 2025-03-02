@@ -33,10 +33,10 @@ jobs:
           url=$1
           
           # Try to archive the URL
-          response=$(curl -s -w "%{http_code}" -o /dev/null "https://web.archive.org/save/$url")
+          response=$(curl -s -w "%{http_code}" "https://web.archive.org/save/$url")
           
-          # Check if archiving was successful (2xx status code)
-          if [[ $response =~ ^2[0-9][0-9]$ ]]; then
+          # Check if archiving was successful
+          if [[ $response == *"\"status\":\"success\""* ]]; then
             echo "SUCCESS"
           else
             echo "FAILED: $response"
@@ -48,6 +48,16 @@ jobs:
       - name: Process URLs
         id: process_urls
         run: |
+          # Create files if they don't exist
+          touch archived_urls.txt
+          touch pasted_urls.txt
+          
+          # Add some initial URLs to pasted_urls.txt if it's empty
+          if [ ! -s pasted_urls.txt ]; then
+            echo "https://www.mecabricks.com/en/models/discover" > pasted_urls.txt
+            echo "https://www.mecabricks.com/en/workshop" >> pasted_urls.txt
+          fi
+          
           python - << 'EOF'
           import os
           import time
@@ -63,18 +73,22 @@ jobs:
           if os.path.exists('archived_urls.txt'):
               with open('archived_urls.txt', 'r') as f:
                   archived_urls = set(line.strip() for line in f if line.strip())
+              print(f"Loaded {len(archived_urls)} previously archived URLs")
           
           # Load URLs from pasted_urls.txt
           if os.path.exists('pasted_urls.txt'):
               with open('pasted_urls.txt', 'r') as f:
                   urls_to_process = set(line.strip() for line in f if line.strip())
+              print(f"Loaded {len(urls_to_process)} URLs to process")
           
           # Function to check if URL is already archived in Internet Archive
           def is_archived(url):
               try:
                   response = requests.get(f"https://archive.org/wayback/available?url={url}", timeout=10)
                   data = response.json()
-                  return len(data.get('archived_snapshots', {})) > 0
+                  has_snapshots = len(data.get('archived_snapshots', {})) > 0
+                  print(f"API check for {url}: {'Already archived' if has_snapshots else 'Not archived'}")
+                  return has_snapshots
               except Exception as e:
                   print(f"Error checking archive status for {url}: {e}")
                   return False
@@ -82,17 +96,23 @@ jobs:
           # Function to archive a URL using the bash script
           def archive_url(url):
               try:
+                  print(f"Running archive script for: {url}")
                   result = subprocess.run(['./archive_url.sh', url], 
                                          capture_output=True, text=True, check=True)
-                  return "SUCCESS" in result.stdout
+                  success = "SUCCESS" in result.stdout
+                  print(f"Archive result: {result.stdout.strip()}")
+                  return success
               except subprocess.CalledProcessError as e:
                   print(f"Error archiving {url}: {e}")
+                  print(f"STDOUT: {e.stdout}")
+                  print(f"STDERR: {e.stderr}")
                   return False
           
           # Function to scrape Mecabricks for new URLs
           def scrape_mecabricks():
               new_urls = set()
               try:
+                  print("Scraping Mecabricks main page...")
                   response = requests.get("https://www.mecabricks.com/en/models/discover", timeout=15)
                   soup = BeautifulSoup(response.text, 'html.parser')
                   
@@ -103,9 +123,11 @@ jobs:
                           full_url = f"https://www.mecabricks.com{href}"
                           if full_url not in archived_urls and full_url not in urls_to_process:
                               new_urls.add(full_url)
+                              print(f"Found new URL: {full_url}")
               except Exception as e:
                   print(f"Error scraping Mecabricks: {e}")
               
+              print(f"Found {len(new_urls)} new URLs from Mecabricks")
               return new_urls
           
           # Main processing logic
@@ -116,6 +138,7 @@ jobs:
           remaining_urls = set()
           for url in urls_to_process:
               if archived_count >= max_archives:
+                  print(f"Reached maximum archive count of {max_archives}")
                   remaining_urls.add(url)
                   continue
                   
@@ -147,9 +170,11 @@ jobs:
               
               for url in mecabricks_urls:
                   if archived_count >= max_archives:
+                      print(f"Reached maximum archive count of {max_archives}")
                       break
                       
                   if url in archived_urls:
+                      print(f"URL already in archived list: {url}")
                       continue
                       
                   if is_archived(url):
