@@ -19,6 +19,7 @@ jobs:
         run: |
           git config --global user.name "GitHub Action"
           git config --global user.email "action@github.com"
+          git config pull.rebase false  # Configure git to use merge strategy
 
       - name: Create script
         run: |
@@ -41,7 +42,7 @@ jobs:
           commit_changes() {
               local attempts=0
               while [ $attempts -lt $RETRY_COUNT ]; do
-                  git pull
+                  git pull  # Pull latest changes first
                   git add "$PASTED_URLS_FILE" "$ALREADY_ARCHIVED_FILE"
                   git commit -m "Update archived URLs (New: $NEW_URL_COUNT, Total Archived: $ARCHIVE_COUNT)"
                   
@@ -89,8 +90,15 @@ jobs:
               local url=$1
               
               echo "Archiving: $url"
-              curl_response=$(curl -s -A "$USER_AGENT" -X POST "${IA_ENDPOINT}${url}")
-              echo "Archive result: $(echo "$curl_response" | head -n 10 | grep -v "html")"
+              http_code=$(curl -s -o /dev/null -w "%{http_code}" -A "$USER_AGENT" -X POST "${IA_ENDPOINT}${url}")
+              
+              if [[ "$http_code" -ge 200 && "$http_code" -lt 300 ]]; then
+                  echo "Archive successful (HTTP $http_code)"
+                  success=true
+              else
+                  echo "Archive may have failed (HTTP $http_code)"
+                  success=false
+              fi
               
               # Add to already archived URLs file
               echo "$url" >> "$ALREADY_ARCHIVED_FILE"
@@ -133,7 +141,7 @@ jobs:
                   done < "$temp_urls_file"
                   
                   # Clean up
-                  rm homepage.html "$temp_urls_file"
+                  rm -f homepage.html "$temp_urls_file"
                   
                   # Sort the pasted URLs file
                   sort -u "$PASTED_URLS_FILE" -o "$PASTED_URLS_FILE"
@@ -161,7 +169,7 @@ jobs:
                           done < "$temp_urls_file"
                           
                           # Clean up
-                          rm page.html "$temp_urls_file"
+                          rm -f page.html "$temp_urls_file"
                           
                           # Sort the pasted URLs file
                           sort -u "$PASTED_URLS_FILE" -o "$PASTED_URLS_FILE"
@@ -192,38 +200,9 @@ jobs:
               scrape_mecabricks
           fi
 
-          # Process URLs from pasted_urls.txt
-          while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ] && [ -s "$PASTED_URLS_FILE" ]; do
-              # Read the first URL from the file
-              url=$(head -n 1 "$PASTED_URLS_FILE")
-              
-              # Remove the URL from pasted_urls.txt
-              sed -i '1d' "$PASTED_URLS_FILE"
-              
-              # Check if URL is already in already_archived.txt
-              if grep -q "^$url$" "$ALREADY_ARCHIVED_FILE" 2>/dev/null; then
-                  echo "URL already in $ALREADY_ARCHIVED_FILE: $url"
-                  continue
-              fi
-              
-              # Check if URL is already archived in IA
-              if check_archived "$url"; then
-                  echo "URL already archived in Internet Archive: $url"
-                  echo "$url" >> "$ALREADY_ARCHIVED_FILE"
-              else
-                  # Archive the URL
-                  archive_url "$url"
-              fi
-              
-              # If we've reached 20 URLs, commit changes
-              if [ $((ARCHIVE_COUNT % 20)) -eq 0 ] && [ $ARCHIVE_COUNT -gt 0 ]; then
-                  sort_files
-                  commit_changes
-              fi
-          done
-
-          # If pasted_urls.txt is empty and we haven't reached max archives, scrape mecabricks
+          # Process URLs until we reach MAX_ARCHIVES
           while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ]; do
+              # If we run out of URLs, scrape more
               if [ ! -s "$PASTED_URLS_FILE" ]; then
                   echo "No more URLs in $PASTED_URLS_FILE. Starting scrape of mecabricks.com..."
                   scrape_mecabricks
@@ -235,32 +214,48 @@ jobs:
                   fi
               fi
               
-              # Process the newly scraped URLs
-              while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ] && [ -s "$PASTED_URLS_FILE" ]; do
-                  url=$(head -n 1 "$PASTED_URLS_FILE")
-                  sed -i '1d' "$PASTED_URLS_FILE"
+              # Read all URLs from pasted_urls.txt in one go
+              urls_to_process=()
+              while IFS= read -r line; do
+                  urls_to_process+=("$line")
+              done < "$PASTED_URLS_FILE"
+              
+              # Clear the file since we've read all URLs
+              > "$PASTED_URLS_FILE"
+              
+              # Process each URL
+              for url in "${urls_to_process[@]}"; do
+                  # Check if we've reached our target
+                  if [ $ARCHIVE_COUNT -ge $MAX_ARCHIVES ]; then
+                      # Put any remaining URLs back into pasted_urls.txt
+                      for remaining_url in "${urls_to_process[@]:$i}"; do
+                          echo "$remaining_url" >> "$PASTED_URLS_FILE"
+                      done
+                      break
+                  fi
                   
+                  # Check if URL is already in already_archived.txt
                   if grep -q "^$url$" "$ALREADY_ARCHIVED_FILE" 2>/dev/null; then
                       echo "URL already in $ALREADY_ARCHIVED_FILE: $url"
                       continue
                   fi
                   
+                  # Check if URL is already archived in IA
                   if check_archived "$url"; then
                       echo "URL already archived in Internet Archive: $url"
                       echo "$url" >> "$ALREADY_ARCHIVED_FILE"
                   else
+                      # Archive the URL
                       archive_url "$url"
-                  fi
-                  
-                  if [ $((ARCHIVE_COUNT % 20)) -eq 0 ] && [ $ARCHIVE_COUNT -gt 0 ]; then
-                      sort_files
-                      commit_changes
                   fi
               done
           done
 
-          # Final sort and commit
+          # Sort files
           sort_files
+          
+          # Only commit once after all archiving is done
+          echo "Archiving complete. Committing changes..."
           commit_changes
 
           echo "Completed archiving. Total new URLs archived: $NEW_URL_COUNT (Total processed: $ARCHIVE_COUNT)"
@@ -273,6 +268,7 @@ jobs:
 
       - name: Push any remaining changes
         run: |
+          git pull  # Pull before push
           git add pasted_urls.txt already_archived.txt
           git commit -m "Final update of archived URLs" || echo "No changes to commit"
           git push || echo "No changes to push"
