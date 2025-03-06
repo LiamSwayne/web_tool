@@ -33,7 +33,7 @@ jobs:
           ALREADY_ARCHIVED_FILE="already_archived.txt"
           ARCHIVE_COUNT=0
           NEW_URL_COUNT=0
-          MAX_ARCHIVES=100
+          MAX_ARCHIVES=200
           RETRY_COUNT=10
           IA_ENDPOINT="https://web.archive.org/save/"
           USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36"
