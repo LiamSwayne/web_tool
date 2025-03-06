@@ -6094,6 +6094,7 @@ https://www.mecabricks.com/en/models/79a8A0Xq28w
 https://www.mecabricks.com/en/models/79a8AAQq28w
 https://www.mecabricks.com/en/models/79a8AEAw28w#Dq7QYV
 https://www.mecabricks.com/en/models/79a8AEAw28w#bnJlqb
+https://www.mecabricks.com/en/models/79a8AEAw28w#jaoleb
 https://www.mecabricks.com/en/models/79a8AEAw28w#jge9kb
 https://www.mecabricks.com/en/models/79a8AJLY28w
 https://www.mecabricks.com/en/models/79a8AJyb28w
@@ -6766,6 +6767,7 @@ https://www.mecabricks.com/en/models/Vyvn7Bd4al3
 https://www.mecabricks.com/en/models/Vyvn7GPmal3
 https://www.mecabricks.com/en/models/Vyvn7kZDal3
 https://www.mecabricks.com/en/models/VyvnAzymjl3
+https://www.mecabricks.com/en/models/VyvnL0e52l3
 https://www.mecabricks.com/en/models/VyvnL0e52l3#jR7W0D
 https://www.mecabricks.com/en/models/VyvnL7kD2l3
 https://www.mecabricks.com/en/models/VyvnL8Y32l3
