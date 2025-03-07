@@ -33,7 +33,7 @@ jobs:
           ALREADY_ARCHIVED_FILE="already_archived.txt"
           ARCHIVE_COUNT=0
           NEW_URL_COUNT=0
-          MAX_ARCHIVES=400
+          MAX_ARCHIVES=100
           RETRY_COUNT=10
           IA_ENDPOINT="https://web.archive.org/save/"
           USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36"
@@ -224,7 +224,6 @@ jobs:
               > "$PASTED_URLS_FILE"
               
               # Process each URL
-              i=0
               for url in "${urls_to_process[@]}"; do
                   # Check if we've reached our target
                   if [ $ARCHIVE_COUNT -ge $MAX_ARCHIVES ]; then
@@ -238,7 +237,6 @@ jobs:
                   # Check if URL is already in already_archived.txt
                   if grep -q "^$url$" "$ALREADY_ARCHIVED_FILE" 2>/dev/null; then
                       echo "URL already in $ALREADY_ARCHIVED_FILE: $url"
-                      i=$((i+1))
                       continue
                   fi
                   
@@ -250,7 +248,6 @@ jobs:
                       # Archive the URL
                       archive_url "$url"
                   fi
-                  i=$((i+1))
               done
           done
 
