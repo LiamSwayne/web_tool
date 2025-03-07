@@ -37,7 +37,7 @@ jobs:
           RETRY_COUNT=10
           IA_ENDPOINT="https://web.archive.org/save/"
           USER_AGENT="Mozilla/5.0 (X11; Linux x86_64) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/91.0.4472.101 Safari/537.36"
-
+          
           # Function to commit changes with retries
           commit_changes() {
               local attempts=0
@@ -59,7 +59,7 @@ jobs:
               echo "Failed to push changes after $RETRY_COUNT attempts."
               return 1
           }
-
+          
           # Function to sort files
           sort_files() {
               if [ -f "$PASTED_URLS_FILE" ]; then
@@ -70,7 +70,7 @@ jobs:
                   sort -u "$ALREADY_ARCHIVED_FILE" -o "$ALREADY_ARCHIVED_FILE"
               fi
           }
-
+          
           # Function to check if URL is already archived in IA
           check_archived() {
               local url=$1
@@ -84,7 +84,7 @@ jobs:
                   return 0  # Already archived
               fi
           }
-
+          
           # Function to archive a URL
           archive_url() {
               local url=$1
@@ -112,7 +112,7 @@ jobs:
               # Sleep to avoid rate limiting
               sleep 5
           }
-
+          
           # Function to recursively scrape mecabricks.com
           scrape_mecabricks() {
               local start_url="https://www.mecabricks.com"
@@ -187,19 +187,53 @@ jobs:
               # Clean up
               rm -f "$visited_urls_file"
           }
-
+          
+          # Function to generate and archive random Hacker News URLs
+          generate_and_archive_hacker_news() {
+              local remaining=$1
+              local min_id=100
+              local max_id=43000000
+              local hn_url_base="https://news.ycombinator.com/item?id="
+              local hn_archived=0
+              
+              echo "Generating $remaining random Hacker News URLs to reach target..."
+              
+              while [ $hn_archived -lt $remaining ]; do
+                  # Generate a random ID between min_id and max_id
+                  random_id=$((RANDOM % (max_id - min_id + 1) + min_id))
+                  url="${hn_url_base}${random_id}"
+                  
+                  # Check if URL is already in already_archived.txt
+                  if grep -q "^$url$" "$ALREADY_ARCHIVED_FILE" 2>/dev/null; then
+                      echo "Hacker News URL already in $ALREADY_ARCHIVED_FILE: $url"
+                      continue
+                  fi
+                  
+                  # Archive the URL
+                  archive_url "$url"
+                  hn_archived=$((hn_archived+1))
+                  
+                  # Check if we've reached our target
+                  if [ $ARCHIVE_COUNT -ge $MAX_ARCHIVES ]; then
+                      break
+                  fi
+              done
+              
+              echo "Added and archived $hn_archived Hacker News URLs"
+          }
+          
           # Main script execution
-
+          
           # Create files if they don't exist
           touch "$PASTED_URLS_FILE"
           touch "$ALREADY_ARCHIVED_FILE"
-
+          
           # Check if pasted_urls.txt is empty
           if [ ! -s "$PASTED_URLS_FILE" ]; then
               echo "No URLs found in $PASTED_URLS_FILE. Starting scrape of mecabricks.com..."
               scrape_mecabricks
           fi
-
+          
           # Process URLs until we reach MAX_ARCHIVES
           while [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ]; do
               # If we run out of URLs, scrape more
@@ -209,7 +243,7 @@ jobs:
                   
                   # If we still don't have URLs, break to avoid infinite loop
                   if [ ! -s "$PASTED_URLS_FILE" ]; then
-                      echo "No URLs found after scraping. Exiting."
+                      echo "No URLs found after scraping. Breaking out to try Hacker News URLs."
                       break
                   fi
               fi
@@ -250,14 +284,21 @@ jobs:
                   fi
               done
           done
-
+          
+          # Check if we need to add Hacker News URLs to reach our target
+          if [ $ARCHIVE_COUNT -lt $MAX_ARCHIVES ]; then
+              remaining_needed=$((MAX_ARCHIVES - ARCHIVE_COUNT))
+              echo "Only archived $ARCHIVE_COUNT URLs. Need $remaining_needed more to reach target of $MAX_ARCHIVES."
+              generate_and_archive_hacker_news $remaining_needed
+          fi
+          
           # Sort files
           sort_files
           
           # Only commit once after all archiving is done
           echo "Archiving complete. Committing changes..."
           commit_changes
-
+          
           echo "Completed archiving. Total new URLs archived: $NEW_URL_COUNT (Total processed: $ARCHIVE_COUNT)"
           EOF
           
