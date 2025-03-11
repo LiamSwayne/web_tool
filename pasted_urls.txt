@@ -1,0 +1,2 @@
+http://smlnj.cs.uchicago.edu/dist/working/110.99.7/smlnj-amd64-110.99.7.pkg
+https://smlnj.cs.uchicago.edu/dist/working/110.99.7/smlnj-amd64-110.99.7.pkg
