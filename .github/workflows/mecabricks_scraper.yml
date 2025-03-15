@@ -2,7 +2,7 @@ name: Archive URLs
 
 on:
   schedule:
-    - cron: '0 * * * *'  # Run every hour
+    - cron: '0,15,30,45 * * * *'  # Run every hour
   workflow_dispatch:  # Allow manual triggering
   push:  # Add push trigger
 
