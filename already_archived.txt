@@ -5264,6 +5264,7 @@ https://news.ycombinator.com/item?id=10226
 https://news.ycombinator.com/item?id=10227
 https://news.ycombinator.com/item?id=10228
 https://news.ycombinator.com/item?id=10229
+https://news.ycombinator.com/item?id=1023
 https://news.ycombinator.com/item?id=10230
 https://news.ycombinator.com/item?id=10231
 https://news.ycombinator.com/item?id=10232
@@ -5355,6 +5356,7 @@ https://news.ycombinator.com/item?id=10289
 https://news.ycombinator.com/item?id=10289
 https://news.ycombinator.com/item?id=1029
 https://news.ycombinator.com/item?id=1029
+https://news.ycombinator.com/item?id=10290
 https://news.ycombinator.com/item?id=10291
 https://news.ycombinator.com/item?id=10292
 https://news.ycombinator.com/item?id=10293
@@ -5615,6 +5617,7 @@ https://news.ycombinator.com/item?id=1046
 https://news.ycombinator.com/item?id=10460
 https://news.ycombinator.com/item?id=10461
 https://news.ycombinator.com/item?id=10461
+https://news.ycombinator.com/item?id=10462
 https://news.ycombinator.com/item?id=10463
 https://news.ycombinator.com/item?id=10463
 https://news.ycombinator.com/item?id=10464
@@ -5736,6 +5739,7 @@ https://news.ycombinator.com/item?id=1054
 https://news.ycombinator.com/item?id=1054
 https://news.ycombinator.com/item?id=10540
 https://news.ycombinator.com/item?id=10540
+https://news.ycombinator.com/item?id=10541
 https://news.ycombinator.com/item?id=10541
 https://news.ycombinator.com/item?id=10542
 https://news.ycombinator.com/item?id=10543
@@ -6250,6 +6254,7 @@ https://news.ycombinator.com/item?id=10871
 https://news.ycombinator.com/item?id=10871
 https://news.ycombinator.com/item?id=10872
 https://news.ycombinator.com/item?id=10872
+https://news.ycombinator.com/item?id=10873
 https://news.ycombinator.com/item?id=10873
 https://news.ycombinator.com/item?id=10874
 https://news.ycombinator.com/item?id=10875
@@ -8011,6 +8016,7 @@ https://news.ycombinator.com/item?id=12003
 https://news.ycombinator.com/item?id=12004
 https://news.ycombinator.com/item?id=12004
 https://news.ycombinator.com/item?id=12005
+https://news.ycombinator.com/item?id=12006
 https://news.ycombinator.com/item?id=12006
 https://news.ycombinator.com/item?id=12007
 https://news.ycombinator.com/item?id=12008
@@ -10001,6 +10007,7 @@ https://news.ycombinator.com/item?id=13290
 https://news.ycombinator.com/item?id=13290
 https://news.ycombinator.com/item?id=13291
 https://news.ycombinator.com/item?id=13291
+https://news.ycombinator.com/item?id=13292
 https://news.ycombinator.com/item?id=13293
 https://news.ycombinator.com/item?id=13294
 https://news.ycombinator.com/item?id=13297
@@ -10792,6 +10799,7 @@ https://news.ycombinator.com/item?id=13804
 https://news.ycombinator.com/item?id=13805
 https://news.ycombinator.com/item?id=13806
 https://news.ycombinator.com/item?id=13807
+https://news.ycombinator.com/item?id=13807
 https://news.ycombinator.com/item?id=13808
 https://news.ycombinator.com/item?id=13808
 https://news.ycombinator.com/item?id=13809
@@ -11270,6 +11278,7 @@ https://news.ycombinator.com/item?id=14102
 https://news.ycombinator.com/item?id=14102
 https://news.ycombinator.com/item?id=14103
 https://news.ycombinator.com/item?id=14104
+https://news.ycombinator.com/item?id=14105
 https://news.ycombinator.com/item?id=14105
 https://news.ycombinator.com/item?id=14107
 https://news.ycombinator.com/item?id=14107
@@ -14714,6 +14723,7 @@ https://news.ycombinator.com/item?id=16314
 https://news.ycombinator.com/item?id=16314
 https://news.ycombinator.com/item?id=16316
 https://news.ycombinator.com/item?id=16316
+https://news.ycombinator.com/item?id=16317
 https://news.ycombinator.com/item?id=16318
 https://news.ycombinator.com/item?id=16318
 https://news.ycombinator.com/item?id=16319
@@ -15036,6 +15046,7 @@ https://news.ycombinator.com/item?id=16522
 https://news.ycombinator.com/item?id=16523
 https://news.ycombinator.com/item?id=16523
 https://news.ycombinator.com/item?id=16524
+https://news.ycombinator.com/item?id=16525
 https://news.ycombinator.com/item?id=16525
 https://news.ycombinator.com/item?id=16526
 https://news.ycombinator.com/item?id=16527
@@ -15511,6 +15522,7 @@ https://news.ycombinator.com/item?id=1684
 https://news.ycombinator.com/item?id=16840
 https://news.ycombinator.com/item?id=16840
 https://news.ycombinator.com/item?id=16841
+https://news.ycombinator.com/item?id=16842
 https://news.ycombinator.com/item?id=16843
 https://news.ycombinator.com/item?id=16843
 https://news.ycombinator.com/item?id=16844
@@ -15579,6 +15591,7 @@ https://news.ycombinator.com/item?id=16882
 https://news.ycombinator.com/item?id=16883
 https://news.ycombinator.com/item?id=16883
 https://news.ycombinator.com/item?id=16884
+https://news.ycombinator.com/item?id=16884
 https://news.ycombinator.com/item?id=16885
 https://news.ycombinator.com/item?id=16885
 https://news.ycombinator.com/item?id=16886
@@ -15642,6 +15655,7 @@ https://news.ycombinator.com/item?id=16923
 https://news.ycombinator.com/item?id=16924
 https://news.ycombinator.com/item?id=16925
 https://news.ycombinator.com/item?id=16926
+https://news.ycombinator.com/item?id=16927
 https://news.ycombinator.com/item?id=16927
 https://news.ycombinator.com/item?id=16928
 https://news.ycombinator.com/item?id=16928
@@ -16488,6 +16502,7 @@ https://news.ycombinator.com/item?id=17463
 https://news.ycombinator.com/item?id=17463
 https://news.ycombinator.com/item?id=17464
 https://news.ycombinator.com/item?id=17464
+https://news.ycombinator.com/item?id=17465
 https://news.ycombinator.com/item?id=17465
 https://news.ycombinator.com/item?id=17466
 https://news.ycombinator.com/item?id=17467
@@ -17514,6 +17529,7 @@ https://news.ycombinator.com/item?id=18116
 https://news.ycombinator.com/item?id=18116
 https://news.ycombinator.com/item?id=18117
 https://news.ycombinator.com/item?id=18118
+https://news.ycombinator.com/item?id=18118
 https://news.ycombinator.com/item?id=18119
 https://news.ycombinator.com/item?id=1812
 https://news.ycombinator.com/item?id=1812
@@ -17579,6 +17595,7 @@ https://news.ycombinator.com/item?id=18157
 https://news.ycombinator.com/item?id=18158
 https://news.ycombinator.com/item?id=18158
 https://news.ycombinator.com/item?id=18159
+https://news.ycombinator.com/item?id=1816
 https://news.ycombinator.com/item?id=18160
 https://news.ycombinator.com/item?id=18161
 https://news.ycombinator.com/item?id=18163
@@ -18896,6 +18913,7 @@ https://news.ycombinator.com/item?id=19009
 https://news.ycombinator.com/item?id=19009
 https://news.ycombinator.com/item?id=1901
 https://news.ycombinator.com/item?id=1901
+https://news.ycombinator.com/item?id=19010
 https://news.ycombinator.com/item?id=19011
 https://news.ycombinator.com/item?id=19012
 https://news.ycombinator.com/item?id=19013
@@ -18911,6 +18929,7 @@ https://news.ycombinator.com/item?id=19019
 https://news.ycombinator.com/item?id=1902
 https://news.ycombinator.com/item?id=19020
 https://news.ycombinator.com/item?id=19020
+https://news.ycombinator.com/item?id=19021
 https://news.ycombinator.com/item?id=19021
 https://news.ycombinator.com/item?id=19022
 https://news.ycombinator.com/item?id=19022
@@ -19277,6 +19296,7 @@ https://news.ycombinator.com/item?id=19250
 https://news.ycombinator.com/item?id=19250
 https://news.ycombinator.com/item?id=19251
 https://news.ycombinator.com/item?id=19251
+https://news.ycombinator.com/item?id=19253
 https://news.ycombinator.com/item?id=19253
 https://news.ycombinator.com/item?id=19254
 https://news.ycombinator.com/item?id=19255
@@ -19773,6 +19793,7 @@ https://news.ycombinator.com/item?id=19577
 https://news.ycombinator.com/item?id=19579
 https://news.ycombinator.com/item?id=19579
 https://news.ycombinator.com/item?id=1958
+https://news.ycombinator.com/item?id=19580
 https://news.ycombinator.com/item?id=19581
 https://news.ycombinator.com/item?id=19582
 https://news.ycombinator.com/item?id=19583
@@ -20576,6 +20597,7 @@ https://news.ycombinator.com/item?id=20116
 https://news.ycombinator.com/item?id=20117
 https://news.ycombinator.com/item?id=20117
 https://news.ycombinator.com/item?id=20118
+https://news.ycombinator.com/item?id=20119
 https://news.ycombinator.com/item?id=2012
 https://news.ycombinator.com/item?id=20120
 https://news.ycombinator.com/item?id=20120
@@ -23011,6 +23033,7 @@ https://news.ycombinator.com/item?id=21673
 https://news.ycombinator.com/item?id=21673
 https://news.ycombinator.com/item?id=21674
 https://news.ycombinator.com/item?id=21675
+https://news.ycombinator.com/item?id=21675
 https://news.ycombinator.com/item?id=21676
 https://news.ycombinator.com/item?id=21677
 https://news.ycombinator.com/item?id=21677
@@ -23479,6 +23502,7 @@ https://news.ycombinator.com/item?id=21986
 https://news.ycombinator.com/item?id=21986
 https://news.ycombinator.com/item?id=21987
 https://news.ycombinator.com/item?id=21987
+https://news.ycombinator.com/item?id=21988
 https://news.ycombinator.com/item?id=21989
 https://news.ycombinator.com/item?id=21990
 https://news.ycombinator.com/item?id=21990
@@ -24562,6 +24586,7 @@ https://news.ycombinator.com/item?id=22683
 https://news.ycombinator.com/item?id=22685
 https://news.ycombinator.com/item?id=22686
 https://news.ycombinator.com/item?id=22686
+https://news.ycombinator.com/item?id=22688
 https://news.ycombinator.com/item?id=22689
 https://news.ycombinator.com/item?id=22690
 https://news.ycombinator.com/item?id=22691
@@ -24961,6 +24986,7 @@ https://news.ycombinator.com/item?id=22941
 https://news.ycombinator.com/item?id=22942
 https://news.ycombinator.com/item?id=22942
 https://news.ycombinator.com/item?id=22943
+https://news.ycombinator.com/item?id=22944
 https://news.ycombinator.com/item?id=22944
 https://news.ycombinator.com/item?id=22945
 https://news.ycombinator.com/item?id=22947
@@ -25708,6 +25734,7 @@ https://news.ycombinator.com/item?id=23412
 https://news.ycombinator.com/item?id=23413
 https://news.ycombinator.com/item?id=23414
 https://news.ycombinator.com/item?id=23415
+https://news.ycombinator.com/item?id=23415
 https://news.ycombinator.com/item?id=23416
 https://news.ycombinator.com/item?id=23417
 https://news.ycombinator.com/item?id=23417
@@ -26443,6 +26470,7 @@ https://news.ycombinator.com/item?id=23891
 https://news.ycombinator.com/item?id=23893
 https://news.ycombinator.com/item?id=23894
 https://news.ycombinator.com/item?id=23895
+https://news.ycombinator.com/item?id=23895
 https://news.ycombinator.com/item?id=23896
 https://news.ycombinator.com/item?id=23896
 https://news.ycombinator.com/item?id=23897
@@ -26651,6 +26679,7 @@ https://news.ycombinator.com/item?id=24032
 https://news.ycombinator.com/item?id=24032
 https://news.ycombinator.com/item?id=24033
 https://news.ycombinator.com/item?id=24033
+https://news.ycombinator.com/item?id=24036
 https://news.ycombinator.com/item?id=24036
 https://news.ycombinator.com/item?id=24037
 https://news.ycombinator.com/item?id=24038
@@ -26946,6 +26975,7 @@ https://news.ycombinator.com/item?id=24227
 https://news.ycombinator.com/item?id=24228
 https://news.ycombinator.com/item?id=24229
 https://news.ycombinator.com/item?id=24229
+https://news.ycombinator.com/item?id=2423
 https://news.ycombinator.com/item?id=2423
 https://news.ycombinator.com/item?id=24230
 https://news.ycombinator.com/item?id=24231
@@ -27471,6 +27501,7 @@ https://news.ycombinator.com/item?id=24557
 https://news.ycombinator.com/item?id=24557
 https://news.ycombinator.com/item?id=24558
 https://news.ycombinator.com/item?id=24558
+https://news.ycombinator.com/item?id=24559
 https://news.ycombinator.com/item?id=2456
 https://news.ycombinator.com/item?id=2456
 https://news.ycombinator.com/item?id=24560
@@ -27920,6 +27951,7 @@ https://news.ycombinator.com/item?id=24849
 https://news.ycombinator.com/item?id=24850
 https://news.ycombinator.com/item?id=24850
 https://news.ycombinator.com/item?id=24851
+https://news.ycombinator.com/item?id=24852
 https://news.ycombinator.com/item?id=24852
 https://news.ycombinator.com/item?id=24853
 https://news.ycombinator.com/item?id=24854
@@ -28608,6 +28640,7 @@ https://news.ycombinator.com/item?id=25285
 https://news.ycombinator.com/item?id=25286
 https://news.ycombinator.com/item?id=25287
 https://news.ycombinator.com/item?id=25287
+https://news.ycombinator.com/item?id=25288
 https://news.ycombinator.com/item?id=25289
 https://news.ycombinator.com/item?id=25289
 https://news.ycombinator.com/item?id=2529
@@ -29419,6 +29452,7 @@ https://news.ycombinator.com/item?id=25826
 https://news.ycombinator.com/item?id=25827
 https://news.ycombinator.com/item?id=25828
 https://news.ycombinator.com/item?id=25829
+https://news.ycombinator.com/item?id=2583
 https://news.ycombinator.com/item?id=25830
 https://news.ycombinator.com/item?id=25831
 https://news.ycombinator.com/item?id=25831
@@ -29705,6 +29739,7 @@ https://news.ycombinator.com/item?id=26002
 https://news.ycombinator.com/item?id=26002
 https://news.ycombinator.com/item?id=26003
 https://news.ycombinator.com/item?id=26003
+https://news.ycombinator.com/item?id=26004
 https://news.ycombinator.com/item?id=26004
 https://news.ycombinator.com/item?id=26005
 https://news.ycombinator.com/item?id=26005
@@ -30435,6 +30470,7 @@ https://news.ycombinator.com/item?id=26472
 https://news.ycombinator.com/item?id=26473
 https://news.ycombinator.com/item?id=26474
 https://news.ycombinator.com/item?id=26475
+https://news.ycombinator.com/item?id=26476
 https://news.ycombinator.com/item?id=26477
 https://news.ycombinator.com/item?id=26478
 https://news.ycombinator.com/item?id=26479
@@ -31352,6 +31388,7 @@ https://news.ycombinator.com/item?id=27064
 https://news.ycombinator.com/item?id=27064
 https://news.ycombinator.com/item?id=27065
 https://news.ycombinator.com/item?id=27065
+https://news.ycombinator.com/item?id=27066
 https://news.ycombinator.com/item?id=27067
 https://news.ycombinator.com/item?id=27068
 https://news.ycombinator.com/item?id=27069
@@ -31686,6 +31723,7 @@ https://news.ycombinator.com/item?id=27287
 https://news.ycombinator.com/item?id=27288
 https://news.ycombinator.com/item?id=27289
 https://news.ycombinator.com/item?id=2729
+https://news.ycombinator.com/item?id=2729
 https://news.ycombinator.com/item?id=27290
 https://news.ycombinator.com/item?id=27291
 https://news.ycombinator.com/item?id=27292
@@ -31840,6 +31878,7 @@ https://news.ycombinator.com/item?id=27386
 https://news.ycombinator.com/item?id=27387
 https://news.ycombinator.com/item?id=27388
 https://news.ycombinator.com/item?id=27388
+https://news.ycombinator.com/item?id=27389
 https://news.ycombinator.com/item?id=27389
 https://news.ycombinator.com/item?id=2739
 https://news.ycombinator.com/item?id=2739
@@ -32021,6 +32060,7 @@ https://news.ycombinator.com/item?id=275
 https://news.ycombinator.com/item?id=275
 https://news.ycombinator.com/item?id=2750
 https://news.ycombinator.com/item?id=2750
+https://news.ycombinator.com/item?id=27500
 https://news.ycombinator.com/item?id=27501
 https://news.ycombinator.com/item?id=27502
 https://news.ycombinator.com/item?id=27502
@@ -32137,6 +32177,7 @@ https://news.ycombinator.com/item?id=2758
 https://news.ycombinator.com/item?id=27580
 https://news.ycombinator.com/item?id=27581
 https://news.ycombinator.com/item?id=27581
+https://news.ycombinator.com/item?id=27582
 https://news.ycombinator.com/item?id=27582
 https://news.ycombinator.com/item?id=27583
 https://news.ycombinator.com/item?id=27584
@@ -35259,6 +35300,7 @@ https://news.ycombinator.com/item?id=29624
 https://news.ycombinator.com/item?id=29625
 https://news.ycombinator.com/item?id=29626
 https://news.ycombinator.com/item?id=29626
+https://news.ycombinator.com/item?id=29627
 https://news.ycombinator.com/item?id=29628
 https://news.ycombinator.com/item?id=29628
 https://news.ycombinator.com/item?id=29629
@@ -37414,6 +37456,7 @@ https://news.ycombinator.com/item?id=31012
 https://news.ycombinator.com/item?id=31013
 https://news.ycombinator.com/item?id=31014
 https://news.ycombinator.com/item?id=31015
+https://news.ycombinator.com/item?id=31016
 https://news.ycombinator.com/item?id=31016
 https://news.ycombinator.com/item?id=31017
 https://news.ycombinator.com/item?id=31017
@@ -40118,6 +40161,7 @@ https://news.ycombinator.com/item?id=32787
 https://news.ycombinator.com/item?id=32788
 https://news.ycombinator.com/item?id=32789
 https://news.ycombinator.com/item?id=32789
+https://news.ycombinator.com/item?id=3279
 https://news.ycombinator.com/item?id=32790
 https://news.ycombinator.com/item?id=32790
 https://news.ycombinator.com/item?id=32791
@@ -40612,6 +40656,7 @@ https://news.ycombinator.com/item?id=3529
 https://news.ycombinator.com/item?id=3529
 https://news.ycombinator.com/item?id=3530
 https://news.ycombinator.com/item?id=3531
+https://news.ycombinator.com/item?id=3532
 https://news.ycombinator.com/item?id=3533
 https://news.ycombinator.com/item?id=3533
 https://news.ycombinator.com/item?id=3534
@@ -43044,6 +43089,7 @@ https://news.ycombinator.com/item?id=5106
 https://news.ycombinator.com/item?id=5107
 https://news.ycombinator.com/item?id=5108
 https://news.ycombinator.com/item?id=5108
+https://news.ycombinator.com/item?id=5109
 https://news.ycombinator.com/item?id=511
 https://news.ycombinator.com/item?id=5110
 https://news.ycombinator.com/item?id=5111
@@ -44133,6 +44179,7 @@ https://news.ycombinator.com/item?id=5814
 https://news.ycombinator.com/item?id=5814
 https://news.ycombinator.com/item?id=5815
 https://news.ycombinator.com/item?id=5816
+https://news.ycombinator.com/item?id=5816
 https://news.ycombinator.com/item?id=5817
 https://news.ycombinator.com/item?id=5817
 https://news.ycombinator.com/item?id=5818
@@ -45220,6 +45267,7 @@ https://news.ycombinator.com/item?id=6511
 https://news.ycombinator.com/item?id=6512
 https://news.ycombinator.com/item?id=6513
 https://news.ycombinator.com/item?id=6514
+https://news.ycombinator.com/item?id=6514
 https://news.ycombinator.com/item?id=6515
 https://news.ycombinator.com/item?id=6515
 https://news.ycombinator.com/item?id=6516
@@ -46120,6 +46168,7 @@ https://news.ycombinator.com/item?id=7088
 https://news.ycombinator.com/item?id=7089
 https://news.ycombinator.com/item?id=709
 https://news.ycombinator.com/item?id=7090
+https://news.ycombinator.com/item?id=7090
 https://news.ycombinator.com/item?id=7091
 https://news.ycombinator.com/item?id=7093
 https://news.ycombinator.com/item?id=7094
@@ -46422,6 +46471,7 @@ https://news.ycombinator.com/item?id=7285
 https://news.ycombinator.com/item?id=7286
 https://news.ycombinator.com/item?id=7286
 https://news.ycombinator.com/item?id=7288
+https://news.ycombinator.com/item?id=729
 https://news.ycombinator.com/item?id=7290
 https://news.ycombinator.com/item?id=7290
 https://news.ycombinator.com/item?id=7291
@@ -50894,6 +50944,56 @@ https://www.academia.edu/v0/works/views?subdomain_param=api&amp;work_ids%5B%5D=3
 https://www.btd-cmh.tq-tungsten.com/collect_ntd
 https://www.cs.cmu.edu/~./15281/#schedule
 https://www.cs.cmu.edu/~./15281/lectures/15281_S25_Lec10_AI_Ethics.pptx
+https://www.cs.cmu.edu/~crary/317-f23/assignments.html
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw1-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw1-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw10-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw10-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw11-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw11-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw12-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw12-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw2-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw2-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw3-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw3-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw4-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw4-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw5-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw5-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw6-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw6-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw7-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw7-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw8-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw8-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw9-handout.pdf
+https://www.cs.cmu.edu/~crary/317-f23/homeworks/hw9-handout.zip
+https://www.cs.cmu.edu/~crary/317-f23/index.html
+https://www.cs.cmu.edu/~crary/317-f23/lectures/01-overview.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/02-natded.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/03-pap.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/04-harmony.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/05-intercalation.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/06-quant.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/08-heyting.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/09-seqcalc.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/10-cutelim.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/11-proving.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/12-inversion.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/13-certifying.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/14-lp.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/15-prolog.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/17-chaining.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/18-datalog.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/19-focusing.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/20-linear.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/20-substructural-deduction.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/21-ordered.pdf
+https://www.cs.cmu.edu/~crary/317-f23/lectures/23-subsingleton.pdf
+https://www.cs.cmu.edu/~crary/317-f23/schedule.html
+https://www.cs.cmu.edu/~crary/317-f23/software.html
+https://www.cs.cmu.edu/~crary/faq.txt 
 https://www.facebook.com/chartmasters.org
 https://www.githubstatus.com/
 https://www.goodreads.com/_next/image?url=https%3A%2F%2Fdryofg8nmyqjw.cloudfront.net%2Fimages%2Fbadge-apple_app_store%402x.png&w=384&q=75
