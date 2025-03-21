@@ -5653,6 +5653,7 @@ https://news.ycombinator.com/item?id=10482
 https://news.ycombinator.com/item?id=10483
 https://news.ycombinator.com/item?id=10483
 https://news.ycombinator.com/item?id=10484
+https://news.ycombinator.com/item?id=10485
 https://news.ycombinator.com/item?id=10486
 https://news.ycombinator.com/item?id=10486
 https://news.ycombinator.com/item?id=10487
@@ -5745,6 +5746,7 @@ https://news.ycombinator.com/item?id=10542
 https://news.ycombinator.com/item?id=10543
 https://news.ycombinator.com/item?id=10544
 https://news.ycombinator.com/item?id=10544
+https://news.ycombinator.com/item?id=10545
 https://news.ycombinator.com/item?id=10546
 https://news.ycombinator.com/item?id=10547
 https://news.ycombinator.com/item?id=10548
@@ -5845,6 +5847,7 @@ https://news.ycombinator.com/item?id=10602
 https://news.ycombinator.com/item?id=10603
 https://news.ycombinator.com/item?id=10604
 https://news.ycombinator.com/item?id=10605
+https://news.ycombinator.com/item?id=10606
 https://news.ycombinator.com/item?id=10607
 https://news.ycombinator.com/item?id=10608
 https://news.ycombinator.com/item?id=10609
@@ -7080,6 +7083,7 @@ https://news.ycombinator.com/item?id=11407
 https://news.ycombinator.com/item?id=11408
 https://news.ycombinator.com/item?id=11408
 https://news.ycombinator.com/item?id=11409
+https://news.ycombinator.com/item?id=11409
 https://news.ycombinator.com/item?id=1141
 https://news.ycombinator.com/item?id=1141
 https://news.ycombinator.com/item?id=11410
@@ -7490,6 +7494,7 @@ https://news.ycombinator.com/item?id=11662
 https://news.ycombinator.com/item?id=11663
 https://news.ycombinator.com/item?id=11663
 https://news.ycombinator.com/item?id=11664
+https://news.ycombinator.com/item?id=11665
 https://news.ycombinator.com/item?id=11666
 https://news.ycombinator.com/item?id=11668
 https://news.ycombinator.com/item?id=11668
@@ -7706,6 +7711,7 @@ https://news.ycombinator.com/item?id=11803
 https://news.ycombinator.com/item?id=11804
 https://news.ycombinator.com/item?id=11805
 https://news.ycombinator.com/item?id=11805
+https://news.ycombinator.com/item?id=11807
 https://news.ycombinator.com/item?id=11807
 https://news.ycombinator.com/item?id=11808
 https://news.ycombinator.com/item?id=11809
@@ -8639,6 +8645,7 @@ https://news.ycombinator.com/item?id=12408
 https://news.ycombinator.com/item?id=12409
 https://news.ycombinator.com/item?id=1241
 https://news.ycombinator.com/item?id=12410
+https://news.ycombinator.com/item?id=12410
 https://news.ycombinator.com/item?id=12411
 https://news.ycombinator.com/item?id=12411
 https://news.ycombinator.com/item?id=12412
@@ -8953,6 +8960,7 @@ https://news.ycombinator.com/item?id=12614
 https://news.ycombinator.com/item?id=12614
 https://news.ycombinator.com/item?id=12615
 https://news.ycombinator.com/item?id=12615
+https://news.ycombinator.com/item?id=12616
 https://news.ycombinator.com/item?id=12616
 https://news.ycombinator.com/item?id=12617
 https://news.ycombinator.com/item?id=12617
@@ -9798,6 +9806,7 @@ https://news.ycombinator.com/item?id=13157
 https://news.ycombinator.com/item?id=13157
 https://news.ycombinator.com/item?id=13159
 https://news.ycombinator.com/item?id=1316
+https://news.ycombinator.com/item?id=13160
 https://news.ycombinator.com/item?id=13161
 https://news.ycombinator.com/item?id=13161
 https://news.ycombinator.com/item?id=13162
@@ -10614,6 +10623,7 @@ https://news.ycombinator.com/item?id=13685
 https://news.ycombinator.com/item?id=13685
 https://news.ycombinator.com/item?id=13686
 https://news.ycombinator.com/item?id=13686
+https://news.ycombinator.com/item?id=13687
 https://news.ycombinator.com/item?id=13688
 https://news.ycombinator.com/item?id=13689
 https://news.ycombinator.com/item?id=1369
@@ -10702,6 +10712,7 @@ https://news.ycombinator.com/item?id=13741
 https://news.ycombinator.com/item?id=13742
 https://news.ycombinator.com/item?id=13742
 https://news.ycombinator.com/item?id=13743
+https://news.ycombinator.com/item?id=13744
 https://news.ycombinator.com/item?id=13744
 https://news.ycombinator.com/item?id=13745
 https://news.ycombinator.com/item?id=13746
@@ -10811,10 +10822,12 @@ https://news.ycombinator.com/item?id=13811
 https://news.ycombinator.com/item?id=13812
 https://news.ycombinator.com/item?id=13813
 https://news.ycombinator.com/item?id=13814
+https://news.ycombinator.com/item?id=13814
 https://news.ycombinator.com/item?id=13815
 https://news.ycombinator.com/item?id=13816
 https://news.ycombinator.com/item?id=13817
 https://news.ycombinator.com/item?id=13818
+https://news.ycombinator.com/item?id=13819
 https://news.ycombinator.com/item?id=1382
 https://news.ycombinator.com/item?id=1382
 https://news.ycombinator.com/item?id=13820
@@ -11366,6 +11379,7 @@ https://news.ycombinator.com/item?id=14162
 https://news.ycombinator.com/item?id=14164
 https://news.ycombinator.com/item?id=14164
 https://news.ycombinator.com/item?id=14165
+https://news.ycombinator.com/item?id=14166
 https://news.ycombinator.com/item?id=14167
 https://news.ycombinator.com/item?id=14167
 https://news.ycombinator.com/item?id=14168
@@ -12597,6 +12611,7 @@ https://news.ycombinator.com/item?id=14954
 https://news.ycombinator.com/item?id=14954
 https://news.ycombinator.com/item?id=14955
 https://news.ycombinator.com/item?id=14956
+https://news.ycombinator.com/item?id=14957
 https://news.ycombinator.com/item?id=14957
 https://news.ycombinator.com/item?id=14958
 https://news.ycombinator.com/item?id=14959
@@ -13879,6 +13894,7 @@ https://news.ycombinator.com/item?id=1579
 https://news.ycombinator.com/item?id=15790
 https://news.ycombinator.com/item?id=15790
 https://news.ycombinator.com/item?id=15791
+https://news.ycombinator.com/item?id=15791
 https://news.ycombinator.com/item?id=15792
 https://news.ycombinator.com/item?id=15792
 https://news.ycombinator.com/item?id=15793
@@ -14085,6 +14101,7 @@ https://news.ycombinator.com/item?id=15919
 https://news.ycombinator.com/item?id=1592
 https://news.ycombinator.com/item?id=15920
 https://news.ycombinator.com/item?id=15920
+https://news.ycombinator.com/item?id=15921
 https://news.ycombinator.com/item?id=15922
 https://news.ycombinator.com/item?id=15923
 https://news.ycombinator.com/item?id=15923
@@ -14689,6 +14706,7 @@ https://news.ycombinator.com/item?id=16292
 https://news.ycombinator.com/item?id=16293
 https://news.ycombinator.com/item?id=16293
 https://news.ycombinator.com/item?id=16294
+https://news.ycombinator.com/item?id=16294
 https://news.ycombinator.com/item?id=16295
 https://news.ycombinator.com/item?id=16297
 https://news.ycombinator.com/item?id=16297
@@ -14702,6 +14720,7 @@ https://news.ycombinator.com/item?id=1630
 https://news.ycombinator.com/item?id=16301
 https://news.ycombinator.com/item?id=16303
 https://news.ycombinator.com/item?id=16304
+https://news.ycombinator.com/item?id=16305
 https://news.ycombinator.com/item?id=16306
 https://news.ycombinator.com/item?id=16306
 https://news.ycombinator.com/item?id=16307
@@ -14887,6 +14906,7 @@ https://news.ycombinator.com/item?id=16415
 https://news.ycombinator.com/item?id=16416
 https://news.ycombinator.com/item?id=16416
 https://news.ycombinator.com/item?id=16418
+https://news.ycombinator.com/item?id=16419
 https://news.ycombinator.com/item?id=16419
 https://news.ycombinator.com/item?id=1642
 https://news.ycombinator.com/item?id=16421
@@ -15309,6 +15329,7 @@ https://news.ycombinator.com/item?id=16699
 https://news.ycombinator.com/item?id=167
 https://news.ycombinator.com/item?id=167
 https://news.ycombinator.com/item?id=1670
+https://news.ycombinator.com/item?id=16700
 https://news.ycombinator.com/item?id=16701
 https://news.ycombinator.com/item?id=16702
 https://news.ycombinator.com/item?id=16703
@@ -15749,6 +15770,7 @@ https://news.ycombinator.com/item?id=16980
 https://news.ycombinator.com/item?id=16981
 https://news.ycombinator.com/item?id=16982
 https://news.ycombinator.com/item?id=16982
+https://news.ycombinator.com/item?id=16983
 https://news.ycombinator.com/item?id=16983
 https://news.ycombinator.com/item?id=16984
 https://news.ycombinator.com/item?id=16984
@@ -17361,6 +17383,7 @@ https://news.ycombinator.com/item?id=18003
 https://news.ycombinator.com/item?id=18003
 https://news.ycombinator.com/item?id=18004
 https://news.ycombinator.com/item?id=18004
+https://news.ycombinator.com/item?id=18005
 https://news.ycombinator.com/item?id=18006
 https://news.ycombinator.com/item?id=18006
 https://news.ycombinator.com/item?id=18007
@@ -17827,6 +17850,7 @@ https://news.ycombinator.com/item?id=1830
 https://news.ycombinator.com/item?id=18301
 https://news.ycombinator.com/item?id=18301
 https://news.ycombinator.com/item?id=18302
+https://news.ycombinator.com/item?id=18303
 https://news.ycombinator.com/item?id=18303
 https://news.ycombinator.com/item?id=18304
 https://news.ycombinator.com/item?id=18304
@@ -18947,6 +18971,7 @@ https://news.ycombinator.com/item?id=19028
 https://news.ycombinator.com/item?id=19029
 https://news.ycombinator.com/item?id=19029
 https://news.ycombinator.com/item?id=19030
+https://news.ycombinator.com/item?id=19030
 https://news.ycombinator.com/item?id=19031
 https://news.ycombinator.com/item?id=19032
 https://news.ycombinator.com/item?id=19033
@@ -19163,6 +19188,7 @@ https://news.ycombinator.com/item?id=19169
 https://news.ycombinator.com/item?id=1917
 https://news.ycombinator.com/item?id=19170
 https://news.ycombinator.com/item?id=19171
+https://news.ycombinator.com/item?id=19171
 https://news.ycombinator.com/item?id=19172
 https://news.ycombinator.com/item?id=19172
 https://news.ycombinator.com/item?id=19173
@@ -19270,6 +19296,7 @@ https://news.ycombinator.com/item?id=19234
 https://news.ycombinator.com/item?id=19235
 https://news.ycombinator.com/item?id=19236
 https://news.ycombinator.com/item?id=19236
+https://news.ycombinator.com/item?id=19237
 https://news.ycombinator.com/item?id=19237
 https://news.ycombinator.com/item?id=19238
 https://news.ycombinator.com/item?id=19238
@@ -20009,6 +20036,7 @@ https://news.ycombinator.com/item?id=19728
 https://news.ycombinator.com/item?id=19729
 https://news.ycombinator.com/item?id=19729
 https://news.ycombinator.com/item?id=1973
+https://news.ycombinator.com/item?id=19730
 https://news.ycombinator.com/item?id=19731
 https://news.ycombinator.com/item?id=19731
 https://news.ycombinator.com/item?id=19732
@@ -20272,6 +20300,7 @@ https://news.ycombinator.com/item?id=199
 https://news.ycombinator.com/item?id=199
 https://news.ycombinator.com/item?id=1990
 https://news.ycombinator.com/item?id=1990
+https://news.ycombinator.com/item?id=19900
 https://news.ycombinator.com/item?id=19900
 https://news.ycombinator.com/item?id=19901
 https://news.ycombinator.com/item?id=19902
@@ -20603,6 +20632,7 @@ https://news.ycombinator.com/item?id=20120
 https://news.ycombinator.com/item?id=20120
 https://news.ycombinator.com/item?id=20121
 https://news.ycombinator.com/item?id=20121
+https://news.ycombinator.com/item?id=20122
 https://news.ycombinator.com/item?id=20122
 https://news.ycombinator.com/item?id=20123
 https://news.ycombinator.com/item?id=20124
@@ -21097,6 +21127,7 @@ https://news.ycombinator.com/item?id=20444
 https://news.ycombinator.com/item?id=20445
 https://news.ycombinator.com/item?id=20445
 https://news.ycombinator.com/item?id=20446
+https://news.ycombinator.com/item?id=20447
 https://news.ycombinator.com/item?id=20448
 https://news.ycombinator.com/item?id=20448
 https://news.ycombinator.com/item?id=20449
@@ -21374,6 +21405,7 @@ https://news.ycombinator.com/item?id=20617
 https://news.ycombinator.com/item?id=20618
 https://news.ycombinator.com/item?id=20619
 https://news.ycombinator.com/item?id=20619
+https://news.ycombinator.com/item?id=2062
 https://news.ycombinator.com/item?id=2062
 https://news.ycombinator.com/item?id=20621
 https://news.ycombinator.com/item?id=20623
@@ -21863,6 +21895,7 @@ https://news.ycombinator.com/item?id=20922
 https://news.ycombinator.com/item?id=20923
 https://news.ycombinator.com/item?id=20923
 https://news.ycombinator.com/item?id=20924
+https://news.ycombinator.com/item?id=20925
 https://news.ycombinator.com/item?id=20926
 https://news.ycombinator.com/item?id=20926
 https://news.ycombinator.com/item?id=20927
@@ -22052,6 +22085,7 @@ https://news.ycombinator.com/item?id=21045
 https://news.ycombinator.com/item?id=21045
 https://news.ycombinator.com/item?id=21046
 https://news.ycombinator.com/item?id=21047
+https://news.ycombinator.com/item?id=21048
 https://news.ycombinator.com/item?id=21049
 https://news.ycombinator.com/item?id=21049
 https://news.ycombinator.com/item?id=2105
@@ -22465,6 +22499,7 @@ https://news.ycombinator.com/item?id=21311
 https://news.ycombinator.com/item?id=21313
 https://news.ycombinator.com/item?id=21314
 https://news.ycombinator.com/item?id=21314
+https://news.ycombinator.com/item?id=21315
 https://news.ycombinator.com/item?id=21315
 https://news.ycombinator.com/item?id=21316
 https://news.ycombinator.com/item?id=21316
@@ -22933,6 +22968,7 @@ https://news.ycombinator.com/item?id=21605
 https://news.ycombinator.com/item?id=21606
 https://news.ycombinator.com/item?id=21606
 https://news.ycombinator.com/item?id=21607
+https://news.ycombinator.com/item?id=21608
 https://news.ycombinator.com/item?id=21609
 https://news.ycombinator.com/item?id=2161
 https://news.ycombinator.com/item?id=21610
@@ -22965,6 +23001,7 @@ https://news.ycombinator.com/item?id=21626
 https://news.ycombinator.com/item?id=21627
 https://news.ycombinator.com/item?id=21628
 https://news.ycombinator.com/item?id=21629
+https://news.ycombinator.com/item?id=2163
 https://news.ycombinator.com/item?id=21630
 https://news.ycombinator.com/item?id=21630
 https://news.ycombinator.com/item?id=21631
@@ -23179,6 +23216,7 @@ https://news.ycombinator.com/item?id=21764
 https://news.ycombinator.com/item?id=21765
 https://news.ycombinator.com/item?id=21765
 https://news.ycombinator.com/item?id=21766
+https://news.ycombinator.com/item?id=21767
 https://news.ycombinator.com/item?id=21768
 https://news.ycombinator.com/item?id=21768
 https://news.ycombinator.com/item?id=21769
@@ -23480,6 +23518,7 @@ https://news.ycombinator.com/item?id=21970
 https://news.ycombinator.com/item?id=21971
 https://news.ycombinator.com/item?id=21971
 https://news.ycombinator.com/item?id=21972
+https://news.ycombinator.com/item?id=21973
 https://news.ycombinator.com/item?id=21974
 https://news.ycombinator.com/item?id=21975
 https://news.ycombinator.com/item?id=21975
@@ -24533,6 +24572,7 @@ https://news.ycombinator.com/item?id=22649
 https://news.ycombinator.com/item?id=2265
 https://news.ycombinator.com/item?id=2265
 https://news.ycombinator.com/item?id=22650
+https://news.ycombinator.com/item?id=22651
 https://news.ycombinator.com/item?id=22651
 https://news.ycombinator.com/item?id=22652
 https://news.ycombinator.com/item?id=22652
@@ -25645,6 +25685,7 @@ https://news.ycombinator.com/item?id=23356
 https://news.ycombinator.com/item?id=23357
 https://news.ycombinator.com/item?id=23358
 https://news.ycombinator.com/item?id=23359
+https://news.ycombinator.com/item?id=23359
 https://news.ycombinator.com/item?id=2336
 https://news.ycombinator.com/item?id=2336
 https://news.ycombinator.com/item?id=23360
@@ -25838,6 +25879,7 @@ https://news.ycombinator.com/item?id=23483
 https://news.ycombinator.com/item?id=23483
 https://news.ycombinator.com/item?id=23484
 https://news.ycombinator.com/item?id=23485
+https://news.ycombinator.com/item?id=23486
 https://news.ycombinator.com/item?id=23486
 https://news.ycombinator.com/item?id=23487
 https://news.ycombinator.com/item?id=23488
@@ -26039,6 +26081,7 @@ https://news.ycombinator.com/item?id=2361
 https://news.ycombinator.com/item?id=2361
 https://news.ycombinator.com/item?id=23610
 https://news.ycombinator.com/item?id=23612
+https://news.ycombinator.com/item?id=23613
 https://news.ycombinator.com/item?id=23614
 https://news.ycombinator.com/item?id=23614
 https://news.ycombinator.com/item?id=23615
@@ -26585,6 +26628,7 @@ https://news.ycombinator.com/item?id=23967
 https://news.ycombinator.com/item?id=23968
 https://news.ycombinator.com/item?id=23968
 https://news.ycombinator.com/item?id=23969
+https://news.ycombinator.com/item?id=2397
 https://news.ycombinator.com/item?id=23970
 https://news.ycombinator.com/item?id=23971
 https://news.ycombinator.com/item?id=23971
@@ -26671,6 +26715,7 @@ https://news.ycombinator.com/item?id=24027
 https://news.ycombinator.com/item?id=24028
 https://news.ycombinator.com/item?id=24029
 https://news.ycombinator.com/item?id=24029
+https://news.ycombinator.com/item?id=2403
 https://news.ycombinator.com/item?id=2403
 https://news.ycombinator.com/item?id=24030
 https://news.ycombinator.com/item?id=24031
@@ -27016,6 +27061,7 @@ https://news.ycombinator.com/item?id=24251
 https://news.ycombinator.com/item?id=24252
 https://news.ycombinator.com/item?id=24252
 https://news.ycombinator.com/item?id=24253
+https://news.ycombinator.com/item?id=24253
 https://news.ycombinator.com/item?id=24254
 https://news.ycombinator.com/item?id=24254
 https://news.ycombinator.com/item?id=24256
@@ -27263,6 +27309,7 @@ https://news.ycombinator.com/item?id=24403
 https://news.ycombinator.com/item?id=24404
 https://news.ycombinator.com/item?id=24405
 https://news.ycombinator.com/item?id=24405
+https://news.ycombinator.com/item?id=24406
 https://news.ycombinator.com/item?id=24407
 https://news.ycombinator.com/item?id=24408
 https://news.ycombinator.com/item?id=24409
@@ -28163,6 +28210,7 @@ https://news.ycombinator.com/item?id=24975
 https://news.ycombinator.com/item?id=24975
 https://news.ycombinator.com/item?id=24976
 https://news.ycombinator.com/item?id=24976
+https://news.ycombinator.com/item?id=24977
 https://news.ycombinator.com/item?id=24978
 https://news.ycombinator.com/item?id=24978
 https://news.ycombinator.com/item?id=24979
@@ -28228,6 +28276,7 @@ https://news.ycombinator.com/item?id=25016
 https://news.ycombinator.com/item?id=25017
 https://news.ycombinator.com/item?id=25017
 https://news.ycombinator.com/item?id=25018
+https://news.ycombinator.com/item?id=25019
 https://news.ycombinator.com/item?id=25019
 https://news.ycombinator.com/item?id=2502
 https://news.ycombinator.com/item?id=25020
@@ -29297,6 +29346,7 @@ https://news.ycombinator.com/item?id=25719
 https://news.ycombinator.com/item?id=2572
 https://news.ycombinator.com/item?id=25721
 https://news.ycombinator.com/item?id=25721
+https://news.ycombinator.com/item?id=25722
 https://news.ycombinator.com/item?id=25723
 https://news.ycombinator.com/item?id=25724
 https://news.ycombinator.com/item?id=25725
@@ -30038,6 +30088,7 @@ https://news.ycombinator.com/item?id=26189
 https://news.ycombinator.com/item?id=2619
 https://news.ycombinator.com/item?id=26190
 https://news.ycombinator.com/item?id=26190
+https://news.ycombinator.com/item?id=26191
 https://news.ycombinator.com/item?id=26191
 https://news.ycombinator.com/item?id=26192
 https://news.ycombinator.com/item?id=26193
@@ -31523,6 +31574,7 @@ https://news.ycombinator.com/item?id=27157
 https://news.ycombinator.com/item?id=27158
 https://news.ycombinator.com/item?id=27159
 https://news.ycombinator.com/item?id=2716
+https://news.ycombinator.com/item?id=2716
 https://news.ycombinator.com/item?id=27160
 https://news.ycombinator.com/item?id=27161
 https://news.ycombinator.com/item?id=27162
@@ -31647,6 +31699,7 @@ https://news.ycombinator.com/item?id=27235
 https://news.ycombinator.com/item?id=27235
 https://news.ycombinator.com/item?id=27236
 https://news.ycombinator.com/item?id=27237
+https://news.ycombinator.com/item?id=27238
 https://news.ycombinator.com/item?id=27238
 https://news.ycombinator.com/item?id=27239
 https://news.ycombinator.com/item?id=27239
@@ -32019,6 +32072,7 @@ https://news.ycombinator.com/item?id=27473
 https://news.ycombinator.com/item?id=27473
 https://news.ycombinator.com/item?id=27474
 https://news.ycombinator.com/item?id=27475
+https://news.ycombinator.com/item?id=27475
 https://news.ycombinator.com/item?id=27476
 https://news.ycombinator.com/item?id=27476
 https://news.ycombinator.com/item?id=27477
@@ -32094,6 +32148,7 @@ https://news.ycombinator.com/item?id=2752
 https://news.ycombinator.com/item?id=2752
 https://news.ycombinator.com/item?id=27520
 https://news.ycombinator.com/item?id=27521
+https://news.ycombinator.com/item?id=27521
 https://news.ycombinator.com/item?id=27522
 https://news.ycombinator.com/item?id=27523
 https://news.ycombinator.com/item?id=27524
@@ -32135,6 +32190,7 @@ https://news.ycombinator.com/item?id=27550
 https://news.ycombinator.com/item?id=27551
 https://news.ycombinator.com/item?id=27551
 https://news.ycombinator.com/item?id=27552
+https://news.ycombinator.com/item?id=27553
 https://news.ycombinator.com/item?id=27554
 https://news.ycombinator.com/item?id=27555
 https://news.ycombinator.com/item?id=27555
@@ -32612,6 +32668,7 @@ https://news.ycombinator.com/item?id=27866
 https://news.ycombinator.com/item?id=27867
 https://news.ycombinator.com/item?id=27868
 https://news.ycombinator.com/item?id=27868
+https://news.ycombinator.com/item?id=27869
 https://news.ycombinator.com/item?id=27869
 https://news.ycombinator.com/item?id=2787
 https://news.ycombinator.com/item?id=2787
@@ -33100,6 +33157,7 @@ https://news.ycombinator.com/item?id=28187
 https://news.ycombinator.com/item?id=28187
 https://news.ycombinator.com/item?id=28188
 https://news.ycombinator.com/item?id=28189
+https://news.ycombinator.com/item?id=2819
 https://news.ycombinator.com/item?id=28190
 https://news.ycombinator.com/item?id=28190
 https://news.ycombinator.com/item?id=28191
@@ -33739,6 +33797,7 @@ https://news.ycombinator.com/item?id=28604
 https://news.ycombinator.com/item?id=28604
 https://news.ycombinator.com/item?id=28605
 https://news.ycombinator.com/item?id=28605
+https://news.ycombinator.com/item?id=28606
 https://news.ycombinator.com/item?id=28606
 https://news.ycombinator.com/item?id=28607
 https://news.ycombinator.com/item?id=28607
@@ -35986,6 +36045,7 @@ https://news.ycombinator.com/item?id=30059
 https://news.ycombinator.com/item?id=3006
 https://news.ycombinator.com/item?id=30060
 https://news.ycombinator.com/item?id=30061
+https://news.ycombinator.com/item?id=30061
 https://news.ycombinator.com/item?id=30062
 https://news.ycombinator.com/item?id=30063
 https://news.ycombinator.com/item?id=30064
@@ -36295,6 +36355,7 @@ https://news.ycombinator.com/item?id=30259
 https://news.ycombinator.com/item?id=30259
 https://news.ycombinator.com/item?id=3026
 https://news.ycombinator.com/item?id=30260
+https://news.ycombinator.com/item?id=30261
 https://news.ycombinator.com/item?id=30262
 https://news.ycombinator.com/item?id=30263
 https://news.ycombinator.com/item?id=30264
@@ -36490,6 +36551,7 @@ https://news.ycombinator.com/item?id=30391
 https://news.ycombinator.com/item?id=30392
 https://news.ycombinator.com/item?id=30392
 https://news.ycombinator.com/item?id=30393
+https://news.ycombinator.com/item?id=30393
 https://news.ycombinator.com/item?id=30394
 https://news.ycombinator.com/item?id=30396
 https://news.ycombinator.com/item?id=30397
@@ -36555,6 +36617,7 @@ https://news.ycombinator.com/item?id=30435
 https://news.ycombinator.com/item?id=30436
 https://news.ycombinator.com/item?id=30437
 https://news.ycombinator.com/item?id=30437
+https://news.ycombinator.com/item?id=30438
 https://news.ycombinator.com/item?id=30439
 https://news.ycombinator.com/item?id=30439
 https://news.ycombinator.com/item?id=3044
@@ -36866,6 +36929,7 @@ https://news.ycombinator.com/item?id=30635
 https://news.ycombinator.com/item?id=30635
 https://news.ycombinator.com/item?id=30636
 https://news.ycombinator.com/item?id=30636
+https://news.ycombinator.com/item?id=30637
 https://news.ycombinator.com/item?id=30638
 https://news.ycombinator.com/item?id=3064
 https://news.ycombinator.com/item?id=30641
@@ -37101,6 +37165,7 @@ https://news.ycombinator.com/item?id=30784
 https://news.ycombinator.com/item?id=30784
 https://news.ycombinator.com/item?id=30785
 https://news.ycombinator.com/item?id=30786
+https://news.ycombinator.com/item?id=30786
 https://news.ycombinator.com/item?id=30788
 https://news.ycombinator.com/item?id=30788
 https://news.ycombinator.com/item?id=30789
@@ -37135,6 +37200,7 @@ https://news.ycombinator.com/item?id=30805
 https://news.ycombinator.com/item?id=30806
 https://news.ycombinator.com/item?id=30807
 https://news.ycombinator.com/item?id=30808
+https://news.ycombinator.com/item?id=30809
 https://news.ycombinator.com/item?id=30809
 https://news.ycombinator.com/item?id=3081
 https://news.ycombinator.com/item?id=30810
@@ -37191,6 +37257,7 @@ https://news.ycombinator.com/item?id=30845
 https://news.ycombinator.com/item?id=30846
 https://news.ycombinator.com/item?id=30847
 https://news.ycombinator.com/item?id=30847
+https://news.ycombinator.com/item?id=30848
 https://news.ycombinator.com/item?id=30848
 https://news.ycombinator.com/item?id=30849
 https://news.ycombinator.com/item?id=30849
@@ -37399,6 +37466,7 @@ https://news.ycombinator.com/item?id=30979
 https://news.ycombinator.com/item?id=3098
 https://news.ycombinator.com/item?id=3098
 https://news.ycombinator.com/item?id=30980
+https://news.ycombinator.com/item?id=30980
 https://news.ycombinator.com/item?id=30981
 https://news.ycombinator.com/item?id=30982
 https://news.ycombinator.com/item?id=30982
@@ -37509,6 +37577,7 @@ https://news.ycombinator.com/item?id=31049
 https://news.ycombinator.com/item?id=3105
 https://news.ycombinator.com/item?id=3105
 https://news.ycombinator.com/item?id=31050
+https://news.ycombinator.com/item?id=31051
 https://news.ycombinator.com/item?id=31052
 https://news.ycombinator.com/item?id=31053
 https://news.ycombinator.com/item?id=31053
@@ -39206,6 +39275,7 @@ https://news.ycombinator.com/item?id=32161
 https://news.ycombinator.com/item?id=32163
 https://news.ycombinator.com/item?id=32163
 https://news.ycombinator.com/item?id=32164
+https://news.ycombinator.com/item?id=32165
 https://news.ycombinator.com/item?id=32166
 https://news.ycombinator.com/item?id=32167
 https://news.ycombinator.com/item?id=32167
@@ -39462,6 +39532,7 @@ https://news.ycombinator.com/item?id=32323
 https://news.ycombinator.com/item?id=32325
 https://news.ycombinator.com/item?id=32326
 https://news.ycombinator.com/item?id=32327
+https://news.ycombinator.com/item?id=32329
 https://news.ycombinator.com/item?id=3233
 https://news.ycombinator.com/item?id=32330
 https://news.ycombinator.com/item?id=32331
@@ -40563,6 +40634,7 @@ https://news.ycombinator.com/item?id=3469
 https://news.ycombinator.com/item?id=347
 https://news.ycombinator.com/item?id=347
 https://news.ycombinator.com/item?id=3470
+https://news.ycombinator.com/item?id=3470
 https://news.ycombinator.com/item?id=3471
 https://news.ycombinator.com/item?id=3472
 https://news.ycombinator.com/item?id=3472
@@ -41365,6 +41437,7 @@ https://news.ycombinator.com/item?id=3985
 https://news.ycombinator.com/item?id=3985
 https://news.ycombinator.com/item?id=3986
 https://news.ycombinator.com/item?id=3987
+https://news.ycombinator.com/item?id=3988
 https://news.ycombinator.com/item?id=3989
 https://news.ycombinator.com/item?id=3989
 https://news.ycombinator.com/item?id=399
@@ -41676,6 +41749,7 @@ https://news.ycombinator.com/item?id=4192
 https://news.ycombinator.com/item?id=4193
 https://news.ycombinator.com/item?id=4194
 https://news.ycombinator.com/item?id=4195
+https://news.ycombinator.com/item?id=4196
 https://news.ycombinator.com/item?id=4196
 https://news.ycombinator.com/item?id=4197
 https://news.ycombinator.com/item?id=4197
@@ -43399,6 +43473,7 @@ https://news.ycombinator.com/item?id=5309
 https://news.ycombinator.com/item?id=531
 https://news.ycombinator.com/item?id=5310
 https://news.ycombinator.com/item?id=5310
+https://news.ycombinator.com/item?id=5311
 https://news.ycombinator.com/item?id=5312
 https://news.ycombinator.com/item?id=5313
 https://news.ycombinator.com/item?id=5314
@@ -43576,6 +43651,7 @@ https://news.ycombinator.com/item?id=5427
 https://news.ycombinator.com/item?id=5427
 https://news.ycombinator.com/item?id=5428
 https://news.ycombinator.com/item?id=5429
+https://news.ycombinator.com/item?id=543
 https://news.ycombinator.com/item?id=543
 https://news.ycombinator.com/item?id=5430
 https://news.ycombinator.com/item?id=5431
@@ -43779,6 +43855,7 @@ https://news.ycombinator.com/item?id=5550
 https://news.ycombinator.com/item?id=5551
 https://news.ycombinator.com/item?id=5551
 https://news.ycombinator.com/item?id=5552
+https://news.ycombinator.com/item?id=5552
 https://news.ycombinator.com/item?id=5553
 https://news.ycombinator.com/item?id=5553
 https://news.ycombinator.com/item?id=5554
@@ -43831,6 +43908,7 @@ https://news.ycombinator.com/item?id=5586
 https://news.ycombinator.com/item?id=5587
 https://news.ycombinator.com/item?id=5588
 https://news.ycombinator.com/item?id=5588
+https://news.ycombinator.com/item?id=5589
 https://news.ycombinator.com/item?id=5589
 https://news.ycombinator.com/item?id=559
 https://news.ycombinator.com/item?id=5590
@@ -43911,6 +43989,7 @@ https://news.ycombinator.com/item?id=564
 https://news.ycombinator.com/item?id=5640
 https://news.ycombinator.com/item?id=5640
 https://news.ycombinator.com/item?id=5641
+https://news.ycombinator.com/item?id=5642
 https://news.ycombinator.com/item?id=5642
 https://news.ycombinator.com/item?id=5643
 https://news.ycombinator.com/item?id=5643
@@ -44076,6 +44155,7 @@ https://news.ycombinator.com/item?id=5746
 https://news.ycombinator.com/item?id=5748
 https://news.ycombinator.com/item?id=5750
 https://news.ycombinator.com/item?id=5751
+https://news.ycombinator.com/item?id=5752
 https://news.ycombinator.com/item?id=5752
 https://news.ycombinator.com/item?id=5753
 https://news.ycombinator.com/item?id=5754
@@ -44660,6 +44740,7 @@ https://news.ycombinator.com/item?id=6114
 https://news.ycombinator.com/item?id=6115
 https://news.ycombinator.com/item?id=6115
 https://news.ycombinator.com/item?id=6116
+https://news.ycombinator.com/item?id=6116
 https://news.ycombinator.com/item?id=6117
 https://news.ycombinator.com/item?id=6118
 https://news.ycombinator.com/item?id=6119
@@ -45229,6 +45310,7 @@ https://news.ycombinator.com/item?id=6486
 https://news.ycombinator.com/item?id=6487
 https://news.ycombinator.com/item?id=6487
 https://news.ycombinator.com/item?id=6488
+https://news.ycombinator.com/item?id=6489
 https://news.ycombinator.com/item?id=6489
 https://news.ycombinator.com/item?id=649
 https://news.ycombinator.com/item?id=6490
@@ -46176,6 +46258,7 @@ https://news.ycombinator.com/item?id=7094
 https://news.ycombinator.com/item?id=7095
 https://news.ycombinator.com/item?id=7096
 https://news.ycombinator.com/item?id=7096
+https://news.ycombinator.com/item?id=7097
 https://news.ycombinator.com/item?id=7098
 https://news.ycombinator.com/item?id=7098
 https://news.ycombinator.com/item?id=7099
@@ -46510,6 +46593,7 @@ https://news.ycombinator.com/item?id=7310
 https://news.ycombinator.com/item?id=7311
 https://news.ycombinator.com/item?id=7312
 https://news.ycombinator.com/item?id=7312
+https://news.ycombinator.com/item?id=7313
 https://news.ycombinator.com/item?id=7313
 https://news.ycombinator.com/item?id=7314
 https://news.ycombinator.com/item?id=7315
@@ -47141,6 +47225,7 @@ https://news.ycombinator.com/item?id=7712
 https://news.ycombinator.com/item?id=7713
 https://news.ycombinator.com/item?id=7714
 https://news.ycombinator.com/item?id=7714
+https://news.ycombinator.com/item?id=7715
 https://news.ycombinator.com/item?id=7715
 https://news.ycombinator.com/item?id=7716
 https://news.ycombinator.com/item?id=7716
@@ -48196,6 +48281,7 @@ https://news.ycombinator.com/item?id=8403
 https://news.ycombinator.com/item?id=8404
 https://news.ycombinator.com/item?id=8405
 https://news.ycombinator.com/item?id=8406
+https://news.ycombinator.com/item?id=8407
 https://news.ycombinator.com/item?id=8408
 https://news.ycombinator.com/item?id=8409
 https://news.ycombinator.com/item?id=8409
@@ -48318,6 +48404,7 @@ https://news.ycombinator.com/item?id=8483
 https://news.ycombinator.com/item?id=8484
 https://news.ycombinator.com/item?id=8485
 https://news.ycombinator.com/item?id=8486
+https://news.ycombinator.com/item?id=8486
 https://news.ycombinator.com/item?id=8487
 https://news.ycombinator.com/item?id=8487
 https://news.ycombinator.com/item?id=8488
@@ -48409,9 +48496,11 @@ https://news.ycombinator.com/item?id=8543
 https://news.ycombinator.com/item?id=8544
 https://news.ycombinator.com/item?id=8545
 https://news.ycombinator.com/item?id=8546
+https://news.ycombinator.com/item?id=8547
 https://news.ycombinator.com/item?id=8548
 https://news.ycombinator.com/item?id=8548
 https://news.ycombinator.com/item?id=8549
+https://news.ycombinator.com/item?id=8550
 https://news.ycombinator.com/item?id=8550
 https://news.ycombinator.com/item?id=8551
 https://news.ycombinator.com/item?id=8552
@@ -48431,6 +48520,7 @@ https://news.ycombinator.com/item?id=8563
 https://news.ycombinator.com/item?id=8563
 https://news.ycombinator.com/item?id=8564
 https://news.ycombinator.com/item?id=8564
+https://news.ycombinator.com/item?id=8565
 https://news.ycombinator.com/item?id=8565
 https://news.ycombinator.com/item?id=8566
 https://news.ycombinator.com/item?id=8566
@@ -50578,6 +50668,7 @@ https://news.ycombinator.com/item?id=9953
 https://news.ycombinator.com/item?id=9954
 https://news.ycombinator.com/item?id=9954
 https://news.ycombinator.com/item?id=9955
+https://news.ycombinator.com/item?id=9956
 https://news.ycombinator.com/item?id=9957
 https://news.ycombinator.com/item?id=9957
 https://news.ycombinator.com/item?id=9958
@@ -53063,6 +53154,7 @@ https://www.mecabricks.com/en/models/1w2rym5pa8W#VE2nmj
 https://www.mecabricks.com/en/models/1w2rymlda8W#b8nnnj
 https://www.mecabricks.com/en/models/1w2rymlda8W#jWnmlV
 https://www.mecabricks.com/en/models/1w2ryzVLa8W#DmQplD
+https://www.mecabricks.com/en/models/1w2ryzVLa8W#jLPgRj
 https://www.mecabricks.com/en/models/3Lkj91ZqjAp
 https://www.mecabricks.com/en/models/3Lkj91ZqjAp#jYvmRD
 https://www.mecabricks.com/en/models/3X8jOBr2YJz
@@ -53190,6 +53282,7 @@ https://www.mecabricks.com/en/models/7l2BepmAa0N
 https://www.mecabricks.com/en/models/7l2BmYVya0N
 https://www.mecabricks.com/en/models/7l2BnrYp20N
 https://www.mecabricks.com/en/models/7l2Bz6Vp20N#VNQQkb
+https://www.mecabricks.com/en/models/7l2BzKyp20N
 https://www.mecabricks.com/en/models/7l2BzOWn20N#be3LLj
 https://www.mecabricks.com/en/models/7l2BzQAA20N
 https://www.mecabricks.com/en/models/7l2BzZKR20N#jp8lMj
@@ -53578,6 +53671,8 @@ https://www.mecabricks.com/en/models/KZvmezVbvG6
 https://www.mecabricks.com/en/models/KZvmkNZX2G6#jMk5xb
 https://www.mecabricks.com/en/models/KZvmmK0zvG6
 https://www.mecabricks.com/en/models/KZvmmnZdvG6
+https://www.mecabricks.com/en/models/KZvmo46L2G6
+https://www.mecabricks.com/en/models/KZvmo7Nb2G6#Dq7nqV
 https://www.mecabricks.com/en/models/KZvmoke92G6
 https://www.mecabricks.com/en/models/KZvmp977jG6
 https://www.mecabricks.com/en/models/KZvmpPD3jG6
@@ -53628,6 +53723,7 @@ https://www.mecabricks.com/en/models/KbjQlw1o2dG
 https://www.mecabricks.com/en/models/KbjQlzPJ2dG
 https://www.mecabricks.com/en/models/KbjQlzrP2dG
 https://www.mecabricks.com/en/models/KbjQm79RjdG
+https://www.mecabricks.com/en/models/KbjQmQ9ojdG
 https://www.mecabricks.com/en/models/KbjQmQ9ojdG#V1x0Zb
 https://www.mecabricks.com/en/models/KbjQmg1ojdG
 https://www.mecabricks.com/en/models/KbjQqDkQjdG
@@ -53706,6 +53802,7 @@ https://www.mecabricks.com/en/models/LyjWXQAJvJr
 https://www.mecabricks.com/en/models/LyjWXkrpvJr
 https://www.mecabricks.com/en/models/LyjWXmo3vJr#D6r2yD
 https://www.mecabricks.com/en/models/LyjWgnxBjJr#jaoW2b
+https://www.mecabricks.com/en/models/LyjWoB93jJr
 https://www.mecabricks.com/en/models/LyjWoB93jJr#VX4RwV
 https://www.mecabricks.com/en/models/LyjWoJJOjJr
 https://www.mecabricks.com/en/models/LyjWq0V3aJr
@@ -54242,6 +54339,7 @@ https://www.mecabricks.com/en/models/mkjAz6eLvZG#VX46EV
 https://www.mecabricks.com/en/models/mkjAzZO8vZG#DkPlWb
 https://www.mecabricks.com/en/models/mkjAzZrOvZG
 https://www.mecabricks.com/en/models/mkjAzZrOvZG
+https://www.mecabricks.com/en/models/mkjAzbJXvZG
 https://www.mecabricks.com/en/models/mkjAzbJXvZG#b94KwD
 https://www.mecabricks.com/en/models/nkOjLKPV2x6
 https://www.mecabricks.com/en/models/o8v04XElvr3
@@ -54492,6 +54590,7 @@ https://www.mecabricks.com/en/models/xov7qZwl20D
 https://www.mecabricks.com/en/models/xov7qk6x20D
 https://www.mecabricks.com/en/models/xov7qkQz20D
 https://www.mecabricks.com/en/models/xov7rDwwj0D#VX44EV
+https://www.mecabricks.com/en/models/xov7rOmkj0D
 https://www.mecabricks.com/en/models/xov7yGWx20D
 https://www.mecabricks.com/en/models/xov7z8wrj0D
 https://www.mecabricks.com/en/models/zOjo0G9Jv6Z
@@ -55038,6 +55137,7 @@ https://www.mecabricks.com/en/user/joshua_anthony/renderings
 https://www.mecabricks.com/en/user/jssbricks
 https://www.mecabricks.com/en/user/juanp.
 https://www.mecabricks.com/en/user/juapablo
+https://www.mecabricks.com/en/user/julianm27
 https://www.mecabricks.com/en/user/julius1234
 https://www.mecabricks.com/en/user/julius1234/comments
 https://www.mecabricks.com/en/user/julius1234/likes
@@ -55203,6 +55303,7 @@ https://www.mecabricks.com/en/user/mayobricks
 https://www.mecabricks.com/en/user/mayotron9
 https://www.mecabricks.com/en/user/mctheaustrianbrickfan
 https://www.mecabricks.com/en/user/mechbuilder
+https://www.mecabricks.com/en/user/megakidbrickster
 https://www.mecabricks.com/en/user/megazanetz
 https://www.mecabricks.com/en/user/meilyy12
 https://www.mecabricks.com/en/user/meister86
@@ -55638,6 +55739,7 @@ https://www.mecabricks.com/en/user/worrissey/likes
 https://www.mecabricks.com/en/user/worrissey/models
 https://www.mecabricks.com/en/user/worrissey/models?p=2
 https://www.mecabricks.com/en/user/worrissey/renderings
+https://www.mecabricks.com/en/user/wyndgekko
 https://www.mecabricks.com/en/user/wyndgekko
 https://www.mecabricks.com/en/user/xforce198
 https://www.mecabricks.com/en/user/yohannathomas9
