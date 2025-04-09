@@ -57705,6 +57705,7 @@ https://www.mecabricks.com/en/models/9P2kPpgmjon
 https://www.mecabricks.com/en/models/9P2kYOBdvon
 https://www.mecabricks.com/en/models/9P2kddpQjon
 https://www.mecabricks.com/en/models/9P2kgV7z2on
+https://www.mecabricks.com/en/models/9P2kmo7Kvon#b8npKj
 https://www.mecabricks.com/en/models/9P2kn0Geaon#jQ8ewV
 https://www.mecabricks.com/en/models/9P2knJnZaon#D6rxLD
 https://www.mecabricks.com/en/models/9P2knYqmaon#jA9K4j
@@ -58468,6 +58469,7 @@ https://www.mecabricks.com/en/models/WRaZKR7Z2pZ
 https://www.mecabricks.com/en/models/WRaZL3wgjpZ
 https://www.mecabricks.com/en/models/WRaZL3wgjpZ#b8nrlj
 https://www.mecabricks.com/en/models/WRaZMWVnvpZ
+https://www.mecabricks.com/en/models/WRaZN9nMapZ#DxvyAV
 https://www.mecabricks.com/en/models/WRaZRQeMapZ
 https://www.mecabricks.com/en/models/WRaZVlGZapZ
 https://www.mecabricks.com/en/models/WRaZZ3PAapZ
@@ -59777,6 +59779,7 @@ https://www.mecabricks.com/en/user/lego_army/models?p=3
 https://www.mecabricks.com/en/user/lego_army/renderings
 https://www.mecabricks.com/en/user/lego_army/renderings?p=2
 https://www.mecabricks.com/en/user/lego_crow
+https://www.mecabricks.com/en/user/lego_richie
 https://www.mecabricks.com/en/user/legobricks.bob
 https://www.mecabricks.com/en/user/legobuilder.98
 https://www.mecabricks.com/en/user/legoduck
