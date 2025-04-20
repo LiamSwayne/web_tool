@@ -58555,6 +58555,7 @@ https://www.mecabricks.com/en/models/N02gx6lyjLD#bd2mBj
 https://www.mecabricks.com/en/models/N02gxGpZjLD#b314wj
 https://www.mecabricks.com/en/models/N02gxL8bjLD#jMkPNb
 https://www.mecabricks.com/en/models/N02gxWpMjLD
+https://www.mecabricks.com/en/models/N02gxgb3jLD#D45NBb
 https://www.mecabricks.com/en/models/N02gxpBAjLD#D4palD
 https://www.mecabricks.com/en/models/N02gxpBAjLD#V28dPD
 https://www.mecabricks.com/en/models/N02gxwPdjLD#jYve7D
@@ -60274,6 +60275,7 @@ https://www.mecabricks.com/en/user/ndroidz
 https://www.mecabricks.com/en/user/neothematrixguy
 https://www.mecabricks.com/en/user/nestikos
 https://www.mecabricks.com/en/user/newnindroid57
+https://www.mecabricks.com/en/user/nexo_brix
 https://www.mecabricks.com/en/user/ngchunter2
 https://www.mecabricks.com/en/user/nickcraftnl
 https://www.mecabricks.com/en/user/nicolas_nm_vegeta04
